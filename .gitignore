@@ -1,0 +1,18 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+
+# Build directories
+build/
+out/
+target/
+
+# Compiled class files
+*.class
+
+# Log files
+logs/
+*.log
