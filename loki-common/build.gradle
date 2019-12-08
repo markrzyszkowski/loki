@@ -2,3 +2,8 @@ version '0.0.1-SNAPSHOT'
 
 bootJar.enabled = false
 jar.enabled = true
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
