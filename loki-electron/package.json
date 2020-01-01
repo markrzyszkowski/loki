@@ -1,0 +1,43 @@
+{
+  "name": "loki",
+  "version": "0.0.1-SNAPSHOT",
+  "author": "Marcin Krzyszkowski",
+  "private": true,
+  "main": "src",
+  "engines": {
+    "node": "10.16.3",
+    "npm": "6.9.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --windows"
+  },
+  "dependencies": {
+    "electron-store": "^5.1.0",
+    "electron-util": "^0.13.1",
+    "get-port": "^5.1.0",
+    "tree-kill": "^1.2.1"
+  },
+  "devDependencies": {
+    "electron": "^7.1.4",
+    "electron-builder": "^21.2.0"
+  },
+  "build": {
+    "appId": "com.krzyszkowski.loki",
+    "productName": "Loki",
+    "files": [
+      "**/*",
+      "build/*"
+    ],
+    "asarUnpack": [
+      "**/*.jar"
+    ],
+    "win": {
+      "icon": "static/icon.png",
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "runAfterFinish": false
+    }
+  }
+}

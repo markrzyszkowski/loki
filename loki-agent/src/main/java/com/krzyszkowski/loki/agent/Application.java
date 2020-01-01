@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.client;
+package com.krzyszkowski.loki.agent;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

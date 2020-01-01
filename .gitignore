@@ -5,8 +5,12 @@
 # Gradle
 .gradle/
 
+# Node.js
+node_modules/
+
 # Build directories
 build/
+dist/
 out/
 target/
 

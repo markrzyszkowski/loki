@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.client;
+package com.krzyszkowski.loki.agent;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
