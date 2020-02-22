@@ -5,7 +5,7 @@ plugins {
 
 task electronPrepare(type: Copy, dependsOn: [npmInstall, ':loki-agent:build', ':loki-server:build']) {
     from "${project(':loki-agent').buildDir}/libs"
-    from "${project(':loki-server').buildDir}/libs"
+    from "${project(':loki-mock').buildDir}/libs"
     into "$buildDir"
 }
 

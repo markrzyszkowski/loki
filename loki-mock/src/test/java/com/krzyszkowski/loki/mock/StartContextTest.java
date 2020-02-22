@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.server;
+package com.krzyszkowski.loki.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
