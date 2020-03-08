@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public interface MockService {
+public interface ProxyService {
 
-    ResponseEntity<byte[]> handle(HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<byte[]> forward(HttpServletRequest request, HttpServletResponse response);
 }

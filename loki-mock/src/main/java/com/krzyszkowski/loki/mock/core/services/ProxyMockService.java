@@ -2,13 +2,11 @@ package com.krzyszkowski.loki.mock.core.services;
 
 import com.krzyszkowski.loki.api.mock.Header;
 import com.krzyszkowski.loki.api.mock.Response;
-import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import com.krzyszkowski.loki.mock.core.internal.MockRepository;
+import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,37 +14,40 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Service
-@Profile("static")
-public class StaticMockService implements MockService {
+@Profile("proxy")
+public class ProxyMockService implements MockService {
 
     private final MockRepository mockRepository;
     private final ObjectFactory<RuleMatcher> ruleMatcherFactory;
+    private final ProxyService proxyService;
 
-    public StaticMockService(MockRepository mockRepository, ObjectFactory<RuleMatcher> ruleMatcherFactory) {
+    public ProxyMockService(MockRepository mockRepository,
+                            ObjectFactory<RuleMatcher> ruleMatcherFactory,
+                            ProxyService proxyService) {
         this.mockRepository = mockRepository;
         this.ruleMatcherFactory = ruleMatcherFactory;
+        this.proxyService = proxyService;
     }
 
     @Override
     public ResponseEntity<byte[]> handle(HttpServletRequest request, HttpServletResponse response) {
-        var mock = mockRepository.findMock(request.getRequestURI().substring(1)).orElseThrow();
+        var mock = mockRepository.findMock(request.getRequestURL().toString());
+        if (mock.isPresent()) {
+            var rule = ruleMatcherFactory.getObject()
+                                         .searchIn(mock.get().getRules())
+                                         .forRuleMatching(request);
+            if (rule.isPresent()) {
+                var ruleResponse = rule.get().getResponse();
 
-        var rule = ruleMatcherFactory.getObject()
-                                     .searchIn(mock.getRules())
-                                     .forRuleMatching(request);
-        if (rule.isPresent()) {
-            var ruleResponse = rule.get().getResponse();
+                populateResponse(response, ruleResponse);
 
-            populateResponse(response, ruleResponse);
-
-            return ResponseEntity
-                    .status(ruleResponse.getStatus())
-                    .body(ruleResponse.getBody().getContent().getBytes());
+                return ResponseEntity
+                        .status(ruleResponse.getStatus())
+                        .body(ruleResponse.getBody().getContent().getBytes());
+            }
         }
 
-        return ResponseEntity
-                .status(HttpStatus.I_AM_A_TEAPOT)
-                .build();
+        return proxyService.forward(request, response);
     }
 
     private void populateResponse(HttpServletResponse response, Response ruleResponse) {
