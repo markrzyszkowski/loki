@@ -1,0 +1,3 @@
+loki:
+  mock:
+    max-request-size: 10MB

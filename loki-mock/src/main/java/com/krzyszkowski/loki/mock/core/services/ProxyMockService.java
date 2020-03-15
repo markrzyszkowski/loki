@@ -30,7 +30,7 @@ public class ProxyMockService implements MockService {
     }
 
     @Override
-    public ResponseEntity<byte[]> handle(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> handle(HttpServletRequest request, HttpServletResponse response) {
         var mock = mockRepository.findMock(request.getRequestURL().toString());
         if (mock.isPresent()) {
             var rule = ruleMatcherFactory.getObject()

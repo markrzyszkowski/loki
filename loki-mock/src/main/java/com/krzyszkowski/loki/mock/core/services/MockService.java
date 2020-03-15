@@ -7,5 +7,5 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface MockService {
 
-    ResponseEntity<byte[]> handle(HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> handle(HttpServletRequest request, HttpServletResponse response);
 }

@@ -2,13 +2,12 @@ package com.krzyszkowski.loki.mock.core.services;
 
 import com.krzyszkowski.loki.api.mock.Header;
 import com.krzyszkowski.loki.api.mock.Response;
-import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import com.krzyszkowski.loki.mock.core.internal.MockRepository;
+import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
