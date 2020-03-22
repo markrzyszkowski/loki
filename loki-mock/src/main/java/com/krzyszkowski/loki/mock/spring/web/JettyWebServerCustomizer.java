@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.mock;
+package com.krzyszkowski.loki.mock.spring.web;
 
 import org.eclipse.jetty.proxy.ConnectHandler;
 import org.eclipse.jetty.server.Request;
@@ -23,7 +23,6 @@ public class JettyWebServerCustomizer implements WebServerFactoryCustomizer<Jett
             var handlerCollection = new HandlerList();
             handlerCollection.addHandler(server.getHandler());
             handlerCollection.addHandler(new LoggingConnectHandler());
-
             server.setHandler(handlerCollection);
         });
     }

@@ -1,7 +1,6 @@
 package com.krzyszkowski.loki.mock.core.services;
 
-import com.krzyszkowski.loki.mock.DeleteOnCloseFileSystemResource;
-import org.springframework.core.io.FileSystemResource;
+import com.krzyszkowski.loki.mock.spring.io.DeleteOnCloseFileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 

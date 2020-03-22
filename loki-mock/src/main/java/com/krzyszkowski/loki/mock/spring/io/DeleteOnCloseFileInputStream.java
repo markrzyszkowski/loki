@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.mock;
+package com.krzyszkowski.loki.mock.spring.io;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,13 +1,10 @@
-package com.krzyszkowski.loki.mock;
+package com.krzyszkowski.loki.mock.spring.web;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
-import org.springframework.util.unit.DataUnit;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

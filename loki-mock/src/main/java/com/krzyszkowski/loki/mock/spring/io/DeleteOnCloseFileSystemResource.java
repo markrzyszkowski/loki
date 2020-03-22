@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.mock;
+package com.krzyszkowski.loki.mock.spring.io;
 
 import org.springframework.core.io.FileSystemResource;
 

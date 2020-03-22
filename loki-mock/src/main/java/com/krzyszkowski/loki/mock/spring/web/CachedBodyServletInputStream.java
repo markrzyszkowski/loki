@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.mock;
+package com.krzyszkowski.loki.mock.spring.web;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
