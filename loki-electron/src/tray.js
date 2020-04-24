@@ -1,34 +1,62 @@
-const {app, BrowserWindow, Menu, Tray} = require('electron');
+const {app, Menu, Tray} = require('electron');
+const log = require('electron-log');
+const {is} = require('electron-util');
+const path = require('path');
+const config = require('./config');
 
 let tray;
-let contextMenu;
 
-function create(window) {
+function createTray(window) {
     if (tray) {
         return;
     }
 
-    function toggleWindow() {
+    const toggleWindow = () => {
         if (window.isVisible()) {
             window.hide();
         } else {
-            window.show();
+            if (config.get('lastWindowState').isMaximized) {
+                window.maximize();
+                window.focus();
+            } else {
+                window.show();
+            }
         }
-    }
+    };
 
-    contextMenu = Menu.buildFromTemplate([
+    const updateConfig = () => {
+        const current = config.get('quitOnWindowClose');
+        config.set('quitOnWindowClose', !current);
+        log.debug(`Setting quitOnWindowClose changed from ${current} to ${!current}`);
+    };
+
+    const contextMenu = Menu.buildFromTemplate([
         {
             label: 'Toggle visibility',
+            visible: !is.macos,
             click() {
                 toggleWindow();
             }
+        },
+        {
+            label: 'Settings',
+            submenu: [
+                {
+                    label: 'Quit on window close',
+                    type: 'checkbox',
+                    checked: config.get('quitOnWindowClose'),
+                    click() {
+                        updateConfig();
+                    }
+                }
+            ]
         },
         {
             role: 'quit'
         }
     ]);
 
-    tray = new Tray(app.getAppPath() + '/static/icon_tray.png');
+    tray = new Tray(path.join(app.getAppPath(), 'static', 'icon_tray.png'));
 
     tray.setContextMenu(contextMenu);
 
@@ -39,5 +67,5 @@ function create(window) {
 }
 
 module.exports = {
-    create: create
+    create: createTray
 };

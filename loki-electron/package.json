@@ -13,14 +13,16 @@
     "build": "electron-builder --windows"
   },
   "dependencies": {
-    "electron-store": "^5.1.0",
-    "electron-util": "^0.13.1",
-    "get-port": "^5.1.0",
-    "tree-kill": "^1.2.1"
+    "electron-log": "^4.1.1",
+    "electron-store": "^5.1.1",
+    "electron-util": "^0.14.1",
+    "get-port": "^5.1.1",
+    "tree-kill": "^1.2.2",
+    "express": "^4.17.1"
   },
   "devDependencies": {
-    "electron": "^7.1.4",
-    "electron-builder": "^21.2.0"
+    "electron": "^8.2.3",
+    "electron-builder": "^22.5.1"
   },
   "build": {
     "appId": "com.krzyszkowski.loki",

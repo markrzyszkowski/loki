@@ -15,16 +15,24 @@ const schema = {
             },
             height: {
                 type: 'number'
+            },
+            isMaximized: {
+                type: 'boolean'
             }
         },
         default: {
             x: undefined,
             y: undefined,
             width: 1280,
-            height: 720
+            height: 720,
+            isMaximized: false
         }
     },
     quitOnWindowClose: {
+        type: 'boolean',
+        default: false
+    },
+    debug: {
         type: 'boolean',
         default: false
     }
