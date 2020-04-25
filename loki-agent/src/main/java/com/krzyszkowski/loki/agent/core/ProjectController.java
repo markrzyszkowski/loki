@@ -41,7 +41,11 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        var projectOptional = projectService.openProject(fetchProjectRequest.getPath());
+        var path = fetchProjectRequest.getPath();
+
+        log.debug("Received request to open project from file '{}'", path);
+
+        var projectOptional = projectService.openProject(path);
 
         return projectOptional.isPresent()
                 ? ResponseEntity.ok(FetchProjectResponse.builder()
@@ -64,7 +68,11 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        var projectOptional = projectService.importProject(fetchProjectRequest.getPath());
+        var path = fetchProjectRequest.getPath();
+
+        log.debug("Received request to import project from file '{}'", path);
+
+        var projectOptional = projectService.importProject(path);
 
         return projectOptional.isPresent()
                 ? ResponseEntity.ok(FetchProjectResponse.builder()
@@ -87,7 +95,15 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        var projectSaved = projectService.saveProject(saveProjectRequest.getPath(), saveProjectRequest.getProject());
+        var path = saveProjectRequest.getPath();
+        var project = saveProjectRequest.getProject();
+
+        log.debug("Received request to save project [id='{}', name='{}'] to file '{}'",
+                  project.getId(),
+                  project.getName(),
+                  path);
+
+        var projectSaved = projectService.saveProject(path, project);
 
         return projectSaved
                 ? ResponseEntity.ok().build()
