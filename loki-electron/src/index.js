@@ -176,8 +176,8 @@ async function setupAgent() {
 
     const args = [
         `-Dserver.port=${agentPort}`,
-        `-Dloki.mock.jar=${mockJar}`,
-        `-Dloki.electron.port=${callbackPort}`,
+        `-Dloki.agent.mock.jar=${mockJar}`,
+        `-Dloki.agent.electron.port=${callbackPort}`,
         '-jar',
         agentJar
     ];

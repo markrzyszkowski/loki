@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class EventListeners {
 
-    @Value("${loki.electron.port}")
+    @Value("${loki.agent.electron.port}")
     private int electronPort;
 
     @EventListener(ApplicationReadyEvent.class)
