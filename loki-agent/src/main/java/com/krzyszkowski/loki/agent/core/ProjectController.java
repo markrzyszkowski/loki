@@ -35,8 +35,8 @@ public class ProjectController {
         if (errors.hasErrors()) {
             var errorResponse = parseErrors(errors);
 
-            log.info("Received malformed request to open project");
-            log.info("Errors: {}", errorResponse.getErrors());
+            log.error("Received malformed request to open project");
+            log.error("Errors: {}", errorResponse.getErrors());
 
             return ResponseEntity.badRequest().body(errorResponse);
         }
@@ -58,8 +58,8 @@ public class ProjectController {
         if (errors.hasErrors()) {
             var errorResponse = parseErrors(errors);
 
-            log.info("Received malformed request to import project");
-            log.info("Errors: {}", errorResponse.getErrors());
+            log.error("Received malformed request to import project");
+            log.error("Errors: {}", errorResponse.getErrors());
 
             return ResponseEntity.badRequest().body(errorResponse);
         }
@@ -81,8 +81,8 @@ public class ProjectController {
         if (errors.hasErrors()) {
             var errorResponse = parseErrors(errors);
 
-            log.info("Received malformed request to save project");
-            log.info("Errors: {}", errorResponse.getErrors());
+            log.error("Received malformed request to save project");
+            log.error("Errors: {}", errorResponse.getErrors());
 
             return ResponseEntity.badRequest().body(errorResponse);
         }

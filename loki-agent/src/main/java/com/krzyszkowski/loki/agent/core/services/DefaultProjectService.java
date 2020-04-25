@@ -33,8 +33,8 @@ public class DefaultProjectService implements ProjectService {
 
             return Optional.of(deserializeProject(projectBytes));
         } catch (IOException e) {
-            log.info("Error occured while trying to open project");
-            log.info("Exception: {}", e.toString());
+            log.error("Error occured while trying to open project");
+            log.error("Exception: {}", e.toString());
 
             return Optional.empty();
         }
@@ -45,8 +45,8 @@ public class DefaultProjectService implements ProjectService {
         try {
             return Optional.of(projectImporter.importProject(path));
         } catch (IOException e) {
-            log.info("Error occured while trying to import project");
-            log.info("Exception: {}", e.toString());
+            log.error("Error occured while trying to import project");
+            log.error("Exception: {}", e.toString());
 
             return Optional.empty();
         }
@@ -61,8 +61,8 @@ public class DefaultProjectService implements ProjectService {
 
             return true;
         } catch (IOException e) {
-            log.info("Error occured while trying to save project");
-            log.info("Exception: {}", e.toString());
+            log.error("Error occured while trying to save project");
+            log.error("Exception: {}", e.toString());
 
             return false;
         }
