@@ -26,7 +26,7 @@ public class MockProperties {
 
     @Getter
     @Setter
-    private static class Agent {
+    public static class Agent {
 
         @Min(1024)
         @Max(65535)

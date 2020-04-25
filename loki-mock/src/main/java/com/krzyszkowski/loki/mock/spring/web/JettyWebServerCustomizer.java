@@ -1,10 +1,9 @@
 package com.krzyszkowski.loki.mock.spring.web;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.proxy.ConnectHandler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
@@ -27,9 +26,8 @@ public class JettyWebServerCustomizer implements WebServerFactoryCustomizer<Jett
         });
     }
 
+    @Slf4j
     static class LoggingConnectHandler extends ConnectHandler {
-
-        private static final Logger log = LoggerFactory.getLogger(LoggingConnectHandler.class);
 
         @Override
         public void handle(String target,
