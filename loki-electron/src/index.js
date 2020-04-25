@@ -98,7 +98,7 @@ app.on('before-quit', () => {
         config.set('lastWindowState', {...mainWindow.getNormalBounds(), isMaximized});
     }
 
-    log.info('Stopping Loki application');
+    log.info('Closing Loki application');
 });
 
 app.on('ready', () => {
