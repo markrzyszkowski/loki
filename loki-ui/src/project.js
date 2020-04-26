@@ -44,7 +44,7 @@ const saveProject = (path, project) => {
         project: project
     }).then(response => {
         return response.data;
-    })
+    });
 };
 
 const defaultState = () => {

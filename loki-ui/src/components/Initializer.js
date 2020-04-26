@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import Snackbar from '@material-ui/core/Snackbar';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
+import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject } from '../project';
+import { handleApiError } from '../util';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -31,6 +34,8 @@ function Initializer(props) {
     const {onProjectInit} = props;
 
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [snackbarContent, setSnackbarContent] = useState({});
 
     const classes = useStyles();
 
@@ -43,14 +48,8 @@ function Initializer(props) {
             if (path) {
                 openProject(path).then(project => {
                     onProjectInit(project);
-                }).catch(error => { // TODO handling
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log(error.message);
-                    }
+                }).catch(error => {
+                    handleApiError(error, setSnackbarContent, setShowSnackbar);
                 });
             }
             setShowBackdrop(false);
@@ -67,14 +66,8 @@ function Initializer(props) {
             if (path) {
                 importProject(path).then(project => {
                     onProjectInit(project);
-                }).catch(error => { // TODO handling
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log(error.message);
-                    }
+                }).catch(error => {
+                    handleApiError(error, setSnackbarContent, setShowSnackbar);
                 });
             }
             setShowBackdrop(false);
@@ -84,6 +77,10 @@ function Initializer(props) {
             setShowBackdrop(true);
         }
         ipc.send('import-project');
+    };
+
+    const handleCloseSnackbar = () => {
+        setShowSnackbar(false);
     };
 
     return (
@@ -120,6 +117,11 @@ function Initializer(props) {
                     Import project
                 </Button>
             </Paper>
+            <Snackbar open={showSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                <Alert severity={snackbarContent.severity} onClose={handleCloseSnackbar}>
+                    {snackbarContent.message}
+                </Alert>
+            </Snackbar>
             <Backdrop open={showBackdrop} className={classes.backdrop}/>
         </div>
     );

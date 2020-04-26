@@ -1,9 +1,14 @@
 import React from 'react';
 import Tooltip from '@material-ui/core/Tooltip';
+import MuiAlert from '@material-ui/lab/Alert';
 import * as PropTypes from 'prop-types';
 
 function ellipsis(text, length) {
     return text.substring(0, length) + '...';
+}
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props}/>;
 }
 
 function EllipsizeWithTooltip(props) {
@@ -26,4 +31,4 @@ EllipsizeWithTooltip.propTypes = {
     interactive: PropTypes.bool.isRequired
 };
 
-export { EllipsizeWithTooltip };
+export { Alert, EllipsizeWithTooltip };

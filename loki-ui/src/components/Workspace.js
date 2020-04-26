@@ -6,14 +6,17 @@ import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
+import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import Project from './Project';
 import ProjectItem from './ProjectItem';
+import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
+import { handleApiError } from '../util';
 
 const drawerWidth = 240;
 
@@ -66,6 +69,8 @@ function Workspace(props) {
     const [projects, setProjects] = useState([initialProject]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [snackbarContent, setSnackbarContent] = useState({});
 
     const classes = useStyles();
 
@@ -94,14 +99,8 @@ function Workspace(props) {
                         setProjects([...projects, project]);
                         setCurrentProjectIndex(projects.length);
                     }
-                }).catch(error => { // TODO handling
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log(error.message);
-                    }
+                }).catch(error => {
+                    handleApiError(error, setSnackbarContent, setShowSnackbar);
                 });
             }
             setShowBackdrop(false);
@@ -120,14 +119,8 @@ function Workspace(props) {
                     setProjectStates([...projectStates, {...defaultState(), neverSaved: true, path: path}]);
                     setProjects([...projects, project]);
                     setCurrentProjectIndex(projects.length);
-                }).catch(error => { // TODO handling
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log(error.message);
-                    }
+                }).catch(error => {
+                    handleApiError(error, setSnackbarContent, setShowSnackbar);
                 });
             }
             setShowBackdrop(false);
@@ -174,14 +167,8 @@ function Workspace(props) {
             const save = path => {
                 saveProject(path, projects[index]).then(() => {
                     handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
-                }).catch(error => { // TODO handling
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log(error.message);
-                    }
+                }).catch(error => {
+                    handleApiError(error, setSnackbarContent, setShowSnackbar);
                 });
             };
 
@@ -223,14 +210,14 @@ function Workspace(props) {
 
     const handleStartMock = () => {
         handleModifyProjectState(currentProjectIndex, {running: true});
-        // TODO loading animation
-        // TODO logic
     };
 
     const handleStopMock = () => {
         handleModifyProjectState(currentProjectIndex, {running: false});
-        // TODO loading animation
-        // TODO logic
+    };
+
+    const handleCloseSnackbar = () => {
+        setShowSnackbar(false);
     };
 
     return (
@@ -273,21 +260,22 @@ function Workspace(props) {
                             Import
                         </Button>
                         <div className={classes.grow}/>
-                        {!!projects.length && !!projects[currentProjectIndex].tabs.length && <div className={classes.actions}>
-                            {
-                                !projectStates[currentProjectIndex].running
-                                ?
-                                <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
-                                    <PlayArrow className={classes.startFabIcon}/>
-                                    Start
-                                </Fab>
-                                :
-                                <Fab variant="extended" size="small" onClick={handleStopMock}>
-                                    <Stop className={classes.stopFabIcon}/>
-                                    Stop
-                                </Fab>
-                            }
-                        </div>}
+                        {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
+                         <div className={classes.actions}>
+                             {
+                                 !projectStates[currentProjectIndex].running
+                                 ?
+                                 <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
+                                     <PlayArrow className={classes.startFabIcon}/>
+                                     Start
+                                 </Fab>
+                                 :
+                                 <Fab variant="extended" size="small" onClick={handleStopMock}>
+                                     <Stop className={classes.stopFabIcon}/>
+                                     Stop
+                                 </Fab>
+                             }
+                         </div>}
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawer}}>
@@ -317,6 +305,11 @@ function Workspace(props) {
                         onModifyProjectState={handleModifyProjectState}
                     />}
                 </main>
+                <Snackbar open={showSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
+                    <Alert severity={snackbarContent.severity} onClose={handleCloseSnackbar}>
+                        {snackbarContent.message}
+                    </Alert>
+                </Snackbar>
                 <Backdrop open={showBackdrop} className={classes.backdrop}/>
             </div>
         </Hotkeys>
