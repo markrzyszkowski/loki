@@ -229,7 +229,9 @@ function createMainWindow() {
     log.debug(`Window dimensions: ${lastWindowState.width}x${lastWindowState.height}`);
 
     if (!is.development) {
-        window.removeMenu();
+        if (!config.get('debug')) {
+            window.removeMenu();
+        }
     }
 
     window.on('resize', () => {
