@@ -36,6 +36,7 @@ function ProjectItem(props) {
         onModifyProject,
         onModifyProjectState,
         onSaveProject,
+        onDuplicateProject,
         onCloseProject
     } = props;
 
@@ -58,6 +59,11 @@ function ProjectItem(props) {
     const handleSaveProject = event => {
         handleCloseMenu(event);
         onSaveProject(index);
+    };
+
+    const handleDuplicateProject = event => {
+        handleCloseMenu(event);
+        onDuplicateProject(index);
     };
 
     const handleCloseProject = () => {
@@ -135,8 +141,10 @@ function ProjectItem(props) {
                         ? {top: menuState.mouseY, left: menuState.mouseX}
                         : undefined}
                 >
-                    {(projectState.modified || projectState.neverSaved) && <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
+                    {(projectState.modified || projectState.neverSaved) &&
+                     <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
                     <MenuItem onClick={handleModifyProject}>Edit</MenuItem>
+                    <MenuItem onClick={handleDuplicateProject}>Duplicate</MenuItem>
                     <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                 </Menu>
                 <ListItemSecondaryAction>
@@ -198,6 +206,7 @@ ProjectItem.propTypes = {
     onModifyProject: PropTypes.func.isRequired,
     onModifyProjectState: PropTypes.func.isRequired,
     onSaveProject: PropTypes.func.isRequired,
+    onDuplicateProject: PropTypes.func.isRequired,
     onCloseProject: PropTypes.func.isRequired
 };
 

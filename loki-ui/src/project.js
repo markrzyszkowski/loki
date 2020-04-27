@@ -10,14 +10,20 @@ ipc.once('agent-port', (event, port) => {
 
 ipc.send('agent-port');
 
+const newTab = () => {
+    return {
+        name: 'Untitled mock',
+        url: '',
+        rules: []
+    };
+};
+
 const newProject = () => {
     return {
         id: uuid(),
         name: 'Untitled project',
         tabs: [
-            {
-                name: 'Untitled mock'
-            }
+            newTab()
         ]
     };
 };
@@ -51,8 +57,10 @@ const defaultState = () => {
     return {
         activeTab: 0,
         modified: false,
-        running: false
+        running: false,
+        neverSaved: true,
+        path: null
     };
 };
 
-export { newProject, openProject, importProject, saveProject, defaultState };
+export { newTab, newProject, openProject, importProject, saveProject, defaultState };

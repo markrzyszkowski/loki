@@ -11,6 +11,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
+import { v4 as uuid } from 'uuid';
 import Project from './Project';
 import ProjectItem from './ProjectItem';
 import { Alert } from './Util';
@@ -65,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 function Workspace(props) {
     const {initialProject} = props;
 
-    const [projectStates, setProjectStates] = useState([{...defaultState(), neverSaved: true, path: null}]);
+    const [projectStates, setProjectStates] = useState([defaultState()]);
     const [projects, setProjects] = useState([initialProject]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [showBackdrop, setShowBackdrop] = useState(false);
@@ -75,7 +76,7 @@ function Workspace(props) {
     const classes = useStyles();
 
     const handleNewProject = () => {
-        setProjectStates([...projectStates, {...defaultState(), neverSaved: true, path: null}]);
+        setProjectStates([...projectStates, defaultState()]);
         setProjects([...projects, newProject()]);
         setCurrentProjectIndex(projects.length);
     };
@@ -116,7 +117,7 @@ function Workspace(props) {
         ipc.once('import-project', (ipcEvent, path) => {
             if (path) {
                 importProject(path).then(project => {
-                    setProjectStates([...projectStates, {...defaultState(), neverSaved: true, path: path}]);
+                    setProjectStates([...projectStates, {...defaultState(), path: path}]);
                     setProjects([...projects, project]);
                     setCurrentProjectIndex(projects.length);
                 }).catch(error => {
@@ -163,31 +164,40 @@ function Workspace(props) {
     };
 
     const handleSaveProject = index => {
-        if (projectStates[index].modified || projectStates[index].neverSaved) {
-            const save = path => {
-                saveProject(path, projects[index]).then(() => {
-                    handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
-                }).catch(error => {
-                    handleApiError(error, setSnackbarContent, setShowSnackbar);
-                });
-            };
+        if (projects.length) {
+            if (projectStates[index].modified || projectStates[index].neverSaved) {
+                const save = path => {
+                    saveProject(path, projects[index]).then(() => {
+                        handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
+                    }).catch(error => {
+                        handleApiError(error, setSnackbarContent, setShowSnackbar);
+                    });
+                };
 
-            if (projectStates[index].neverSaved) {
-                ipc.once('save-project', (ipcEvent, path) => {
-                    if (path) {
-                        save(path);
+                if (projectStates[index].neverSaved) {
+                    ipc.once('save-project', (ipcEvent, path) => {
+                        if (path) {
+                            save(path);
+                        }
+                        setShowBackdrop(false);
+                    });
+
+                    if (!ipc.isDummy) {
+                        setShowBackdrop(true);
                     }
-                    setShowBackdrop(false);
-                });
-
-                if (!ipc.isDummy) {
-                    setShowBackdrop(true);
+                    ipc.send('save-project');
+                } else {
+                    save(projectStates[index].path);
                 }
-                ipc.send('save-project');
-            } else {
-                save(projectStates[index].path);
             }
         }
+    };
+
+    const handleDuplicateProject = index => {
+        const projectCopy = {...projects[index]};
+        setProjectStates([...projectStates, defaultState()]);
+        setProjects([...projects, {...projectCopy, id: uuid(), name: `Copy of ${projectCopy.name}`}]);
+        setCurrentProjectIndex(projects.length);
     };
 
     const handleCloseProject = index => {
@@ -291,6 +301,7 @@ function Workspace(props) {
                                 onModifyProject={handleModifyProject}
                                 onModifyProjectState={handleModifyProjectState}
                                 onSaveProject={handleSaveProject}
+                                onDuplicateProject={handleDuplicateProject}
                                 onCloseProject={handleCloseProject}
                             />)}
                     </List>

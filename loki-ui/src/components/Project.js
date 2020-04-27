@@ -8,6 +8,7 @@ import * as PropTypes from 'prop-types';
 import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
 import ProjectTabScrollButton from './ProjectTabScrollButton';
+import { newTab } from '../project';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,7 +31,7 @@ function Project(props) {
     };
 
     const handleAddTab = () => {
-        onModifyProject(index, {tabs: [...project.tabs, {name: 'Untitled mock'}]});
+        onModifyProject(index, {tabs: [...project.tabs, newTab()]});
         onModifyProjectState(index, {modified: true, activeTab: project.tabs.length});
     };
 
@@ -53,7 +54,7 @@ function Project(props) {
             if (tabIndex === projectState.activeTab && tabIndex === 0) {
                 onModifyProjectState(index, {activeTab: 0});
             } else if (tabIndex <= projectState.activeTab) {
-                onModifyProjectState(index, {activeTab: projectState.activeTab - 1})
+                onModifyProjectState(index, {activeTab: projectState.activeTab - 1});
             }
         }
     };
