@@ -18,7 +18,7 @@ import ProjectItem from './ProjectItem';
 import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
-import { flexion, handleApiError } from '../util';
+import { flection, handleApiError } from '../util';
 
 const drawerWidth = 280;
 
@@ -219,11 +219,6 @@ function Workspace(props) {
         }
     };
 
-    const handleSelectWarning = () => {
-        const tabIndex = projects[currentProjectIndex].warnings[0].tab;
-        handleModifyProjectState(currentProjectIndex, {activeTab: tabIndex});
-    };
-
     const handleStartMock = () => {
         handleModifyProjectState(currentProjectIndex, {running: true});
     };
@@ -281,8 +276,7 @@ function Workspace(props) {
                              {!!projects[currentProjectIndex].warnings.length &&
                               <Chip
                                   icon={<Error/>}
-                                  label={flexion(projects[currentProjectIndex].warnings.length, 'warning', 'warnings')}
-                                  onClick={handleSelectWarning}
+                                  label={flection(projects[currentProjectIndex].warnings.length, 'warning', 'warnings')}
                               />}
                              {!projects[currentProjectIndex].warnings.length && !projectStates[currentProjectIndex].running &&
                               <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>

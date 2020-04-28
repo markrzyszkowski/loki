@@ -2,7 +2,7 @@ function ellipsis(text, length) {
     return `${text.substring(0, length)}...`;
 }
 
-function flexion(count, singular, plural) {
+function flection(count, singular, plural) {
     return `${count} ${count > 1 ? plural : singular}`
 }
 
@@ -22,4 +22,4 @@ function handleApiError(error, actions) {
     setShowSnackbar(true);
 }
 
-export { ellipsis, flexion, handleApiError };
+export { ellipsis, flection, handleApiError };
