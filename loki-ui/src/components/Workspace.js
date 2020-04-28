@@ -3,13 +3,14 @@ import Hotkeys from 'react-hot-keys';
 import AppBar from '@material-ui/core/AppBar';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
-import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
+import { Add, Error, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import Project from './Project';
@@ -17,9 +18,9 @@ import ProjectItem from './ProjectItem';
 import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
-import { handleApiError } from '../util';
+import { flexion, handleApiError } from '../util';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -218,6 +219,11 @@ function Workspace(props) {
         }
     };
 
+    const handleSelectWarning = () => {
+        const tabIndex = projects[currentProjectIndex].warnings[0].tab;
+        handleModifyProjectState(currentProjectIndex, {activeTab: tabIndex});
+    };
+
     const handleStartMock = () => {
         handleModifyProjectState(currentProjectIndex, {running: true});
     };
@@ -272,19 +278,22 @@ function Workspace(props) {
                         <div className={classes.grow}/>
                         {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
                          <div className={classes.actions}>
-                             {
-                                 !projectStates[currentProjectIndex].running
-                                 ?
-                                 <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
-                                     <PlayArrow className={classes.startFabIcon}/>
-                                     Start
-                                 </Fab>
-                                 :
-                                 <Fab variant="extended" size="small" onClick={handleStopMock}>
-                                     <Stop className={classes.stopFabIcon}/>
-                                     Stop
-                                 </Fab>
-                             }
+                             {!!projects[currentProjectIndex].warnings.length &&
+                              <Chip
+                                  icon={<Error/>}
+                                  label={flexion(projects[currentProjectIndex].warnings.length, 'warning', 'warnings')}
+                                  onClick={handleSelectWarning}
+                              />}
+                             {!projects[currentProjectIndex].warnings.length && !projectStates[currentProjectIndex].running &&
+                              <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
+                                  <PlayArrow className={classes.startFabIcon}/>
+                                  Start
+                              </Fab>}
+                             {projectStates[currentProjectIndex].running &&
+                              <Fab variant="extended" size="small" onClick={handleStopMock}>
+                                  <Stop className={classes.stopFabIcon}/>
+                                  Stop
+                              </Fab>}
                          </div>}
                     </Toolbar>
                 </AppBar>

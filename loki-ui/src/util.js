@@ -1,3 +1,11 @@
+function ellipsis(text, length) {
+    return `${text.substring(0, length)}...`;
+}
+
+function flexion(count, singular, plural) {
+    return `${count} ${count > 1 ? plural : singular}`
+}
+
 function handleApiError(error, actions) {
     const {setSnackbarContent, setShowSnackbar} = actions;
     if (error.response) {
@@ -14,4 +22,4 @@ function handleApiError(error, actions) {
     setShowSnackbar(true);
 }
 
-export { handleApiError };
+export { ellipsis, flexion, handleApiError };

@@ -2,10 +2,7 @@ import React from 'react';
 import Tooltip from '@material-ui/core/Tooltip';
 import MuiAlert from '@material-ui/lab/Alert';
 import * as PropTypes from 'prop-types';
-
-function ellipsis(text, length) {
-    return text.substring(0, length) + '...';
-}
+import { ellipsis } from '../util';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props}/>;

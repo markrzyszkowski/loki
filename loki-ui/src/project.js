@@ -24,7 +24,8 @@ const newProject = () => {
         name: 'Untitled project',
         tabs: [
             newTab()
-        ]
+        ],
+        warnings: [],
     };
 };
 

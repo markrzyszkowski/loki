@@ -5,16 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Project {
+public class Warning {
 
-    private String id;
-    private String name;
-    private List<Tab> tabs;
-    private List<Warning> warnings;
+    private int tab;
+    private int message;
 }

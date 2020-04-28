@@ -49,7 +49,10 @@ function Project(props) {
         if (project.tabs.length) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
-            onModifyProject(index, {tabs: tabsCopy});
+
+            const warningsCopy = project.warnings.filter(warning => tabIndex !== warning.tab);
+
+            onModifyProject(index, {tabs: tabsCopy, warnings: warningsCopy});
 
             if (tabIndex === projectState.activeTab && tabIndex === 0) {
                 onModifyProjectState(index, {activeTab: 0});

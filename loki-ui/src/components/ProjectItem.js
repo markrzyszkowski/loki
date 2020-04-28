@@ -13,7 +13,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-import { Close, Save } from '@material-ui/icons';
+import { Close, Error, Save } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import { EllipsizeWithTooltip } from './Util';
 
@@ -129,7 +129,8 @@ function ProjectItem(props) {
                 onContextMenu={handleOpenMenu}
                 classes={{container: projectState.running ? classes.running : classes.default}}
             >
-                <ListItemText primary={<EllipsizeWithTooltip text={project.name} maxLength={16} interactive={false}/>}/>
+                <ListItemText primary={<EllipsizeWithTooltip text={project.name} maxLength={20} interactive={false}/>}/>
+                {!!project.warnings.length && <Error color="secondary"/>}
                 {!projectState.modified && projectState.neverSaved && <Save color="primary"/>}
                 {projectState.modified && <Save color="secondary"/>}
                 <Menu
