@@ -84,7 +84,11 @@ function Project(props) {
                     <Add/>
                 </Button>
             </Paper>
-            {!!project.tabs.length && <ProjectContent tab={project.tabs[projectState.activeTab]}/>}
+            {!!project.tabs.length && <ProjectContent
+                tab={project.tabs[projectState.activeTab]}
+                index={projectState.activeTab}
+                onModifyTab={handleModifyTab}
+            />}
         </>
     );
 }
