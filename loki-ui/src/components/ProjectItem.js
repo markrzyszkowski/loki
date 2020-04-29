@@ -130,7 +130,7 @@ function ProjectItem(props) {
                 classes={{container: projectState.running ? classes.running : classes.default}}
             >
                 <ListItemText primary={<EllipsizeWithTooltip text={project.name} maxLength={20} interactive={false}/>}/>
-                {!!project.warnings.length && <Error color="secondary"/>}
+                {!!projectState.warnings.length && <Error color="secondary"/>}
                 {!projectState.modified && projectState.neverSaved && <Save color="primary"/>}
                 {projectState.modified && <Save color="secondary"/>}
                 <Menu

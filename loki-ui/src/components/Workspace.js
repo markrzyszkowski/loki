@@ -273,12 +273,12 @@ function Workspace(props) {
                         <div className={classes.grow}/>
                         {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
                          <div className={classes.actions}>
-                             {!!projects[currentProjectIndex].warnings.length &&
+                             {!!projectStates[currentProjectIndex].warnings.length &&
                               <Chip
                                   icon={<Error/>}
-                                  label={flection(projects[currentProjectIndex].warnings.length, 'warning', 'warnings')}
+                                  label={flection(projectStates[currentProjectIndex].warnings.length, 'warning', 'warnings')}
                               />}
-                             {!projects[currentProjectIndex].warnings.length && !projectStates[currentProjectIndex].running &&
+                             {!projectStates[currentProjectIndex].warnings.length && !projectStates[currentProjectIndex].running &&
                               <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
                                   <PlayArrow className={classes.startFabIcon}/>
                                   Start

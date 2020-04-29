@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Tab {
 
+    private String id;
     private String name;
 }

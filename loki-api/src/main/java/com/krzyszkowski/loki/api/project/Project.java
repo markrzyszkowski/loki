@@ -16,5 +16,4 @@ public class Project {
     private String id;
     private String name;
     private List<Tab> tabs;
-    private List<Warning> warnings;
 }

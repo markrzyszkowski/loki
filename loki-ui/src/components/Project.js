@@ -37,10 +37,8 @@ function Project(props) {
 
     const handleModifyTab = (tabIndex, tabProperties) => {
         const tabsCopy = [...project.tabs];
-        tabsCopy[tabIndex] = {
-            ...tabsCopy[tabIndex],
-            ...tabProperties
-        };
+        tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...tabProperties};
+
         onModifyProject(index, {tabs: tabsCopy});
         onModifyProjectState(index, {modified: true});
     };
@@ -50,7 +48,7 @@ function Project(props) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
 
-            const warningsCopy = project.warnings.filter(warning => tabIndex !== warning.tab);
+            const warningsCopy = projectState.warnings.filter(warning => project.tabs[tabIndex].id !== warning.tabId);
 
             onModifyProject(index, {tabs: tabsCopy, warnings: warningsCopy});
 

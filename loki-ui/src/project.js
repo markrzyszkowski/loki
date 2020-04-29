@@ -12,6 +12,7 @@ ipc.send('agent-port');
 
 const newTab = () => {
     return {
+        id: uuid(),
         name: 'Untitled mock',
         url: '',
         rules: []
@@ -24,8 +25,7 @@ const newProject = () => {
         name: 'Untitled project',
         tabs: [
             newTab()
-        ],
-        warnings: [],
+        ]
     };
 };
 
@@ -60,7 +60,8 @@ const defaultState = () => {
         modified: false,
         running: false,
         neverSaved: true,
-        path: null
+        path: null,
+        warnings: []
     };
 };
 
