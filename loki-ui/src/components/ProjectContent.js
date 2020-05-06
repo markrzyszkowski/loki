@@ -17,13 +17,21 @@ function ProjectContent(props) {
     const handleUrlChange = event => {
         const text = event.target.value;
         if (text !== tab.url) {
-            onModifyTab(index, {url: text});
+            onModifyTab(index, {url: text}, 'url');
         }
     };
 
     return (
         <div role="tabpanel" className={classes.root}>
-            <TextField label="URL" placeholder="Enter request URL" value={tab.url} onChange={handleUrlChange} fullWidth/>
+            <TextField
+                error={!!warnings['url']}
+                helperText={warnings['url']}
+                label="URL"
+                placeholder="Enter request URL"
+                value={tab.url}
+                id="url"
+                onChange={handleUrlChange}
+                fullWidth/>
         </div>
     );
 }
