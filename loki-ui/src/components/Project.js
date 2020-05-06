@@ -35,7 +35,7 @@ function Project(props) {
         const tab = newTab();
 
         const warningsCopy = {...projectState.warnings};
-        warningsCopy[tab.id] = {url: 'Mock URL cannot be empty'};
+        validators.url({...project, tabs: [...project.tabs, tab]}, warningsCopy);
 
         onModifyProject(index, {tabs: [...project.tabs, tab]});
         onModifyProjectState(index, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});

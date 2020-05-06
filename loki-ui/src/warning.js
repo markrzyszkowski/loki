@@ -16,6 +16,7 @@ function validateUrls(project, warnings) {
     for (let url in duplicates) {
         if (duplicates[url].length > 1) {
             duplicates[url].forEach(id => {
+                warnings[id] = {...warnings[id]};
                 if (!warnings[id]['url']) {
                     warnings[id] = {...warnings[id], url: 'Mock URL must be unique in project scope'};
                 }
@@ -27,7 +28,9 @@ function validateUrls(project, warnings) {
 function validateUrl(tab, warnings) {
     if (tab.url && tab.url.length) {
         if (isValidUrl(tab.url)) {
-            delete warnings[tab.id]['url'];
+            if (warnings[tab.id]) {
+                delete warnings[tab.id]['url'];
+            }
         } else {
             warnings[tab.id] = {...warnings[tab.id], url: 'Mock URL must be valid'};
         }
