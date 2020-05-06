@@ -9,16 +9,26 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
 import { EllipsizeWithTooltip } from './Util';
 
+const useStyles = makeStyles(theme => ({
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
+    }
+}));
+
 function ProjectTab(props) {
-    const {tab, index, onModifyTab, onDeleteTab, ...other} = props;
+    const {tab, index, warnings, onModifyTab, onDeleteTab, ...other} = props;
 
     const [menuState, setMenuState] = useState({mouseY: null, mouseX: null});
     const [dialogError, setDialogError] = useState(false);
     const [showModifyTabDialog, setShowModifyTabDialog] = useState(false);
     const [showDeleteTabDialog, setShowDeleteTabDialog] = useState(false);
+
+    const classes = useStyles();
 
     const handleModifyTab = event => {
         handleCloseMenu(event);
@@ -88,7 +98,7 @@ function ProjectTab(props) {
                         <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                     </Menu>
                 </>
-            } {...other}/>
+            } classes={{root: !!Object.keys(warnings).length ? classes.warning : null}} {...other}/>
             <Dialog open={showModifyTabDialog} onClose={handleCancelModifyAction}>
                 <DialogTitle>{tab.name}</DialogTitle>
                 <DialogContent>
@@ -133,6 +143,7 @@ function ProjectTab(props) {
 ProjectTab.propTypes = {
     tab: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyTab: PropTypes.func.isRequired,
     onDeleteTab: PropTypes.func.isRequired
 };

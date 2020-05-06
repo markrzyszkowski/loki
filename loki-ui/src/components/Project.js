@@ -94,6 +94,7 @@ function Project(props) {
                         <ProjectTab
                             tab={tab}
                             index={index}
+                            warnings={projectState.warnings[tab.id] || {}}
                             onModifyTab={handleModifyTab}
                             onDeleteTab={handleDeleteTab}
                         />)}
