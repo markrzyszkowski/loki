@@ -61,7 +61,7 @@ const defaultState = () => {
         running: false,
         neverSaved: true,
         path: null,
-        warnings: []
+        warnings: {}
     };
 };
 

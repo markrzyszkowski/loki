@@ -19,6 +19,7 @@ import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
 import { flection, handleApiError } from '../util';
+import { checkWarnings } from '../warning';
 
 const drawerWidth = 280;
 
@@ -67,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 function Workspace(props) {
     const {initialProject} = props;
 
-    const [projectStates, setProjectStates] = useState([defaultState()]);
+    const [projectStates, setProjectStates] = useState([checkWarnings(initialProject, defaultState())]);
     const [projects, setProjects] = useState([initialProject]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [showBackdrop, setShowBackdrop] = useState(false);
@@ -77,8 +78,9 @@ function Workspace(props) {
     const classes = useStyles();
 
     const handleNewProject = () => {
-        setProjectStates([...projectStates, defaultState()]);
-        setProjects([...projects, newProject()]);
+        const project = newProject();
+        setProjectStates([...projectStates, checkWarnings(project, defaultState())]);
+        setProjects([...projects, project]);
         setCurrentProjectIndex(projects.length);
     };
 
@@ -97,7 +99,8 @@ function Workspace(props) {
                     if (isAlreadyOpen(project)) {
                         setCurrentProjectIndex(getProjectIndex(project));
                     } else {
-                        setProjectStates([...projectStates, {...defaultState(), neverSaved: false, path: path}]);
+                        const state = {...defaultState(), neverSaved: false, path: path};
+                        setProjectStates([...projectStates, checkWarnings(project, state)]);
                         setProjects([...projects, project]);
                         setCurrentProjectIndex(projects.length);
                     }
@@ -118,7 +121,8 @@ function Workspace(props) {
         ipc.once('import-project', (ipcEvent, path) => {
             if (path) {
                 importProject(path).then(project => {
-                    setProjectStates([...projectStates, {...defaultState(), path: path}]);
+                    const state = {...defaultState(), path: path};
+                    setProjectStates([...projectStates, checkWarnings(project, state)]);
                     setProjects([...projects, project]);
                     setCurrentProjectIndex(projects.length);
                 }).catch(error => {
@@ -273,18 +277,18 @@ function Workspace(props) {
                         <div className={classes.grow}/>
                         {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
                          <div className={classes.actions}>
-                             {!!projectStates[currentProjectIndex].warnings.length &&
+                             {!!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length &&
                               <Chip
                                   icon={<Error/>}
-                                  label={flection(projectStates[currentProjectIndex].warnings.length, 'warning', 'warnings')}
+                                  label={flection(Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab).length).reduce((x, y) => x + y, 0), 'warning', 'warnings')}
                               />}
-                             {!projectStates[currentProjectIndex].warnings.length && !projectStates[currentProjectIndex].running &&
+                             {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running &&
                               <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
                                   <PlayArrow className={classes.startFabIcon}/>
                                   Start
                               </Fab>}
                              {projectStates[currentProjectIndex].running &&
-                              <Fab variant="extended" size="small" onClick={handleStopMock}>
+                              <Fab component="label" variant="extended" size="small" onClick={handleStopMock}>
                                   <Stop className={classes.stopFabIcon}/>
                                   Stop
                               </Fab>}

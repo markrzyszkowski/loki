@@ -9,6 +9,7 @@ import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
 import ProjectTabScrollButton from './ProjectTabScrollButton';
 import { newTab } from '../project';
+import { validators } from '../warning';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -31,16 +32,32 @@ function Project(props) {
     };
 
     const handleAddTab = () => {
-        onModifyProject(index, {tabs: [...project.tabs, newTab()]});
-        onModifyProjectState(index, {modified: true, activeTab: project.tabs.length});
+        const tab = newTab();
+
+        const warningsCopy = {...projectState.warnings};
+        warningsCopy[tab.id] = {url: 'Mock URL cannot be empty'};
+
+        onModifyProject(index, {tabs: [...project.tabs, tab]});
+        onModifyProjectState(index, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
-    const handleModifyTab = (tabIndex, tabProperties) => {
+    const handleModifyTab = (tabIndex, tabProperties, field) => {
         const tabsCopy = [...project.tabs];
         tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...tabProperties};
 
+        const warningsCopy = {...projectState.warnings};
+        if (field) {
+            const validate = validators[field];
+
+            if (field === 'url') {
+                validate({...project, tabs: tabsCopy}, warningsCopy);
+            } else {
+                // non url field validation
+            }
+        }
+
         onModifyProject(index, {tabs: tabsCopy});
-        onModifyProjectState(index, {modified: true});
+        onModifyProjectState(index, {modified: true, warnings: warningsCopy});
     };
 
     const handleDeleteTab = tabIndex => {
@@ -48,14 +65,15 @@ function Project(props) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
 
-            const warningsCopy = projectState.warnings.filter(warning => project.tabs[tabIndex].id !== warning.tabId);
+            const warningsCopy = {...projectState.warnings};
+            delete warningsCopy[project.tabs[tabIndex].id];
 
-            onModifyProject(index, {tabs: tabsCopy, warnings: warningsCopy});
+            onModifyProject(index, {tabs: tabsCopy});
 
             if (tabIndex === projectState.activeTab && tabIndex === 0) {
-                onModifyProjectState(index, {activeTab: 0});
+                onModifyProjectState(index, {activeTab: 0, warnings: warningsCopy});
             } else if (tabIndex <= projectState.activeTab) {
-                onModifyProjectState(index, {activeTab: projectState.activeTab - 1});
+                onModifyProjectState(index, {activeTab: projectState.activeTab - 1, warnings: warningsCopy});
             }
         }
     };
@@ -87,6 +105,7 @@ function Project(props) {
             {!!project.tabs.length && <ProjectContent
                 tab={project.tabs[projectState.activeTab]}
                 index={projectState.activeTab}
+                warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
                 onModifyTab={handleModifyTab}
             />}
         </>

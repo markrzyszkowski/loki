@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ProjectContent(props) {
-    const {tab, index, onModifyTab} = props;
+    const {tab, index, warnings, onModifyTab} = props;
 
     const classes = useStyles();
 
@@ -31,6 +31,7 @@ function ProjectContent(props) {
 ProjectContent.propTypes = {
     tab: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyTab: PropTypes.func.isRequired
 };
 
