@@ -22,6 +22,7 @@ import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import Project from './Project';
 import ProjectItem from './ProjectItem';
+import ProjectSettings from './ProjectSettings';
 import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
@@ -318,6 +319,12 @@ function Workspace(props) {
                                   Stop
                               </Fab>}
                          </div>}
+                        {!!projects.length && <ProjectSettings
+                             project={projects[currentProjectIndex]}
+                             projectState={projectStates[currentProjectIndex]}
+                             index={currentProjectIndex}
+                             onModifyProject={handleModifyProject}
+                             onModifyProjectState={handleModifyProjectState}/>}
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawer}}>

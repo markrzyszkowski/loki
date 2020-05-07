@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Warning {
+public class Settings { // TODO
 
-    private int tab;
-    private int message;
+    private Profile profile;
 }

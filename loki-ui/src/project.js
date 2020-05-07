@@ -23,6 +23,9 @@ const newProject = () => {
     return {
         id: uuid(),
         name: 'Untitled project',
+        settings: {
+            profile: 'STATIC'
+        },
         tabs: [
             newTab()
         ]
