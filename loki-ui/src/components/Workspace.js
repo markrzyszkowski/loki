@@ -4,9 +4,16 @@ import AppBar from '@material-ui/core/AppBar';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -71,6 +78,7 @@ function Workspace(props) {
     const [projectStates, setProjectStates] = useState([checkWarnings(initialProject, defaultState())]);
     const [projects, setProjects] = useState([initialProject]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+    const [showWarningsDialog, setShowWarningsDialog] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [showSnackbar, setShowSnackbar] = useState(false);
     const [snackbarContent, setSnackbarContent] = useState({});
@@ -223,6 +231,22 @@ function Workspace(props) {
         }
     };
 
+    const handleOpenWarningsDialog = () => {
+        setShowWarningsDialog(true);
+    };
+
+    const handleCloseWarningsDialog = () => {
+        setShowWarningsDialog(false);
+    };
+
+    const handleNavigateToWarning = (tab, field) => {
+        const index = projects[currentProjectIndex].tabs.findIndex(t => t.id === tab);
+        setShowWarningsDialog(false);
+        if (index !== projectStates[currentProjectIndex].activeTab) {
+            handleModifyProjectState(currentProjectIndex, {activeTab: index});
+        }
+    };
+
     const handleStartMock = () => {
         handleModifyProjectState(currentProjectIndex, {running: true});
     };
@@ -281,6 +305,7 @@ function Workspace(props) {
                               <Chip
                                   icon={<Error/>}
                                   label={flection(Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab).length).reduce((x, y) => x + y, 0), 'warning', 'warnings')}
+                                  onClick={handleOpenWarningsDialog}
                               />}
                              {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running &&
                               <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
@@ -323,6 +348,29 @@ function Workspace(props) {
                         onModifyProjectState={handleModifyProjectState}
                     />}
                 </main>
+                {!!projects.length && !!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length &&
+                 <Dialog open={showWarningsDialog} scroll="paper" onClose={handleCloseWarningsDialog}>
+                     <DialogTitle>{`Warnings for ${projects[currentProjectIndex].name}`}</DialogTitle>
+                     <DialogContent>
+                         <List>
+                             {Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([tab, warnings]) => Object.entries(warnings).map(([field, warning]) =>
+                                 <ListItem button onClick={() => handleNavigateToWarning(tab, field)}>
+                                     <ListItemIcon>
+                                         <Error/>
+                                     </ListItemIcon>
+                                     <ListItemText
+                                         primary={`In tab: ${projects[currentProjectIndex].tabs.find(t => t.id === tab).name}`}
+                                         secondary={warning}
+                                     />
+                                 </ListItem>))}
+                         </List>
+                     </DialogContent>
+                     <DialogActions>
+                         <Button onClick={handleCloseWarningsDialog} color="secondary">
+                             Close
+                         </Button>
+                     </DialogActions>
+                 </Dialog>}
                 <Snackbar open={showSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                     <Alert severity={snackbarContent.severity} onClose={handleCloseSnackbar}>
                         {snackbarContent.message}
