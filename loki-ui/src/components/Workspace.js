@@ -48,6 +48,9 @@ const useStyles = makeStyles(theme => ({
     action: {
         margin: theme.spacing(1)
     },
+    warningsOffset: {
+        marginLeft: theme.spacing(2)
+    },
     grow: {
         flexGrow: 1
     },
@@ -309,12 +312,12 @@ function Workspace(props) {
                                   onClick={handleOpenWarningsDialog}
                               />}
                              {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running &&
-                              <Fab component="label" variant="extended" size="small" onClick={handleStartMock}>
+                              <Fab component="label" variant="extended" size="small" onClick={handleStartMock} className={classes.warningsOffset}>
                                   <PlayArrow className={classes.startFabIcon}/>
                                   Start
                               </Fab>}
                              {projectStates[currentProjectIndex].running &&
-                              <Fab component="label" variant="extended" size="small" onClick={handleStopMock}>
+                              <Fab component="label" variant="extended" size="small" onClick={handleStopMock} className={classes.warningsOffset}>
                                   <Stop className={classes.stopFabIcon}/>
                                   Stop
                               </Fab>}
