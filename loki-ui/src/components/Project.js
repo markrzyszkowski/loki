@@ -67,6 +67,7 @@ function Project(props) {
 
             const warningsCopy = {...projectState.warnings};
             delete warningsCopy[project.tabs[tabIndex].id];
+            validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
             onModifyProject(index, {tabs: tabsCopy});
 
