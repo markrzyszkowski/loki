@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.api.configuration;
+package com.krzyszkowski.loki.api.messages.mock;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfigurationResponse {
+public class StartMockResponse {
 
-    private Map<String, String> configuration;
+    private Map<String, String> urls;
 }

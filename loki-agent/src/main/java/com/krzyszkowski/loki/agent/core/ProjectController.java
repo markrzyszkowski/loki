@@ -1,12 +1,12 @@
 package com.krzyszkowski.loki.agent.core;
 
+import com.krzyszkowski.loki.agent.core.internal.util.Mappers;
 import com.krzyszkowski.loki.agent.core.services.ProjectService;
 import com.krzyszkowski.loki.api.messages.ErrorResponse;
 import com.krzyszkowski.loki.api.messages.project.FetchProjectRequest;
 import com.krzyszkowski.loki.api.messages.project.FetchProjectResponse;
 import com.krzyszkowski.loki.api.messages.project.SaveProjectRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -33,7 +32,7 @@ public class ProjectController {
     @PostMapping("/open")
     public ResponseEntity<?> openProject(@Valid @RequestBody FetchProjectRequest fetchProjectRequest, Errors errors) {
         if (errors.hasErrors()) {
-            var errorResponse = parseErrors(errors);
+            var errorResponse = Mappers.parseErrors(errors);
 
             log.error("Received malformed request to open project");
             log.error("Errors: {}", errorResponse.getErrors());
@@ -60,7 +59,7 @@ public class ProjectController {
     @PostMapping("/import")
     public ResponseEntity<?> importProject(@Valid @RequestBody FetchProjectRequest fetchProjectRequest, Errors errors) {
         if (errors.hasErrors()) {
-            var errorResponse = parseErrors(errors);
+            var errorResponse = Mappers.parseErrors(errors);
 
             log.error("Received malformed request to import project");
             log.error("Errors: {}", errorResponse.getErrors());
@@ -87,7 +86,7 @@ public class ProjectController {
     @PostMapping("/save")
     public ResponseEntity<?> saveProject(@Valid @RequestBody SaveProjectRequest saveProjectRequest, Errors errors) {
         if (errors.hasErrors()) {
-            var errorResponse = parseErrors(errors);
+            var errorResponse = Mappers.parseErrors(errors);
 
             log.error("Received malformed request to save project");
             log.error("Errors: {}", errorResponse.getErrors());
@@ -111,14 +110,5 @@ public class ProjectController {
                                 .body(ErrorResponse.builder()
                                                    .errors(List.of("Could not save project data to selected file"))
                                                    .build());
-    }
-
-    private ErrorResponse parseErrors(Errors errors) {
-        return ErrorResponse.builder()
-                            .errors(errors.getAllErrors()
-                                          .stream()
-                                          .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                                          .collect(Collectors.toList()))
-                            .build();
     }
 }

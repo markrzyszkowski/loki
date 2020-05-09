@@ -6,6 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -19,11 +20,16 @@ public class EventListeners {
     public void applicationReadyEventListener() {
         var callbackUrl = String.format("http://localhost:%d/ready", electronPort);
 
-        log.info("Sending agent ready message to electron callback server");
-        var responseEntity = new RestTemplate().getForEntity(callbackUrl, Void.class);
+        try {
+            log.info("Sending agent ready message to electron callback server");
+            var responseEntity = new RestTemplate().getForEntity(callbackUrl, Void.class);
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            log.error("Agent ready callback was not successful; status code: {}", responseEntity.getStatusCodeValue());
+            if (responseEntity.getStatusCode() != HttpStatus.OK) {
+                log.error("Agent ready callback was not successful; status code: {}", responseEntity.getStatusCodeValue());
+            }
+        } catch (RestClientException e) {
+            log.error("Agent ready callback was not successful");
+            log.error("Exception: {}", e.toString());
         }
     }
 }
