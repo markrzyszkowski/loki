@@ -1,6 +1,6 @@
-package com.krzyszkowski.loki.mock.configuration.internal;
+package com.krzyszkowski.loki.mock.core;
 
-import com.krzyszkowski.loki.api.configuration.ConfigurationRequest;
+import com.krzyszkowski.loki.api.configuration.Configuration;
 import com.krzyszkowski.loki.mock.core.internal.MockRepository;
 import com.krzyszkowski.loki.mock.core.services.MockService;
 import org.springframework.context.annotation.Profile;
@@ -13,46 +13,47 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
-@Profile("proxy")
-public class ProxyMockConfigurator implements MockConfigurator {
+@Profile("static")
+public class StaticMockConfigurator implements MockConfigurator {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final MockRepository mockRepository;
     private final MockService mockService;
 
-    public ProxyMockConfigurator(RequestMappingHandlerMapping requestMappingHandlerMapping,
-                                 MockRepository mockRepository,
-                                 MockService mockService) {
+    public StaticMockConfigurator(RequestMappingHandlerMapping requestMappingHandlerMapping,
+                                  MockRepository mockRepository,
+                                  MockService mockService) {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
         this.mockRepository = mockRepository;
         this.mockService = mockService;
     }
 
     @Override
-    public Map<String, String> configure(ConfigurationRequest request) {
-        var configuration = new HashMap<String, String>();
+    public Map<String, String> configure(Configuration configuration) {
+        var urls = new HashMap<String, String>();
 
-        try {
-            registerMapping();
-        } catch (NoSuchMethodException e) {
-            return new HashMap<>();
-        }
+        configuration.getMocks()
+                     .forEach(mock -> {
+                         var urlHash = UUID.nameUUIDFromBytes(mock.getUrl().getBytes()).toString();
 
-        request.getMocks().forEach(mock -> {
-            configuration.put(mock.getUrl(), "**");
+                         try {
+                             registerMapping(urlHash);
+                         } catch (NoSuchMethodException e) {
+                             return;
+                         }
 
-            mockRepository.addMock(mock.getUrl(), mock);
-        });
+                         urls.put(mock.getUrl(), urlHash);
 
-        return configuration;
+                         mockRepository.addMock(urlHash, mock);
+                     });
+
+        return urls;
     }
 
-    private void registerMapping() throws NoSuchMethodException {
-        requestMappingHandlerMapping.registerMapping(RequestMappingInfo.paths("**").build(),
+    private void registerMapping(String urlHash) throws NoSuchMethodException {
+        requestMappingHandlerMapping.registerMapping(RequestMappingInfo.paths(urlHash).build(),
                                                      mockService,
                                                      mockService.getClass().getDeclaredMethod("handle",
                                                                                               HttpServletRequest.class,

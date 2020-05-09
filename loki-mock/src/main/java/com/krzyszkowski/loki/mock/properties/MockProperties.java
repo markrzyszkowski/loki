@@ -18,6 +18,8 @@ import javax.validation.constraints.Min;
 @ConfigurationProperties("loki.mock")
 public class MockProperties {
 
+    private String id;
+
     @MinDataSize(value = 1L, unit = DataUnit.MEGABYTES)
     @MaxDataSize(value = 1024L, unit = DataUnit.MEGABYTES)
     private DataSize maxRequestSize;
