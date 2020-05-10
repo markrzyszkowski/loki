@@ -1,14 +1,6 @@
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
-import ipc from './ipc';
-
-let agentPort;
-
-ipc.once('agent-port', (event, port) => {
-    agentPort = port;
-});
-
-ipc.send('agent-port');
+import { agentPort } from './agent';
 
 const newTab = () => {
     return {
