@@ -17,7 +17,7 @@ function handleApiError(error, actions) {
         setSnackbarContent({severity: 'error', message: 'Request to agent has been sent but no response was received'});
     } else {
         console.error('Error occured during request creation:', error.message);
-        setSnackbarContent({severity: 'error', message: 'Error occured during request creation:'});
+        setSnackbarContent({severity: 'error', message: 'Error occured during request creation'});
     }
     setShowSnackbar(true);
 }

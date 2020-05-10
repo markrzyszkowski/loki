@@ -25,6 +25,7 @@ import ProjectItem from './ProjectItem';
 import ProjectSettings from './ProjectSettings';
 import { Alert } from './Util';
 import ipc from '../ipc';
+import { startMock, stopMock } from '../mock';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
 import { flection, handleApiError } from '../util';
 import { checkWarnings } from '../warning';
@@ -117,7 +118,7 @@ function Workspace(props) {
                         setCurrentProjectIndex(projects.length);
                     }
                 }).catch(error => {
-                    handleApiError(error, setSnackbarContent, setShowSnackbar);
+                    handleApiError(error, {setSnackbarContent, setShowSnackbar});
                 });
             }
             setShowBackdrop(false);
@@ -138,7 +139,7 @@ function Workspace(props) {
                     setProjects([...projects, project]);
                     setCurrentProjectIndex(projects.length);
                 }).catch(error => {
-                    handleApiError(error, setSnackbarContent, setShowSnackbar);
+                    handleApiError(error, {setSnackbarContent, setShowSnackbar});
                 });
             }
             setShowBackdrop(false);
@@ -187,7 +188,7 @@ function Workspace(props) {
                     saveProject(path, projects[index]).then(() => {
                         handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
                     }).catch(error => {
-                        handleApiError(error, setSnackbarContent, setShowSnackbar);
+                        handleApiError(error, {setSnackbarContent, setShowSnackbar});
                     });
                 };
 
@@ -252,11 +253,20 @@ function Workspace(props) {
     };
 
     const handleStartMock = () => {
-        handleModifyProjectState(currentProjectIndex, {running: true});
+        startMock(projects[currentProjectIndex]).then(urls => {
+            handleModifyProjectState(currentProjectIndex, {running: true});
+        }).catch(error => {
+            handleApiError(error, {setSnackbarContent, setShowSnackbar});
+        });
+
     };
 
     const handleStopMock = () => {
-        handleModifyProjectState(currentProjectIndex, {running: false});
+        stopMock(projects[currentProjectIndex]).then(() => {
+            handleModifyProjectState(currentProjectIndex, {running: false});
+        }).catch(error => {
+            handleApiError(error, {setSnackbarContent, setShowSnackbar});
+        });
     };
 
     const handleCloseSnackbar = () => {
@@ -312,22 +322,22 @@ function Workspace(props) {
                                   onClick={handleOpenWarningsDialog}
                               />}
                              {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running &&
-                              <Fab component="label" variant="extended" size="small" onClick={handleStartMock} className={classes.warningsOffset}>
+                              <Fab variant="extended" size="small" onClick={handleStartMock} className={classes.warningsOffset}>
                                   <PlayArrow className={classes.startFabIcon}/>
                                   Start
                               </Fab>}
                              {projectStates[currentProjectIndex].running &&
-                              <Fab component="label" variant="extended" size="small" onClick={handleStopMock} className={classes.warningsOffset}>
+                              <Fab variant="extended" size="small" onClick={handleStopMock} className={classes.warningsOffset}>
                                   <Stop className={classes.stopFabIcon}/>
                                   Stop
                               </Fab>}
                          </div>}
                         {!!projects.length && <ProjectSettings
-                             project={projects[currentProjectIndex]}
-                             projectState={projectStates[currentProjectIndex]}
-                             index={currentProjectIndex}
-                             onModifyProject={handleModifyProject}
-                             onModifyProjectState={handleModifyProjectState}/>}
+                            project={projects[currentProjectIndex]}
+                            projectState={projectStates[currentProjectIndex]}
+                            index={currentProjectIndex}
+                            onModifyProject={handleModifyProject}
+                            onModifyProjectState={handleModifyProjectState}/>}
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawer}}>
