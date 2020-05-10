@@ -3,6 +3,15 @@ function checkWarnings(project, state) {
     return state;
 }
 
+function deleteEmptyWarnings(warnings) {
+    Object.entries(warnings)
+          .filter(([_, tabWarnings]) => !Object.keys(tabWarnings).length)
+          .map(([tabId, _]) => tabId)
+          .forEach(id => {
+              delete warnings[id];
+          });
+}
+
 function validateUrls(project, warnings) {
     const duplicates = {};
 
@@ -23,6 +32,8 @@ function validateUrls(project, warnings) {
             });
         }
     }
+
+    deleteEmptyWarnings(warnings);
 }
 
 function validateUrl(tab, warnings) {

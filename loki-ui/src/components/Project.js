@@ -75,6 +75,8 @@ function Project(props) {
                 onModifyProjectState(index, {activeTab: 0, warnings: warningsCopy});
             } else if (tabIndex <= projectState.activeTab) {
                 onModifyProjectState(index, {activeTab: projectState.activeTab - 1, warnings: warningsCopy});
+            } else {
+                onModifyProjectState(index, {warnings: warningsCopy})
             }
         }
     };
