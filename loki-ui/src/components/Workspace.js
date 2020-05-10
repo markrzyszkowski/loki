@@ -283,7 +283,6 @@ function Workspace(props) {
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar className={classes.actions}>
                         <Button
-                            component="label"
                             variant="contained"
                             color="secondary"
                             startIcon={<Add/>}
@@ -293,7 +292,6 @@ function Workspace(props) {
                             New project
                         </Button>
                         <Button
-                            component="label"
                             variant="contained"
                             color="default"
                             startIcon={<FolderOpen/>}
@@ -303,7 +301,6 @@ function Workspace(props) {
                             Open
                         </Button>
                         <Button
-                            component="label"
                             variant="contained"
                             color="default"
                             startIcon={<OpenInBrowser/>}

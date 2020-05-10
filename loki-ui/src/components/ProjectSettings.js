@@ -39,7 +39,7 @@ function ProjectSettings(props) {
             <Dialog open={showSettingsDialog} scroll="paper" onClose={handleCloseSettingsDialog}>
                 <DialogTitle>{`${project.name} settings`}</DialogTitle>
                 <DialogContent>
-                    <FormLabel component="label">Mock profile</FormLabel>
+                    <FormLabel>Mock profile</FormLabel>
                     <RadioGroup row value={project.settings.profile} name="profile" onChange={handleProfileChangeAction}>
                         <FormControlLabel value="STATIC" control={<Radio/>} label="Static"/>
                         <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>

@@ -87,7 +87,6 @@ function Initializer(props) {
         <div className={classes.root}>
             <Paper elevation={3} className={classes.actions}>
                 <Button
-                    component="label"
                     variant="contained"
                     size="large"
                     color="secondary"
@@ -97,7 +96,6 @@ function Initializer(props) {
                     Create new project
                 </Button>
                 <Button
-                    component="label"
                     variant="contained"
                     size="large"
                     color="default"
@@ -107,7 +105,6 @@ function Initializer(props) {
                     Open existing project
                 </Button>
                 <Button
-                    component="label"
                     variant="contained"
                     size="large"
                     color="default"
