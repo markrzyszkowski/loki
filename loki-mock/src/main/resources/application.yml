@@ -1,3 +1,10 @@
 loki:
   mock:
     max-request-size: 10MB
+
+logging:
+  level:
+    root: info
+    com:
+      krzyszkowski:
+        loki: info

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +18,22 @@ import java.util.UUID;
 public class MockOrchestrator {
 
     private static final String JAVA = "java";
-    private static final String MOCK_ID = "-Dloki.mock.id=%s";
-    private static final String PROFILE = "-Dspring.profiles.active=%s";
     private static final String SERVER_PORT = "-Dserver.port=%d";
+    private static final String PROFILE = "-Dspring.profiles.active=%s";
+    private static final String LOG_FILE = "-Dlogging.file.name=%s";
+    private static final String LOG_LEVEL = "-Dlogging.level.com.krzyszkowski.loki=%s";
+    private static final String MOCK_ID = "-Dloki.mock.id=%s";
     private static final String AGENT_PORT = "-Dloki.mock.agent.port=%d";
     private static final String JAR = "-jar";
 
     private final Map<UUID, Process> processes = new HashMap<>();
     private final Map<UUID, Boolean> readiness = new HashMap<>();
+
+    @Value("${logging.file.name}")
+    private String logFile;
+
+    @Value("${logging.level.com.krzyszkowski.loki}")
+    private String logLevel;
 
     @Value("${server.port}")
     private int agentPort;
@@ -33,17 +42,28 @@ public class MockOrchestrator {
     private String mockJar;
 
     public void startMockProcess(UUID mockId, Profile profile, int port) throws IOException {
+        System.out.println(Path.of(logFile).toString());
+        System.out.println(Path.of(logFile).getParent().toString());
+        System.out.println(Path.of(logFile).getParent().resolve(String.format("mock-%s", mockId.toString())));
+
         var command = List.of(JAVA,
-                              String.format(MOCK_ID, mockId.toString()),
-                              String.format(PROFILE, profile.toString().toLowerCase()),
                               String.format(SERVER_PORT, port),
+                              String.format(PROFILE, profile.toString().toLowerCase()),
+                              String.format(LOG_FILE, Path.of(logFile)
+                                                          .getParent()
+                                                          .resolve(String.format("mock-%s.log", mockId.toString()))),
+                              String.format(LOG_LEVEL, logLevel),
+                              String.format(MOCK_ID, mockId.toString()),
                               String.format(AGENT_PORT, agentPort),
                               JAR,
                               mockJar);
 
         var processBuilder = new ProcessBuilder(command)
-                .redirectErrorStream(true)
-                .inheritIO(); // TODO inherit only if debug
+                .redirectErrorStream(true);
+
+        if (logLevel.equals("debug")) {
+            processBuilder.inheritIO();
+        }
 
         log.info("Starting mock process with id {}", mockId);
         log.debug("Arguments: [{}]", String.join(", ", command));

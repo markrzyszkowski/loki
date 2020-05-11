@@ -4,6 +4,7 @@ const {fixPathForAsarUnpack, is} = require('electron-util');
 const cp = require('child_process');
 const express = require('express');
 const getPort = require('get-port');
+const pth = require('path');
 const config = require('./config');
 const ipc = require('./ipc');
 const tray = require('./tray');
@@ -18,6 +19,8 @@ if (!is.development) {
     } else {
         log.transports.file.level = 'info';
     }
+} else {
+    log.transports.file.level = 'debug';
 }
 
 let mainWindow;
@@ -141,7 +144,7 @@ async function setupAgentCallback() {
 async function setupAgent() {
     agentPort = await getPort();
 
-    const path = require('path').join(fixPathForAsarUnpack(app.getAppPath()), 'build');
+    const path = pth.join(fixPathForAsarUnpack(app.getAppPath()), 'build');
 
     let agentJar;
     let mockJar;
@@ -176,6 +179,8 @@ async function setupAgent() {
 
     const args = [
         `-Dserver.port=${agentPort}`,
+        `-Dlogging.file.name=${pth.join(pth.parse(log.transports.file.getFile().path).dir, 'agent.log')}`,
+        `-Dlogging.level.com.krzyszkowski.loki=${log.transports.file.level}`,
         `-Dloki.agent.mock.jar=${mockJar}`,
         `-Dloki.agent.electron.port=${callbackPort}`,
         '-jar',
@@ -200,7 +205,7 @@ async function setupAgent() {
 
     if (is.development) {
         agentProcess.stdout.on('data', data => {
-            log.silly(data.toString());
+            log.debug(data.toString());
         });
     }
 }
