@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
 import ProjectTabScrollButton from './ProjectTabScrollButton';
+import { ScrollTopButton } from './Util';
 import { newTab } from '../project';
 import { validators } from '../warning';
 
@@ -103,6 +104,7 @@ function Project(props) {
                 <Tabs
                     value={projectState.activeTab}
                     onChange={handleSelectTab}
+                    id="scroll-top-anchor"
                     indicatorColor="primary"
                     textColor="primary"
                     variant="scrollable"
@@ -129,6 +131,7 @@ function Project(props) {
                 warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
                 onModifyTab={handleModifyTab}
             />}
+            <ScrollTopButton anchor="scroll-top-anchor"/>
         </>
     );
 }
