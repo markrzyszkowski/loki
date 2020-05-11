@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ProjectTab(props) {
-    const {tab, index, warnings, onModifyTab, onDeleteTab, ...other} = props;
+    const {tab, index, warnings, onModifyTab, onDeleteTab, onDuplicateTab, ...other} = props;
 
     const [menuState, setMenuState] = useState({mouseY: null, mouseX: null});
     const [dialogError, setDialogError] = useState(false);
@@ -38,6 +38,11 @@ function ProjectTab(props) {
     const handleDeleteTab = event => {
         handleCloseMenu(event);
         setShowDeleteTabDialog(true);
+    };
+
+    const handleDuplicateTab = event => {
+        handleCloseMenu(event);
+        onDuplicateTab(index);
     };
 
     const handleOpenMenu = event => {
@@ -95,6 +100,7 @@ function ProjectTab(props) {
                     >
                         <MenuItem onClick={handleModifyTab}>Edit</MenuItem>
                         <MenuItem onClick={handleDeleteTab}>Delete</MenuItem>
+                        <MenuItem onClick={handleDuplicateTab}>Duplicate</MenuItem>
                         <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                     </Menu>
                 </>
@@ -145,7 +151,8 @@ ProjectTab.propTypes = {
     index: PropTypes.number.isRequired,
     warnings: PropTypes.object.isRequired,
     onModifyTab: PropTypes.func.isRequired,
-    onDeleteTab: PropTypes.func.isRequired
+    onDeleteTab: PropTypes.func.isRequired,
+    onDuplicateTab: PropTypes.func.isRequired
 };
 
 export default ProjectTab;

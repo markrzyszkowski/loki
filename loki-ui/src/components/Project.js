@@ -5,6 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
+import { v4 as uuid } from 'uuid';
 import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
 import ProjectTabScrollButton from './ProjectTabScrollButton';
@@ -81,6 +82,21 @@ function Project(props) {
         }
     };
 
+    const handleDuplicateTab = tabIndex => {
+        const tabCopy = {...project.tabs[tabIndex]};
+
+        const tabId = uuid();
+
+        const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}]
+
+        const warningsCopy = {...projectState.warnings};
+        warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
+        validators.url({...project, tabs: tabsCopy}, warningsCopy);
+
+        onModifyProject(index, {tabs: tabsCopy});
+        onModifyProjectState(index, {activeTab: project.tabs.length, warnings: warningsCopy});
+    };
+
     return (
         <>
             <Paper square className={classes.root}>
@@ -100,6 +116,7 @@ function Project(props) {
                             warnings={projectState.warnings[tab.id] || {}}
                             onModifyTab={handleModifyTab}
                             onDeleteTab={handleDeleteTab}
+                            onDuplicateTab={handleDuplicateTab}
                         />)}
                 </Tabs>
                 <Button onClick={handleAddTab} className={classes.square}>
