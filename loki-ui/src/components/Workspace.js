@@ -220,6 +220,10 @@ function Workspace(props) {
 
     const handleCloseProject = index => {
         if (projects.length) {
+            if (projectStates[index].running) {
+                handleStopMock(projects[index]);
+            }
+
             const projectsCopy = [...projects];
             projectsCopy.splice(index, 1);
             setProjects(projectsCopy);
