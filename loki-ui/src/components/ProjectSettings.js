@@ -10,13 +10,22 @@ import IconButton from '@material-ui/core/IconButton';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import { Settings } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
+
+const useStyles = makeStyles(theme => ({
+    setting: {
+        marginBottom: '10px'
+    }
+}));
 
 function ProjectSettings(props) {
     const {project, projectState, index, onModifyProject, onModifyProjectState} = props;
 
     const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+
+    const classes = useStyles();
 
     const handleProfileChangeAction = event => {
         const profile = event.target.value;
@@ -51,18 +60,22 @@ function ProjectSettings(props) {
             <Dialog open={showSettingsDialog} scroll="paper" onClose={handleCloseSettingsDialog}>
                 <DialogTitle>{`${project.name} settings`}</DialogTitle>
                 <DialogContent>
-                    <FormLabel>Mock profile</FormLabel>
-                    <RadioGroup row value={project.settings.profile} name="profile" onChange={handleProfileChangeAction}>
-                        <FormControlLabel value="STATIC" control={<Radio/>} label="Static"/>
-                        <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>
-                    </RadioGroup>
-                    <TextField
-                        label="Port"
-                        value={project.settings.port}
-                        type="number"
-                        inputProps={{min: 0, max: 65535}}
-                        onChange={handlePortChangeAction}
-                        fullWidth/>
+                    <div className={classes.setting}>
+                        <FormLabel>Mock profile</FormLabel>
+                        <RadioGroup row value={project.settings.profile} name="profile" onChange={handleProfileChangeAction}>
+                            <FormControlLabel value="STATIC" control={<Radio/>} label="Static"/>
+                            <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>
+                        </RadioGroup>
+                    </div>
+                    <div className={classes.setting}>
+                        <FormLabel>Mock port</FormLabel>
+                        <TextField
+                            value={project.settings.port}
+                            type="number"
+                            inputProps={{min: 0, max: 65535}}
+                            onChange={handlePortChangeAction}
+                            fullWidth/>
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseSettingsDialog} color="secondary">
