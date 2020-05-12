@@ -2,6 +2,7 @@ package com.krzyszkowski.loki.agent.core.services;
 
 import com.krzyszkowski.loki.agent.core.internal.ConfigurationRepository;
 import com.krzyszkowski.loki.agent.core.internal.MockOrchestrator;
+import com.krzyszkowski.loki.api.configuration.AppliedConfiguration;
 import com.krzyszkowski.loki.api.configuration.Configuration;
 import com.krzyszkowski.loki.api.mock.Mock;
 import com.krzyszkowski.loki.api.mock.Settings;
@@ -33,7 +34,7 @@ public class DefaultMockService implements MockService {
     }
 
     @Override
-    public Optional<Map<String, String>> startMock(String id, Settings settings, List<Mock> mocks) {
+    public Optional<AppliedConfiguration> startMock(String id, Settings settings, List<Mock> mocks) {
         var uuid = UUID.fromString(id);
 
         configurationRepository.addConfiguration(uuid, Configuration.builder()
@@ -41,10 +42,25 @@ public class DefaultMockService implements MockService {
                                                                     .mocks(mocks)
                                                                     .build());
 
+        var port = settings.getPort();
+
+        if (port != 0) {
+            try {
+                SocketUtils.findAvailableTcpPort(port, port);
+            } catch (IllegalStateException e) {
+                log.error("Selected port is not available");
+                log.error("Exception: {}", e.toString());
+                return Optional.empty();
+            }
+        } else {
+            port = SocketUtils.findAvailableTcpPort();
+        }
+
         try {
-            mockOrchestrator.startMockProcess(uuid, settings.getProfile(), SocketUtils.findAvailableTcpPort());
+            mockOrchestrator.startMockProcess(uuid, settings.getProfile(), port);
         } catch (IOException e) {
-            // log.error()
+            log.error("Could not start mock process");
+            log.error("Exception: {}", e.toString());
         }
 
         var executorService = Executors.newSingleThreadScheduledExecutor();
@@ -61,7 +77,12 @@ public class DefaultMockService implements MockService {
             return Optional.empty();
         } catch (CancellationException e) { // ok
             // log.info()
-            return configurationRepository.findUrls(uuid);
+            var finalPort = port;
+            return configurationRepository.findUrls(uuid)
+                                          .map(urls -> AppliedConfiguration.builder()
+                                                                           .port(finalPort)
+                                                                           .urls(urls)
+                                                                           .build());
         }
 
         return Optional.empty();

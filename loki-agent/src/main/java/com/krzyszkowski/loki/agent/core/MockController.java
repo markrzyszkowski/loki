@@ -46,11 +46,11 @@ public class MockController {
 
         log.debug("Received request to start mock with id {}", id);
 
-        var urlsOptional = mockService.startMock(id, settings, mocks);
+        var appliedConfigurationOptional = mockService.startMock(id, settings, mocks);
 
-        return urlsOptional.isPresent()
+        return appliedConfigurationOptional.isPresent()
                 ? ResponseEntity.ok(StartMockResponse.builder()
-                                                     .urls(urlsOptional.get())
+                                                     .appliedConfiguration(appliedConfigurationOptional.get())
                                                      .build())
                 : ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(ErrorResponse.builder()

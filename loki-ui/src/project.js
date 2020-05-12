@@ -16,7 +16,8 @@ const newProject = () => {
         id: uuid(),
         name: 'Untitled project',
         settings: {
-            profile: 'STATIC'
+            profile: 'STATIC',
+            port: 0
         },
         tabs: [
             newTab()

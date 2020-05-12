@@ -9,6 +9,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import TextField from '@material-ui/core/TextField';
 import { Settings } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
@@ -20,6 +21,17 @@ function ProjectSettings(props) {
     const handleProfileChangeAction = event => {
         const profile = event.target.value;
         onModifyProject(index, {settings: {...project.settings, profile: profile}});
+        onModifyProjectState(index, {modified: true});
+    };
+
+    const handlePortChangeAction = event => {
+        let port = parseInt(event.target.value);
+
+        if (port > 65535) {
+            port = 65535;
+        }
+
+        onModifyProject(index, {settings: {...project.settings, port: port}});
         onModifyProjectState(index, {modified: true});
     };
 
@@ -44,6 +56,13 @@ function ProjectSettings(props) {
                         <FormControlLabel value="STATIC" control={<Radio/>} label="Static"/>
                         <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>
                     </RadioGroup>
+                    <TextField
+                        label="Port"
+                        value={project.settings.port}
+                        type="number"
+                        inputProps={{min: 0, max: 65535}}
+                        onChange={handlePortChangeAction}
+                        fullWidth/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseSettingsDialog} color="secondary">
