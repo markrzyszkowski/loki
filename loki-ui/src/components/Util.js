@@ -43,7 +43,7 @@ function ScrollTopButton(props) {
     const classes = useStyles();
 
     const handleClick = () => {
-        const anchor = document.getElementById('scroll-top-anchor');
+        const anchor = document.getElementById(anchor);
 
         if (anchor) {
             anchor.scrollIntoView({behavior: 'smooth', block: 'center'});
