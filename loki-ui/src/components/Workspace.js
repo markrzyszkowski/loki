@@ -259,11 +259,10 @@ function Workspace(props) {
 
     const handleStartMock = () => {
         handleModifyProjectState(currentProjectIndex, {waiting: true});
-        startMock(projects[currentProjectIndex]).then(urls => {
-            handleModifyProjectState(currentProjectIndex, {running: true});
+        startMock(projects[currentProjectIndex]).then(appliedConfiguration => {
+            handleModifyProjectState(currentProjectIndex, {running: true, waiting: false, activePort: appliedConfiguration.port, activeUrls: appliedConfiguration.urls});
         }).catch(error => {
             handleApiError(error, {setSnackbarContent, setShowSnackbar});
-        }).finally(() => {
             handleModifyProjectState(currentProjectIndex, {waiting: false});
         });
     };

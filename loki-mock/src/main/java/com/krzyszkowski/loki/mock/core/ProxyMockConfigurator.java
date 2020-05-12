@@ -40,7 +40,7 @@ public class ProxyMockConfigurator implements MockConfigurator {
         }
 
         configuration.getMocks().forEach(mock -> {
-            urls.put(mock.getUrl(), "**");
+            urls.put(mock.getId(), "**");
 
             mockRepository.addMock(mock.getUrl(), mock);
         });

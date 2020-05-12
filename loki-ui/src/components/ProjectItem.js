@@ -23,6 +23,9 @@ const useStyles = makeStyles(theme => ({
     },
     running: {
         borderRight: '4px solid green'
+    },
+    runningModified: {
+        borderRight: '4px solid red'
     }
 }));
 
@@ -127,7 +130,7 @@ function ProjectItem(props) {
                 selected={index === currentIndex}
                 onClick={handleSelectProject}
                 onContextMenu={handleOpenMenu}
-                classes={{container: projectState.running ? classes.running : classes.default}}
+                classes={{container: projectState.running && projectState.modified ? classes.runningModified : projectState.running ? classes.running : classes.default}}
             >
                 <ListItemText primary={<EllipsizeWithTooltip text={project.name} maxLength={20} interactive={false}/>}/>
                 {!!Object.entries(projectState.warnings).flatMap(([_, tab]) => Object.keys(tab)).length && <Error color="secondary"/>}

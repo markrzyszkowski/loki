@@ -44,7 +44,7 @@ public class StaticMockConfigurator implements MockConfigurator {
                              return;
                          }
 
-                         urls.put(mock.getUrl(), urlHash);
+                         urls.put(mock.getId(), urlHash);
 
                          mockRepository.addMock(urlHash, mock);
                      });

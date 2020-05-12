@@ -78,7 +78,7 @@ function Project(props) {
             } else if (tabIndex <= projectState.activeTab) {
                 onModifyProjectState(index, {activeTab: projectState.activeTab - 1, warnings: warningsCopy});
             } else {
-                onModifyProjectState(index, {warnings: warningsCopy})
+                onModifyProjectState(index, {warnings: warningsCopy});
             }
         }
     };
@@ -88,7 +88,7 @@ function Project(props) {
 
         const tabId = uuid();
 
-        const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}]
+        const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}];
 
         const warningsCopy = {...projectState.warnings};
         warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
@@ -128,7 +128,11 @@ function Project(props) {
             {!!project.tabs.length && <ProjectContent
                 tab={project.tabs[projectState.activeTab]}
                 index={projectState.activeTab}
+                settings={project.settings}
                 warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
+                isRunning={projectState.running}
+                activePort={projectState.activePort}
+                activeUrls={projectState.activeUrls}
                 onModifyTab={handleModifyTab}
             />}
             <ScrollTopButton anchor="scroll-top-anchor"/>

@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Mock {
 
+    private String id;
     private String url;
     private List<Rule> rules;
 }

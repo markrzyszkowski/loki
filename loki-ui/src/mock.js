@@ -7,12 +7,13 @@ const startMock = project => {
         settings: project.settings,
         mocks: project.tabs.map(tab => {
             return {
+                id: tab.id,
                 url: tab.url,
                 rules: tab.rules
             };
         })
     }).then(response => {
-        return response.urls;
+        return response.data.appliedConfiguration;
     });
 };
 

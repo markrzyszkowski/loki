@@ -58,7 +58,9 @@ const defaultState = () => {
         waiting: false,
         neverSaved: true,
         path: null,
-        warnings: {}
+        warnings: {},
+        activePort: 0,
+        activeUrls: {}
     };
 };
 
