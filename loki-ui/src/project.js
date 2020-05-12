@@ -55,6 +55,7 @@ const defaultState = () => {
         activeTab: 0,
         modified: false,
         running: false,
+        waiting: false,
         neverSaved: true,
         path: null,
         warnings: {}

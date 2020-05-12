@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -257,19 +258,22 @@ function Workspace(props) {
     };
 
     const handleStartMock = () => {
+        handleModifyProjectState(currentProjectIndex, {waiting: true});
         startMock(projects[currentProjectIndex]).then(urls => {
             handleModifyProjectState(currentProjectIndex, {running: true});
         }).catch(error => {
             handleApiError(error, {setSnackbarContent, setShowSnackbar});
+        }).finally(() => {
+            handleModifyProjectState(currentProjectIndex, {waiting: false});
         });
-
     };
 
     const handleStopMock = () => {
-        stopMock(projects[currentProjectIndex]).then(() => {
-            handleModifyProjectState(currentProjectIndex, {running: false});
-        }).catch(error => {
+        handleModifyProjectState(currentProjectIndex, {waiting: true});
+        stopMock(projects[currentProjectIndex]).catch(error => {
             handleApiError(error, {setSnackbarContent, setShowSnackbar});
+        }).finally(() => {
+            handleModifyProjectState(currentProjectIndex, {running: false, waiting: false});
         });
     };
 
@@ -314,6 +318,8 @@ function Workspace(props) {
                             Import
                         </Button>
                         <div className={classes.grow}/>
+                        {!projectStates[currentProjectIndex].running && projectStates[currentProjectIndex].waiting &&
+                         <CircularProgress color="inherit"/>}
                         {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
                          <div className={classes.actions}>
                              {!!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length &&
@@ -322,12 +328,12 @@ function Workspace(props) {
                                   label={flection(Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab).length).reduce((x, y) => x + y, 0), 'warning', 'warnings')}
                                   onClick={handleOpenWarningsDialog}
                               />}
-                             {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running &&
+                             {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running && !projectStates[currentProjectIndex].waiting &&
                               <Fab variant="extended" size="small" onClick={handleStartMock} className={classes.warningsOffset}>
                                   <PlayArrow className={classes.startFabIcon}/>
                                   Start
                               </Fab>}
-                             {projectStates[currentProjectIndex].running &&
+                             {projectStates[currentProjectIndex].running && !projectStates[currentProjectIndex].waiting &&
                               <Fab variant="extended" size="small" onClick={handleStopMock} className={classes.warningsOffset}>
                                   <Stop className={classes.stopFabIcon}/>
                                   Stop
