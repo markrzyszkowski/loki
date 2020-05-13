@@ -317,7 +317,7 @@ function Workspace(props) {
                             Import
                         </Button>
                         <div className={classes.grow}/>
-                        {!projectStates[currentProjectIndex].running && projectStates[currentProjectIndex].waiting &&
+                        {!!projects.length && !projectStates[currentProjectIndex].running && projectStates[currentProjectIndex].waiting &&
                          <CircularProgress color="inherit"/>}
                         {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
                          <div className={classes.actions}>
