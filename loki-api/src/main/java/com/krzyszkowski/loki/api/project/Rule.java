@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tab {
+public class Rule {
 
-    private String id;
     private String name;
-    private String url;
-    private List<Rule> rules;
+    private Request request;
+    private Response response;
+    private boolean active;
+    private boolean expanded;
 }

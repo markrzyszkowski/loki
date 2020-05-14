@@ -15,5 +15,5 @@ public class Response {
 
     private int status;
     private List<Header> headers;
-    private Body body;
+    private String body;
 }

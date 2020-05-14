@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Header {
 
-    private String name;
+    private String key;
     private String value;
 }

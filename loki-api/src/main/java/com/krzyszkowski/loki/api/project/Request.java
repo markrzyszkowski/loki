@@ -11,10 +11,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tab {
+public class Request {
 
-    private String id;
-    private String name;
-    private String url;
-    private List<Rule> rules;
+    private List<String> headers;
+    private boolean expanded;
 }

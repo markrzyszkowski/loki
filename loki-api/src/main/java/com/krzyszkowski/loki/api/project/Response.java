@@ -11,10 +11,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tab {
+public class Response {
 
-    private String id;
-    private String name;
-    private String url;
-    private List<Rule> rules;
+    private int statusCode;
+    private List<Header> headers;
+    private String body;
+    private boolean expanded;
 }
