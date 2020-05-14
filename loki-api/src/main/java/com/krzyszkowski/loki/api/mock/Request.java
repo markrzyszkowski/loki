@@ -14,7 +14,11 @@ import java.util.List;
 public class Request {
 
     private String method;
-    private List<Condition<Header>> headers;
-    private List<Condition<Parameter>> parameters;
-    private List<Condition<Body>> body;
+    private Condition methodCondition;
+    private List<HeaderWithCondition> headers;
+    private List<ParameterWithCondition> parameters;
+    private String body;
+    private Condition bodyCondition;
+    private boolean bodyIgnoreCase;
+    private boolean bodyIgnoreWhitespace;
 }

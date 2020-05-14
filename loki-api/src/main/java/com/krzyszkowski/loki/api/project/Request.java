@@ -13,6 +13,15 @@ import java.util.List;
 @AllArgsConstructor
 public class Request {
 
-    private List<String> headers;
+    private String method;
+    private Condition methodCondition;
+    private List<HeaderWithCondition> headers;
+    private List<ParameterWithCondition> parameters;
+    private String body;
+    private Condition bodyCondition;
+    private boolean bodyIgnoreCase;
+    private boolean bodyIgnoreWhitespace;
     private boolean expanded;
+    private boolean headersExpanded;
+    private boolean parametersExpanded;
 }
