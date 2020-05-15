@@ -6,18 +6,16 @@ import Workspace from './Workspace';
 import { newProject } from '../project';
 
 function App() {
-    const [ready, setReady] = useState(false);
-    const [project, setProject] = useState({});
+    const [project, setProject] = useState(null);
 
     const handleProjectInit = project => {
         setProject(project);
-        setReady(true);
     };
 
     return (
         <>
             <CssBaseline/>
-            {/*{ready ? <Workspace initialProject={project}/> : <Initializer onProjectInit={handleProjectInit}/>}*/}
+            {/*{project ? <Workspace initialProject={project}/> : <Initializer onProjectInit={handleProjectInit}/>}*/}
             <Workspace initialProject={newProject()}/>
         </>
     );
