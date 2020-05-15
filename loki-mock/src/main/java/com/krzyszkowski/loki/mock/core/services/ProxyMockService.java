@@ -42,8 +42,8 @@ public class ProxyMockService implements MockService {
                 populateResponse(response, ruleResponse);
 
                 return ResponseEntity
-                        .status(ruleResponse.getStatus())
-                        .body(ruleResponse.getBody().getContent().getBytes());
+                        .status(ruleResponse.getStatusCode())
+                        .body(ruleResponse.getBody().getBytes());
             }
         }
 
@@ -55,6 +55,6 @@ public class ProxyMockService implements MockService {
     }
 
     private void populateHeaders(HttpServletResponse response, List<Header> headers) {
-        headers.forEach(header -> response.setHeader(header.getName(), header.getValue()));
+        headers.forEach(header -> response.setHeader(header.getKey(), header.getValue()));
     }
 }

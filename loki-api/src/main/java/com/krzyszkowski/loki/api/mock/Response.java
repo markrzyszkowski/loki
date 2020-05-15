@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Response {
 
-    private int status;
+    private int statusCode;
     private List<Header> headers;
     private String body;
 }
