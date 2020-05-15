@@ -6,20 +6,21 @@ function flection(count, singular, plural) {
     return `${count} ${count > 1 ? plural : singular}`
 }
 
-function handleApiError(error, actions) {
-    const {setSnackbarContent, setShowSnackbar} = actions;
+function handleApiError(error, alert) {
     if (error.response) {
         console.error('Received agent response with list of errors');
         console.error('Response:', error.response.data);
-        setSnackbarContent({severity: 'error', message: error.response.data.errors.join('; ')});
+
+        alert.show('error', error.response.data.errors.join('; '));
     } else if (error.request) {
         console.error('Request to agent has been sent but no response was received');
-        setSnackbarContent({severity: 'error', message: 'Request to agent has been sent but no response was received'});
+
+        alert.show('error', 'Error occured while trying to communicate with agent service');
     } else {
-        console.error('Error occured during request creation:', error.message);
-        setSnackbarContent({severity: 'error', message: 'Error occured during request creation'});
+        console.error('Request creation failed:', error.message);
+
+        alert.show('error', 'Unknown error occured');
     }
-    setShowSnackbar(true);
 }
 
 export { ellipsis, flection, handleApiError };

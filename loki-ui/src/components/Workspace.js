@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Hotkeys from 'react-hot-keys';
 import AppBar from '@material-ui/core/AppBar';
-import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,7 +14,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, Error, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
@@ -24,7 +22,6 @@ import { v4 as uuid } from 'uuid';
 import Project from './Project';
 import ProjectItem from './ProjectItem';
 import ProjectSettings from './ProjectSettings';
-import { Alert } from './Util';
 import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
@@ -36,9 +33,6 @@ const drawerWidth = 280;
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex'
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 2
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1
@@ -79,15 +73,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Workspace(props) {
-    const {initialProject} = props;
+    const {project, backdrop, alert} = props;
 
-    const [projectStates, setProjectStates] = useState([checkWarnings(initialProject, defaultState())]);
-    const [projects, setProjects] = useState([initialProject]);
+    const [projectStates, setProjectStates] = useState([checkWarnings(project, defaultState())]);
+    const [projects, setProjects] = useState([project]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [showWarningsDialog, setShowWarningsDialog] = useState(false);
-    const [showBackdrop, setShowBackdrop] = useState(false);
-    const [showSnackbar, setShowSnackbar] = useState(false);
-    const [snackbarContent, setSnackbarContent] = useState({});
 
     const classes = useStyles();
 
@@ -119,14 +110,14 @@ function Workspace(props) {
                         setCurrentProjectIndex(projects.length);
                     }
                 }).catch(error => {
-                    handleApiError(error, {setSnackbarContent, setShowSnackbar});
+                    handleApiError(error, alert);
                 });
             }
-            setShowBackdrop(false);
+            backdrop.hide();
         });
 
         if (!ipc.isDummy) {
-            setShowBackdrop(true);
+            backdrop.show();
         }
         ipc.send('open-project');
     };
@@ -140,14 +131,14 @@ function Workspace(props) {
                     setProjects([...projects, project]);
                     setCurrentProjectIndex(projects.length);
                 }).catch(error => {
-                    handleApiError(error, {setSnackbarContent, setShowSnackbar});
+                    handleApiError(error, alert);
                 });
             }
-            setShowBackdrop(false);
+            backdrop.hide();
         });
 
         if (!ipc.isDummy) {
-            setShowBackdrop(true);
+            backdrop.show();
         }
         ipc.send('import-project');
     };
@@ -189,7 +180,7 @@ function Workspace(props) {
                     saveProject(path, projects[index]).then(() => {
                         handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
                     }).catch(error => {
-                        handleApiError(error, {setSnackbarContent, setShowSnackbar});
+                        handleApiError(error, alert);
                     });
                 };
 
@@ -198,11 +189,11 @@ function Workspace(props) {
                         if (path) {
                             save(path);
                         }
-                        setShowBackdrop(false);
+                        backdrop.hide();
                     });
 
                     if (!ipc.isDummy) {
-                        setShowBackdrop(true);
+                        backdrop.show();
                     }
                     ipc.send('save-project');
                 } else {
@@ -262,7 +253,7 @@ function Workspace(props) {
         startMock(projects[currentProjectIndex]).then(appliedConfiguration => {
             handleModifyProjectState(currentProjectIndex, {running: true, waiting: false, activePort: appliedConfiguration.port, activeUrls: appliedConfiguration.urls});
         }).catch(error => {
-            handleApiError(error, {setSnackbarContent, setShowSnackbar});
+            handleApiError(error, alert);
             handleModifyProjectState(currentProjectIndex, {waiting: false});
         });
     };
@@ -270,14 +261,10 @@ function Workspace(props) {
     const handleStopMock = () => {
         handleModifyProjectState(currentProjectIndex, {waiting: true});
         stopMock(projects[currentProjectIndex]).catch(error => {
-            handleApiError(error, {setSnackbarContent, setShowSnackbar});
+            handleApiError(error, alert);
         }).finally(() => {
             handleModifyProjectState(currentProjectIndex, {running: false, waiting: false});
         });
-    };
-
-    const handleCloseSnackbar = () => {
-        setShowSnackbar(false);
     };
 
     return (
@@ -397,19 +384,15 @@ function Workspace(props) {
                          </Button>
                      </DialogActions>
                  </Dialog>}
-                <Snackbar open={showSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
-                    <Alert severity={snackbarContent.severity} onClose={handleCloseSnackbar}>
-                        {snackbarContent.message}
-                    </Alert>
-                </Snackbar>
-                <Backdrop open={showBackdrop} className={classes.backdrop}/>
             </div>
         </Hotkeys>
     );
 }
 
 Workspace.propTypes = {
-    initialProject: PropTypes.object.isRequired
+    project: PropTypes.object.isRequired,
+    backdrop: PropTypes.object.isRequired,
+    alert: PropTypes.object.isRequired
 };
 
 export default Workspace;

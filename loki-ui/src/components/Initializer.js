@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import Backdrop from '@material-ui/core/Backdrop';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
-import { Alert } from './Util';
 import ipc from '../ipc';
 import { newProject, openProject, importProject } from '../project';
 import { handleApiError } from '../util';
@@ -16,9 +13,6 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh'
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 2
     },
     actions: {
         display: 'flex',
@@ -31,11 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Initializer(props) {
-    const {onProjectInit} = props;
-
-    const [showBackdrop, setShowBackdrop] = useState(false);
-    const [showSnackbar, setShowSnackbar] = useState(false);
-    const [snackbarContent, setSnackbarContent] = useState({});
+    const {backdrop, alert, onProjectInit} = props;
 
     const classes = useStyles();
 
@@ -44,43 +34,39 @@ function Initializer(props) {
     };
 
     const handleOpenProject = () => {
-        ipc.once('open-project', (ipcEvent, path) => {
+        ipc.once('open-project', (_, path) => {
             if (path) {
                 openProject(path).then(project => {
                     onProjectInit(project);
                 }).catch(error => {
-                    handleApiError(error, setSnackbarContent, setShowSnackbar);
+                    handleApiError(error, alert);
                 });
             }
-            setShowBackdrop(false);
+            backdrop.hide();
         });
 
         if (!ipc.isDummy) {
-            setShowBackdrop(true);
+            backdrop.show();
         }
         ipc.send('open-project');
     };
 
     const handleImportProject = () => {
-        ipc.once('import-project', (ipcEvent, path) => {
+        ipc.once('import-project', (_, path) => {
             if (path) {
                 importProject(path).then(project => {
                     onProjectInit(project);
                 }).catch(error => {
-                    handleApiError(error, setSnackbarContent, setShowSnackbar);
+                    handleApiError(error, alert);
                 });
             }
-            setShowBackdrop(false);
+            backdrop.hide();
         });
 
         if (!ipc.isDummy) {
-            setShowBackdrop(true);
+            backdrop.show();
         }
         ipc.send('import-project');
-    };
-
-    const handleCloseSnackbar = () => {
-        setShowSnackbar(false);
     };
 
     return (
@@ -114,17 +100,13 @@ function Initializer(props) {
                     Import project
                 </Button>
             </Paper>
-            <Snackbar open={showSnackbar} autoHideDuration={5000} onClose={handleCloseSnackbar}>
-                <Alert severity={snackbarContent.severity} onClose={handleCloseSnackbar}>
-                    {snackbarContent.message}
-                </Alert>
-            </Snackbar>
-            <Backdrop open={showBackdrop} className={classes.backdrop}/>
         </div>
     );
 }
 
 Initializer.propTypes = {
+    backdrop: PropTypes.object.isRequired,
+    alert: PropTypes.object.isRequired,
     onProjectInit: PropTypes.func.isRequired
 };
 

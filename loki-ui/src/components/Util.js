@@ -1,5 +1,6 @@
 import React from 'react';
 import Fab from '@material-ui/core/Fab';
+import Snackbar from '@material-ui/core/Snackbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,7 +19,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props}/>;
+    const {alert} = props;
+
+    const handleClose = () => {
+        alert.hide();
+    };
+
+    return (
+        <Snackbar open={alert.open} autoHideDuration={5000} onClose={handleClose}>
+            <MuiAlert elevation={6} variant="filled" severity={alert.severity} onClose={handleClose}>
+                {alert.message}
+            </MuiAlert>
+        </Snackbar>
+    );
 }
 
 function EllipsizeWithTooltip(props) {
@@ -58,6 +71,10 @@ function ScrollTopButton(props) {
         </Zoom>
     );
 }
+
+Alert.propTypes = {
+    alert: PropTypes.object.isRequired
+};
 
 EllipsizeWithTooltip.propTypes = {
     text: PropTypes.string.isRequired,
