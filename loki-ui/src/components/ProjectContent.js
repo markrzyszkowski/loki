@@ -18,7 +18,6 @@ const useStyles = makeStyles(theme => ({
     urlField: {
         flexGrow: 1
     },
-    action: {},
     rulesWrapper: {
         display: 'flex',
         flexDirection: 'column',
@@ -53,12 +52,57 @@ function ProjectContent(props) {
     };
 
     const handleAddRule = () => {
-        onModifyTab(index, {rules: [...tab.rules, {request: {}, response: {}}]});
+        const rule = {
+            name: `Rule ${tab.rules.length + 1}`,
+            request: {
+                method: '',
+                methodCondition: '',
+                headers: [],
+                parameters: [],
+                body: '',
+                bodyCondition: '',
+                bodyIgnoreCase: false,
+                bodyIgnoreWhitespace: false,
+                expanded: true,
+                headersExpanded: true,
+                parametersExpanded: true
+            },
+            response: {
+                statusCode: 200,
+                headers: [],
+                body: '',
+                expanded: true,
+                headersExpanded: true
+            },
+            active: true,
+            expanded: true
+        };
+        onModifyTab(index, {rules: [...tab.rules, rule]});
     };
 
-    const handleDeleteRule = (index) => {
+    const handleModifyRule = (ruleIndex, ruleProperties) => {
         const rulesCopy = [...tab.rules];
-        rulesCopy.splice(index, 1);
+        rulesCopy[ruleIndex] = {...rulesCopy[ruleIndex], ...ruleProperties};
+
+        onModifyTab(index, {rules: rulesCopy});
+    };
+
+    const handleShiftRule = (ruleIndex, ruleOffset) => {
+        const rulesCopy = [...tab.rules];
+
+        const newRuleIndex = ruleIndex + ruleOffset;
+        if (newRuleIndex >= 0 && newRuleIndex < rulesCopy.length) {
+            let temp = rulesCopy[ruleIndex];
+            rulesCopy[ruleIndex] = rulesCopy[newRuleIndex];
+            rulesCopy[newRuleIndex] = temp;
+
+            onModifyTab(index, {rules: rulesCopy});
+        }
+    };
+
+    const handleDeleteRule = ruleIndex => {
+        const rulesCopy = [...tab.rules];
+        rulesCopy.splice(ruleIndex, 1);
 
         onModifyTab(index, {rules: rulesCopy});
     };
@@ -86,12 +130,12 @@ function ProjectContent(props) {
                     color="secondary"
                     startIcon={<Add/>}
                     onClick={handleAddRule}
-                    className={classes.action}
                 >
                     Add rule
                 </Button>
                 <div className={classes.rules}>
-                    {tab.rules.map((rule, index) => <Rule rule={rule} index={index} onDeleteRule={handleDeleteRule}/>)}
+                    {tab.rules.map((rule, index) =>
+                        <Rule rule={rule} index={index} lastIndex={tab.rules.length - 1} onModifyRule={handleModifyRule} onShiftRule={handleShiftRule} onDeleteRule={handleDeleteRule}/>)}
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ const startMock = project => {
             return {
                 id: tab.id,
                 url: tab.url,
-                rules: tab.rules
+                rules: tab.rules.filter(rule => rule.active)
             };
         })
     }).then(response => {
