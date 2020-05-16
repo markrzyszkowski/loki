@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     actions: {
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '450px'
+        minWidth: 450
     },
     action: {
         margin: theme.spacing(3)
