@@ -8,7 +8,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,15 +19,15 @@ import { Add, Error, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@materia
 import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import Project from './Project';
-import ProjectItem from './ProjectItem';
 import ProjectSettings from './ProjectSettings';
+import Sidebar from './Sidebar';
 import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
 import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
 import { flection, handleApiError } from '../util';
 import { checkWarnings } from '../warning';
 
-const drawerWidth = 280;
+const sidebarWidth = 280;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -50,17 +49,10 @@ const useStyles = makeStyles(theme => ({
     grow: {
         flexGrow: 1
     },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0
-    },
     toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
-        maxWidth: `calc(100% - ${drawerWidth}px)`
-    },
-    projectsList: {
-        padding: 0
+        maxWidth: `calc(100% - ${sidebarWidth}px)`
     },
     startFabIcon: {
         marginRight: theme.spacing(1),
@@ -75,8 +67,8 @@ const useStyles = makeStyles(theme => ({
 function Workspace(props) {
     const {project, backdrop, alert} = props;
 
-    const [projectStates, setProjectStates] = useState([checkWarnings(project, defaultState())]);
     const [projects, setProjects] = useState([project]);
+    const [projectStates, setProjectStates] = useState([checkWarnings(project, defaultState())]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [showWarningsDialog, setShowWarningsDialog] = useState(false);
 
@@ -84,8 +76,9 @@ function Workspace(props) {
 
     const handleNewProject = () => {
         const project = newProject();
-        setProjectStates([...projectStates, checkWarnings(project, defaultState())]);
+
         setProjects([...projects, project]);
+        setProjectStates([...projectStates, checkWarnings(project, defaultState())]);
         setCurrentProjectIndex(projects.length);
     };
 
@@ -147,30 +140,18 @@ function Workspace(props) {
         setCurrentProjectIndex(index);
     };
 
-    const handleModifyProject = (index, projectProperties) => {
+    const handleModifyProject = (index, properties) => {
         const projectsCopy = [...projects];
-        projectsCopy[index] = {
-            ...projectsCopy[index],
-            ...projectProperties
-        };
+        projectsCopy[index] = {...projectsCopy[index], ...properties};
+
         setProjects(projectsCopy);
     };
 
-    const handleModifyProjectState = (index, projectStateProperties) => {
+    const handleModifyProjectState = (index, properties) => {
         const projectStatesCopy = [...projectStates];
-        projectStatesCopy[index] = {
-            ...projectStatesCopy[index],
-            ...projectStateProperties
-        };
+        projectStatesCopy[index] = {...projectStatesCopy[index], ...properties};
+
         setProjectStates(projectStatesCopy);
-    };
-
-    const handleSaveProjectShortcutKeyDown = (_, event) => {
-        event.preventDefault();
-    };
-
-    const handleSaveProjectShortcutKeyUp = () => {
-        handleSaveProject(currentProjectIndex);
     };
 
     const handleSaveProject = index => {
@@ -267,6 +248,14 @@ function Workspace(props) {
         });
     };
 
+    const handleSaveProjectShortcutKeyDown = (_, event) => { // TODO
+        event.preventDefault();
+    };
+
+    const handleSaveProjectShortcutKeyUp = () => { // TODO
+        handleSaveProject(currentProjectIndex);
+    };
+
     return (
         <Hotkeys
             keyName="ctrl+s,command+s"
@@ -333,24 +322,18 @@ function Workspace(props) {
                             onModifyProjectState={handleModifyProjectState}/>}
                     </Toolbar>
                 </AppBar>
-                <Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawer}}>
-                    <div className={classes.toolbar}/>
-                    <List className={classes.projectsList}>
-                        {projects.map((project, index) =>
-                            <ProjectItem
-                                project={project}
-                                projectState={projectStates[index]}
-                                index={index}
-                                currentIndex={currentProjectIndex}
-                                onSelectProject={handleSelectProject}
-                                onModifyProject={handleModifyProject}
-                                onModifyProjectState={handleModifyProjectState}
-                                onSaveProject={handleSaveProject}
-                                onDuplicateProject={handleDuplicateProject}
-                                onCloseProject={handleCloseProject}
-                            />)}
-                    </List>
-                </Drawer>
+                <Sidebar
+                    projects={projects}
+                    projectStates={projectStates}
+                    currentIndex={currentProjectIndex}
+                    width={sidebarWidth}
+                    onSelectProject={handleSelectProject}
+                    onModifyProject={handleModifyProject}
+                    onModifyProjectState={handleModifyProjectState}
+                    onSaveProject={handleSaveProject}
+                    onDuplicateProject={handleDuplicateProject}
+                    onCloseProject={handleCloseProject}
+                />
                 <main className={classes.content}>
                     <div className={classes.toolbar}/>
                     {!!projects.length && <Project
