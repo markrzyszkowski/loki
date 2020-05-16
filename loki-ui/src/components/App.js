@@ -3,8 +3,8 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import Initializer from './Initializer';
-import { Alert } from './Util';
 import Workspace from './Workspace';
+import Alert from './util/Alert';
 
 const useStyles = makeStyles(theme => ({
     backdrop: {

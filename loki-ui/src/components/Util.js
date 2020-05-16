@@ -1,12 +1,10 @@
 import React from 'react';
 import Fab from '@material-ui/core/Fab';
-import Snackbar from '@material-ui/core/Snackbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import { useScrollTrigger } from '@material-ui/core';
 import { KeyboardArrowUp } from '@material-ui/icons';
-import MuiAlert from '@material-ui/lab/Alert';
 import * as PropTypes from 'prop-types';
 import { ellipsis } from '../util';
 
@@ -17,22 +15,6 @@ const useStyles = makeStyles(theme => ({
         right: theme.spacing(2)
     }
 }));
-
-function Alert(props) {
-    const {alert} = props;
-
-    const handleClose = () => {
-        alert.hide();
-    };
-
-    return (
-        <Snackbar open={alert.open} autoHideDuration={5000} onClose={handleClose}>
-            <MuiAlert elevation={6} variant="filled" severity={alert.severity} onClose={handleClose}>
-                {alert.message}
-            </MuiAlert>
-        </Snackbar>
-    );
-}
 
 function EllipsizeWithTooltip(props) {
     const {text, maxLength, interactive} = props;
@@ -72,10 +54,6 @@ function ScrollTopButton(props) {
     );
 }
 
-Alert.propTypes = {
-    alert: PropTypes.object.isRequired
-};
-
 EllipsizeWithTooltip.propTypes = {
     text: PropTypes.string.isRequired,
     maxLength: PropTypes.number.isRequired,
@@ -86,4 +64,4 @@ ScrollTopButton.propTypes = {
     anchor: PropTypes.string.isRequired
 };
 
-export { Alert, EllipsizeWithTooltip, ScrollTopButton };
+export { EllipsizeWithTooltip, ScrollTopButton };
