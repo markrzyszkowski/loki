@@ -11,7 +11,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-import { Settings } from '@material-ui/icons';
+import { Settings as SettingsIcon } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
@@ -20,49 +20,53 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function ProjectSettings(props) {
-    const {project, projectState, index, onModifyProject, onModifyProjectState} = props;
+function Settings(props) {
+    const {project, index, onChangeSettings} = props;
 
-    const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+    const [showDialog, setShowDialog] = useState(false);
 
     const classes = useStyles();
 
-    const handleProfileChangeAction = event => {
-        const profile = event.target.value;
-        onModifyProject(index, {settings: {...project.settings, profile: profile}});
-        onModifyProjectState(index, {modified: true});
+    const handleOpenDialog = () => {
+        setShowDialog(true);
     };
 
-    const handlePortChangeAction = event => {
+    const handleCloseDialog = () => {
+        setShowDialog(false);
+    };
+
+    const handleProfileChange = event => {
+        const profile = event.target.value;
+
+        onChangeSettings(index, {profile: profile});
+    };
+
+    const handlePortChange = event => {
         let port = parseInt(event.target.value);
 
         if (port > 65535) {
             port = 65535;
         }
 
-        onModifyProject(index, {settings: {...project.settings, port: port}});
-        onModifyProjectState(index, {modified: true});
-    };
-
-    const handleOpenSettingsDialog = () => {
-        setShowSettingsDialog(true);
-    };
-
-    const handleCloseSettingsDialog = () => {
-        setShowSettingsDialog(false);
+        onChangeSettings(index, {port: port});
     };
 
     return (
         <>
-            <IconButton color="inherit" onClick={handleOpenSettingsDialog}>
-                <Settings/>
+            <IconButton color="inherit" onClick={handleOpenDialog}>
+                <SettingsIcon/>
             </IconButton>
-            <Dialog open={showSettingsDialog} scroll="paper" onClose={handleCloseSettingsDialog}>
+            <Dialog open={showDialog} scroll="paper" onClose={handleCloseDialog}>
                 <DialogTitle>{`${project.name} settings`}</DialogTitle>
                 <DialogContent>
                     <div className={classes.setting}>
                         <FormLabel>Mock profile</FormLabel>
-                        <RadioGroup row value={project.settings.profile} name="profile" onChange={handleProfileChangeAction}>
+                        <RadioGroup
+                            row
+                            value={project.settings.profile}
+                            name="profile"
+                            onChange={handleProfileChange}
+                        >
                             <FormControlLabel value="STATIC" control={<Radio/>} label="Static"/>
                             <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>
                         </RadioGroup>
@@ -73,12 +77,13 @@ function ProjectSettings(props) {
                             value={project.settings.port}
                             type="number"
                             inputProps={{min: 0, max: 65535}}
-                            onChange={handlePortChangeAction}
-                            fullWidth/>
+                            onChange={handlePortChange}
+                            fullWidth
+                        />
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseSettingsDialog} color="secondary">
+                    <Button onClick={handleCloseDialog} color="secondary">
                         Close
                     </Button>
                 </DialogActions>
@@ -87,12 +92,10 @@ function ProjectSettings(props) {
     );
 }
 
-ProjectSettings.propTypes = {
+Settings.propTypes = {
     project: PropTypes.object.isRequired,
-    projectState: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
-    onModifyProject: PropTypes.func.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired
+    onChangeSettings: PropTypes.func.isRequired
 };
 
-export default ProjectSettings;
+export default Settings;

@@ -1,30 +1,15 @@
 import React, { useState } from 'react';
 import Hotkeys from 'react-hot-keys';
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Fab from '@material-ui/core/Fab';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
-import { Add, Error, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import Project from './Project';
-import ProjectSettings from './ProjectSettings';
 import Sidebar from './Sidebar';
+import Toolbar from './Toolbar';
 import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
-import { newProject, openProject, importProject, saveProject, defaultState } from '../project';
-import { flection, handleApiError } from '../util';
+import { saveProject, defaultState, newProject, openProject, importProject } from '../project';
+import { handleApiError } from '../util';
 import { checkWarnings } from '../warning';
 
 const sidebarWidth = 280;
@@ -33,34 +18,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex'
     },
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1
-    },
-    actions: {
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1)
-    },
-    action: {
-        margin: theme.spacing(1)
-    },
-    warningsOffset: {
-        marginLeft: theme.spacing(2)
-    },
-    grow: {
-        flexGrow: 1
-    },
-    toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
         maxWidth: `calc(100% - ${sidebarWidth}px)`
-    },
-    startFabIcon: {
-        marginRight: theme.spacing(1),
-        color: 'green'
-    },
-    stopFabIcon: {
-        marginRight: theme.spacing(1),
-        color: 'red'
     }
 }));
 
@@ -70,9 +30,16 @@ function Workspace(props) {
     const [projects, setProjects] = useState([project]);
     const [projectStates, setProjectStates] = useState([checkWarnings(project, defaultState())]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-    const [showWarningsDialog, setShowWarningsDialog] = useState(false);
 
     const classes = useStyles();
+
+    const handleShortcutKeyDown = (_, event) => {
+        event.preventDefault();
+    };
+
+    const handleShortcutKeyUp = () => {
+        handleSaveProject(currentProjectIndex);
+    };
 
     const handleNewProject = () => {
         const project = newProject();
@@ -83,12 +50,12 @@ function Workspace(props) {
     };
 
     const handleOpenProject = () => {
-        const isAlreadyOpen = newProject => {
-            return !!projects.find(project => project.id === newProject.id);
-        };
-
         const getProjectIndex = newProject => {
             return projects.findIndex(project => project.id === newProject.id);
+        };
+
+        const isAlreadyOpen = newProject => {
+            return getProjectIndex(newProject) !== -1;
         };
 
         ipc.once('open-project', (ipcEvent, path) => {
@@ -98,20 +65,23 @@ function Workspace(props) {
                         setCurrentProjectIndex(getProjectIndex(project));
                     } else {
                         const state = {...defaultState(), neverSaved: false, path: path};
-                        setProjectStates([...projectStates, checkWarnings(project, state)]);
+
                         setProjects([...projects, project]);
+                        setProjectStates([...projectStates, checkWarnings(project, state)]);
                         setCurrentProjectIndex(projects.length);
                     }
                 }).catch(error => {
                     handleApiError(error, alert);
                 });
             }
+
             backdrop.hide();
         });
 
         if (!ipc.isDummy) {
             backdrop.show();
         }
+
         ipc.send('open-project');
     };
 
@@ -120,24 +90,23 @@ function Workspace(props) {
             if (path) {
                 importProject(path).then(project => {
                     const state = {...defaultState(), path: path};
-                    setProjectStates([...projectStates, checkWarnings(project, state)]);
+
                     setProjects([...projects, project]);
+                    setProjectStates([...projectStates, checkWarnings(project, state)]);
                     setCurrentProjectIndex(projects.length);
                 }).catch(error => {
                     handleApiError(error, alert);
                 });
             }
+
             backdrop.hide();
         });
 
         if (!ipc.isDummy) {
             backdrop.show();
         }
-        ipc.send('import-project');
-    };
 
-    const handleSelectProject = index => {
-        setCurrentProjectIndex(index);
+        ipc.send('import-project');
     };
 
     const handleModifyProject = (index, properties) => {
@@ -152,6 +121,10 @@ function Workspace(props) {
         projectStatesCopy[index] = {...projectStatesCopy[index], ...properties};
 
         setProjectStates(projectStatesCopy);
+    };
+
+    const handleSelectProject = index => {
+        setCurrentProjectIndex(index);
     };
 
     const handleSaveProject = index => {
@@ -170,12 +143,14 @@ function Workspace(props) {
                         if (path) {
                             save(path);
                         }
+
                         backdrop.hide();
                     });
 
                     if (!ipc.isDummy) {
                         backdrop.show();
                     }
+
                     ipc.send('save-project');
                 } else {
                     save(projectStates[index].path);
@@ -186,15 +161,16 @@ function Workspace(props) {
 
     const handleDuplicateProject = index => {
         const projectCopy = {...projects[index]};
-        setProjectStates([...projectStates, defaultState()]);
+
         setProjects([...projects, {...projectCopy, id: uuid(), name: `Copy of ${projectCopy.name}`}]);
+        setProjectStates([...projectStates, defaultState()]);
         setCurrentProjectIndex(projects.length);
     };
 
     const handleCloseProject = index => {
         if (projects.length) {
             if (projectStates[index].running) {
-                handleStopMock(projects[index]);
+                handleStopMock(index);
             }
 
             const projectsCopy = [...projects];
@@ -213,115 +189,51 @@ function Workspace(props) {
         }
     };
 
-    const handleOpenWarningsDialog = () => {
-        setShowWarningsDialog(true);
-    };
+    const handleStartMock = index => {
+        handleModifyProjectState(index, {waiting: true});
 
-    const handleCloseWarningsDialog = () => {
-        setShowWarningsDialog(false);
-    };
-
-    const handleNavigateToWarning = (tab, field) => {
-        const index = projects[currentProjectIndex].tabs.findIndex(t => t.id === tab);
-        setShowWarningsDialog(false);
-        if (index !== projectStates[currentProjectIndex].activeTab) {
-            handleModifyProjectState(currentProjectIndex, {activeTab: index});
-        }
-    };
-
-    const handleStartMock = () => {
-        handleModifyProjectState(currentProjectIndex, {waiting: true});
-        startMock(projects[currentProjectIndex]).then(appliedConfiguration => {
-            handleModifyProjectState(currentProjectIndex, {running: true, waiting: false, activePort: appliedConfiguration.port, activeUrls: appliedConfiguration.urls});
+        startMock(projects[index]).then(configuration => {
+            handleModifyProjectState(index, {
+                running: true,
+                waiting: false,
+                activePort: configuration.port,
+                activeUrls: configuration.urls
+            });
         }).catch(error => {
             handleApiError(error, alert);
-            handleModifyProjectState(currentProjectIndex, {waiting: false});
+            handleModifyProjectState(index, {waiting: false});
         });
     };
 
-    const handleStopMock = () => {
-        handleModifyProjectState(currentProjectIndex, {waiting: true});
-        stopMock(projects[currentProjectIndex]).catch(error => {
+    const handleStopMock = index => {
+        handleModifyProjectState(index, {waiting: true});
+
+        stopMock(projects[index]).catch(error => {
             handleApiError(error, alert);
         }).finally(() => {
-            handleModifyProjectState(currentProjectIndex, {running: false, waiting: false});
+            handleModifyProjectState(index, {running: false, waiting: false});
         });
-    };
-
-    const handleSaveProjectShortcutKeyDown = (_, event) => { // TODO
-        event.preventDefault();
-    };
-
-    const handleSaveProjectShortcutKeyUp = () => { // TODO
-        handleSaveProject(currentProjectIndex);
     };
 
     return (
         <Hotkeys
             keyName="ctrl+s,command+s"
-            onKeyDown={handleSaveProjectShortcutKeyDown}
-            onKeyUp={handleSaveProjectShortcutKeyUp}
+            onKeyDown={handleShortcutKeyDown}
+            onKeyUp={handleShortcutKeyUp}
         >
             <div className={classes.root}>
-                <AppBar position="fixed" className={classes.appBar}>
-                    <Toolbar className={classes.actions}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<Add/>}
-                            onClick={handleNewProject}
-                            className={classes.action}
-                        >
-                            New project
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="default"
-                            startIcon={<FolderOpen/>}
-                            onClick={handleOpenProject}
-                            className={classes.action}
-                        >
-                            Open
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="default"
-                            startIcon={<OpenInBrowser/>}
-                            onClick={handleImportProject}
-                            className={classes.action}
-                        >
-                            Import
-                        </Button>
-                        <div className={classes.grow}/>
-                        {!!projects.length && !projectStates[currentProjectIndex].running && projectStates[currentProjectIndex].waiting &&
-                         <CircularProgress color="inherit"/>}
-                        {!!projects.length && !!projects[currentProjectIndex].tabs.length &&
-                         <div className={classes.actions}>
-                             {!!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length &&
-                              <Chip
-                                  icon={<Error/>}
-                                  label={flection(Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab).length).reduce((x, y) => x + y, 0), 'warning', 'warnings')}
-                                  onClick={handleOpenWarningsDialog}
-                              />}
-                             {!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length && !projectStates[currentProjectIndex].running && !projectStates[currentProjectIndex].waiting &&
-                              <Fab variant="extended" size="small" onClick={handleStartMock} className={classes.warningsOffset}>
-                                  <PlayArrow className={classes.startFabIcon}/>
-                                  Start
-                              </Fab>}
-                             {projectStates[currentProjectIndex].running && !projectStates[currentProjectIndex].waiting &&
-                              <Fab variant="extended" size="small" onClick={handleStopMock} className={classes.warningsOffset}>
-                                  <Stop className={classes.stopFabIcon}/>
-                                  Stop
-                              </Fab>}
-                         </div>}
-                        {!!projects.length && <ProjectSettings
-                            project={projects[currentProjectIndex]}
-                            projectState={projectStates[currentProjectIndex]}
-                            index={currentProjectIndex}
-                            onModifyProject={handleModifyProject}
-                            onModifyProjectState={handleModifyProjectState}/>}
-                    </Toolbar>
-                </AppBar>
+                <Toolbar
+                    projects={projects}
+                    projectStates={projectStates}
+                    currentIndex={currentProjectIndex}
+                    onNewProject={handleNewProject}
+                    onOpenProject={handleOpenProject}
+                    onImportProject={handleImportProject}
+                    onModifyProject={handleModifyProject}
+                    onModifyProjectState={handleModifyProjectState}
+                    onStartMock={handleStartMock}
+                    onStopMock={handleStopMock}
+                />
                 <Sidebar
                     projects={projects}
                     projectStates={projectStates}
@@ -335,38 +247,15 @@ function Workspace(props) {
                     onCloseProject={handleCloseProject}
                 />
                 <main className={classes.content}>
-                    <div className={classes.toolbar}/>
-                    {!!projects.length && <Project
-                        project={projects[currentProjectIndex]}
-                        projectState={projectStates[currentProjectIndex]}
-                        index={currentProjectIndex}
-                        onModifyProject={handleModifyProject}
-                        onModifyProjectState={handleModifyProjectState}
-                    />}
+                    {!!projects.length &&
+                     <Project
+                         project={projects[currentProjectIndex]}
+                         projectState={projectStates[currentProjectIndex]}
+                         index={currentProjectIndex}
+                         onModifyProject={handleModifyProject}
+                         onModifyProjectState={handleModifyProjectState}
+                     />}
                 </main>
-                {!!projects.length && !!Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([_, tab]) => Object.keys(tab)).length &&
-                 <Dialog open={showWarningsDialog} scroll="paper" onClose={handleCloseWarningsDialog}>
-                     <DialogTitle>{`Warnings for ${projects[currentProjectIndex].name}`}</DialogTitle>
-                     <DialogContent>
-                         <List>
-                             {Object.entries(projectStates[currentProjectIndex].warnings).flatMap(([tab, warnings]) => Object.entries(warnings).map(([field, warning]) =>
-                                 <ListItem button onClick={() => handleNavigateToWarning(tab, field)}>
-                                     <ListItemIcon>
-                                         <Error/>
-                                     </ListItemIcon>
-                                     <ListItemText
-                                         primary={`In tab: ${projects[currentProjectIndex].tabs.find(t => t.id === tab).name}`}
-                                         secondary={warning}
-                                     />
-                                 </ListItem>))}
-                         </List>
-                     </DialogContent>
-                     <DialogActions>
-                         <Button onClick={handleCloseWarningsDialog} color="secondary">
-                             Close
-                         </Button>
-                     </DialogActions>
-                 </Dialog>}
             </div>
         </Hotkeys>
     );
