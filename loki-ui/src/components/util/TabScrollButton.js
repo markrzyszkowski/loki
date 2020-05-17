@@ -5,34 +5,34 @@ import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
-    root: {
+    button: {
         minWidth: '48px',
         flexShrink: 0,
         borderRadius: 0
     }
 }));
 
-function ProjectTabScrollButton(props) {
+function TabScrollButton(props) {
     const {direction, visible, onClick} = props;
 
     const classes = useStyles();
+
+    const left = direction === 'left';
 
     return (
         <Button
             disabled={!visible}
             onClick={onClick}
-            role={null}
-            tabIndex={null}
-            className={classes.root}>
-            {direction === 'left' ? <ArrowLeft/> : <ArrowRight/>}
+            className={classes.button}>
+            {left ? <ArrowLeft/> : <ArrowRight/>}
         </Button>
     );
 }
 
-ProjectTabScrollButton.propTypes = {
+TabScrollButton.propTypes = {
     direction: PropTypes.oneOf(['left', 'right']).isRequired,
     visible: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired
 };
 
-export default ProjectTabScrollButton;
+export default TabScrollButton;
