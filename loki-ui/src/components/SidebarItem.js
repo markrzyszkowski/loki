@@ -111,7 +111,6 @@ function SidebarItem(props) {
                            : projectState.running ? classes.running : classes.default;
     const hasWarnings = warningCount(projectState.warnings) > 0;
     const unsaved = projectState.modified || projectState.neverSaved;
-    const showMenu = !!menuPosition;
 
     return (
         <>
@@ -127,7 +126,7 @@ function SidebarItem(props) {
                 }/>
                 {hasWarnings && <Error color="secondary"/>}
                 {unsaved && <Save color={projectState.modified ? 'secondary' : 'primary'}/>}
-                <Menu open={showMenu} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
+                <Menu open={!!menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                     {unsaved && <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
                     <MenuItem onClick={handleDuplicateProject}>Duplicate</MenuItem>

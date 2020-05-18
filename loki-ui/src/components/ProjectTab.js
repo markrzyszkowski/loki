@@ -102,7 +102,7 @@ function ProjectTab(props) {
                 label={
                     <>
                         <Ellipsis text={tab.name} maxLength={16} interactive={false}/>
-                        <Menu open={menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
+                        <Menu open={!!menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                             <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
                             <MenuItem onClick={handleDuplicateTab}>Duplicate</MenuItem>
                             <MenuItem onClick={handleOpenConfirmation}>Delete</MenuItem>
