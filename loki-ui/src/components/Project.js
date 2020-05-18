@@ -117,6 +117,7 @@ function Project(props) {
                 >
                     {project.tabs.map((tab, index) =>
                         <ProjectTab
+                            key={tab.id}
                             tab={tab}
                             index={index}
                             warnings={projectState.warnings[tab.id] || {}}
