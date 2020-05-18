@@ -68,10 +68,10 @@ function Toolbar(props) {
     };
 
     const hasProjects = projects.length > 0;
-    const hasTabs = projects[currentIndex].tabs.length > 0;
-    const hasWarnings = warningCount(projectStates[currentIndex].warnings) > 0;
-    const running = projectStates[currentIndex].running;
-    const waiting = projectStates[currentIndex].waiting;
+    const hasTabs = hasProjects && projects[currentIndex].tabs.length > 0;
+    const hasWarnings = hasProjects && warningCount(projectStates[currentIndex].warnings) > 0;
+    const running = hasProjects && projectStates[currentIndex].running;
+    const waiting = hasProjects && projectStates[currentIndex].waiting;
     const loading = hasProjects && !running && waiting;
 
     return (
@@ -106,7 +106,7 @@ function Toolbar(props) {
                 </Button>
                 <div className={classes.grow}/>
                 {loading && <CircularProgress color="inherit"/>}
-                {hasProjects && hasTabs &&
+                {hasTabs &&
                  <div className={classes.actions}>
                      {hasWarnings &&
                       <Warnings
