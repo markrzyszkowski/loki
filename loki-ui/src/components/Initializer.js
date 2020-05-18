@@ -4,7 +4,8 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
 import ipc from '../ipc';
-import { newProject, openProject, importProject } from '../project';
+import { defaultProject } from '../defaults';
+import { openProject, importProject } from '../project';
 import { handleApiError } from '../util';
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +31,7 @@ function Initializer(props) {
     const classes = useStyles();
 
     const handleNewProject = () => {
-        onProjectInit(newProject());
+        onProjectInit(defaultProject());
     };
 
     const handleOpenProject = () => {

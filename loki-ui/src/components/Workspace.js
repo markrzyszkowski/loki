@@ -6,9 +6,10 @@ import { v4 as uuid } from 'uuid';
 import Project from './Project';
 import Sidebar from './Sidebar';
 import Toolbar from './Toolbar';
+import { defaultProject, defaultState } from '../defaults';
 import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
-import { saveProject, defaultState, newProject, openProject, importProject } from '../project';
+import { openProject, importProject, saveProject } from '../project';
 import { handleApiError } from '../util';
 import { checkWarnings } from '../warning';
 
@@ -42,7 +43,7 @@ function Workspace(props) {
     };
 
     const handleNewProject = () => {
-        const project = newProject();
+        const project = defaultProject();
 
         setProjects([...projects, project]);
         setProjectStates([...projectStates, checkWarnings(project, defaultState())]);

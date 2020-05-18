@@ -10,7 +10,7 @@ import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
 import ScrollTabsButton from './util/ScrollTabsButton';
 import ScrollTopButton from './util/ScrollTopButton';
-import { newTab } from '../project';
+import { defaultTab } from '../defaults';
 import { validators } from '../warning';
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ function Project(props) {
     };
 
     const handleAddTab = () => {
-        const tab = newTab();
+        const tab = defaultTab();
 
         const warningsCopy = {...projectState.warnings};
         validators.url({...project, tabs: [...project.tabs, tab]}, warningsCopy);
