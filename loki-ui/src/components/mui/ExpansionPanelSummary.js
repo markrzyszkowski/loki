@@ -1,4 +1,3 @@
-import React from 'react';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import { withStyles } from '@material-ui/core/styles';
 

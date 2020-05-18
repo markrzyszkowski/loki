@@ -4,7 +4,7 @@ import { ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/ico
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
-import ExpansionPanelSummary from './CustomExpansionPanelSummary';
+import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import Response from './Response';
 import Request from './Request';
 import MenuItem from '@material-ui/core/MenuItem';
