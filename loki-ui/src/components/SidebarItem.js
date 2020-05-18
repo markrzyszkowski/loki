@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Error, Save } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import SidebarItemButton from './SidebarItemButton';
-import { EllipsizeWithTooltip } from './Util';
+import Ellipsis from './util/Ellipsis';
 import { warningCount } from '../warning';
 
 const useStyles = makeStyles(theme => ({
@@ -123,7 +123,7 @@ function SidebarItem(props) {
                 classes={{container: containerClass}}
             >
                 <ListItemText primary={
-                    <EllipsizeWithTooltip text={project.name} maxLength={20} interactive={false}/>
+                    <Ellipsis text={project.name} maxLength={20} interactive={false}/>
                 }/>
                 {hasWarnings && <Error color="secondary"/>}
                 {unsaved && <Save color={projectState.modified ? 'secondary' : 'primary'}/>}

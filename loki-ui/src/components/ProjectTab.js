@@ -11,7 +11,7 @@ import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
-import { EllipsizeWithTooltip } from './Util';
+import Ellipsis from './util/Ellipsis';
 
 const useStyles = makeStyles(theme => ({
     warning: {
@@ -101,7 +101,7 @@ function ProjectTab(props) {
                 onContextMenu={handleOpenMenu}
                 label={
                     <>
-                        <EllipsizeWithTooltip text={tab.name} maxLength={16} interactive={false}/>
+                        <Ellipsis text={tab.name} maxLength={16} interactive={false}/>
                         <Menu open={menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                             <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
                             <MenuItem onClick={handleDuplicateTab}>Duplicate</MenuItem>

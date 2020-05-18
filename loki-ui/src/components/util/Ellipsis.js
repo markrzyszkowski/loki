@@ -1,9 +1,9 @@
 import React from 'react';
 import Tooltip from '@material-ui/core/Tooltip';
 import * as PropTypes from 'prop-types';
-import { ellipsis } from '../util';
+import { ellipsis } from '../../util';
 
-function EllipsizeWithTooltip(props) {
+function Ellipsis(props) {
     const {text, maxLength, interactive} = props;
 
     return (
@@ -17,12 +17,10 @@ function EllipsizeWithTooltip(props) {
     );
 }
 
-EllipsizeWithTooltip.propTypes = {
+Ellipsis.propTypes = {
     text: PropTypes.string.isRequired,
     maxLength: PropTypes.number.isRequired,
     interactive: PropTypes.bool.isRequired
 };
 
-export { EllipsizeWithTooltip };
-
-export { EllipsizeWithTooltip, ScrollTopButton };
+export default Ellipsis;
