@@ -26,11 +26,11 @@ const useStyles = makeStyles(theme => ({
     },
     rules: {
         marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(3)
+        marginBottom: theme.spacing(9)
     },
     rulesOffset: {
         marginTop: '2px',
-        marginBottom: theme.spacing(3)
+        marginBottom: theme.spacing(9)
     }
 }));
 
