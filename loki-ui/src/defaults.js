@@ -37,9 +37,9 @@ const defaultState = () => {
     };
 };
 
-const defaultRule = ordinal => {
+const defaultRule = () => {
     return {
-        name: `Rule ${ordinal}`,
+        name: `Untitled rule`,
         request: {
             method: '',
             methodCondition: '',

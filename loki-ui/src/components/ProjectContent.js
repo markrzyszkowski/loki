@@ -105,11 +105,12 @@ function ProjectContent(props) {
             <div className={rulesClass}>
                 {tab.rules.map((rule, index) =>
                     <Rule
+                        key={index}
                         rule={rule}
                         index={index}
                         lastIndex={tab.rules.length - 1}
-                        onModifyRule={handleModifyRule}
                         onShiftRule={handleShiftRule}
+                        onModifyRule={handleModifyRule}
                         onDeleteRule={handleDeleteRule}
                     />)}
             </div>
