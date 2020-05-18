@@ -37,4 +37,32 @@ const defaultState = () => {
     };
 };
 
-export { defaultTab, defaultProject, defaultState };
+const defaultRule = ordinal => {
+    return {
+        name: `Rule ${ordinal}`,
+        request: {
+            method: '',
+            methodCondition: '',
+            headers: [],
+            parameters: [],
+            body: '',
+            bodyCondition: '',
+            bodyIgnoreCase: false,
+            bodyIgnoreWhitespace: false,
+            expanded: true,
+            headersExpanded: true,
+            parametersExpanded: true
+        },
+        response: {
+            statusCode: 200,
+            headers: [],
+            body: '',
+            expanded: true,
+            headersExpanded: true
+        },
+        active: true,
+        expanded: true
+    };
+};
+
+export { defaultTab, defaultProject, defaultState, defaultRule };

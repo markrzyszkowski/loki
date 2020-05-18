@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,6 +7,7 @@ import { Add } from '@material-ui/icons';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import Rule from './Rule';
+import { defaultRule } from '../defaults';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -18,24 +19,18 @@ const useStyles = makeStyles(theme => ({
     urlField: {
         flexGrow: 1
     },
-    rulesWrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+    button: {
+        position: 'fixed',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2)
+    },
+    rules: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3)
     },
-    rulesWrapper2: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+    rulesOffset: {
         marginTop: '2px',
         marginBottom: theme.spacing(3)
-    },
-    rules: {
-        width: '100%',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2)
     }
 }));
 
@@ -45,52 +40,28 @@ function ProjectContent(props) {
     const classes = useStyles();
 
     const handleUrlChange = event => {
-        const text = event.target.value;
-        if (text !== tab.url) {
-            onModifyTab(index, {url: text}, 'url');
+        const url = event.target.value;
+
+        if (url !== tab.url) {
+            onModifyTab(index, {url: url}, 'url');
         }
     };
 
     const handleAddRule = () => {
-        const rule = {
-            name: `Rule ${tab.rules.length + 1}`,
-            request: {
-                method: '',
-                methodCondition: '',
-                headers: [],
-                parameters: [],
-                body: '',
-                bodyCondition: '',
-                bodyIgnoreCase: false,
-                bodyIgnoreWhitespace: false,
-                expanded: true,
-                headersExpanded: true,
-                parametersExpanded: true
-            },
-            response: {
-                statusCode: 200,
-                headers: [],
-                body: '',
-                expanded: true,
-                headersExpanded: true
-            },
-            active: true,
-            expanded: true
-        };
-        onModifyTab(index, {rules: [...tab.rules, rule]});
+        onModifyTab(index, {rules: [...tab.rules, defaultRule(tab.rules.length + 1)]});
     };
 
-    const handleModifyRule = (ruleIndex, ruleProperties) => {
+    const handleModifyRule = (ruleIndex, properties) => {
         const rulesCopy = [...tab.rules];
-        rulesCopy[ruleIndex] = {...rulesCopy[ruleIndex], ...ruleProperties};
+        rulesCopy[ruleIndex] = {...rulesCopy[ruleIndex], ...properties};
 
         onModifyTab(index, {rules: rulesCopy});
     };
 
-    const handleShiftRule = (ruleIndex, ruleOffset) => {
+    const handleShiftRule = (ruleIndex, offset) => {
         const rulesCopy = [...tab.rules];
 
-        const newRuleIndex = ruleIndex + ruleOffset;
+        const newRuleIndex = ruleIndex + offset;
         if (newRuleIndex >= 0 && newRuleIndex < rulesCopy.length) {
             let temp = rulesCopy[ruleIndex];
             rulesCopy[ruleIndex] = rulesCopy[newRuleIndex];
@@ -107,6 +78,10 @@ function ProjectContent(props) {
         onModifyTab(index, {rules: rulesCopy});
     };
 
+    const showMockUrl = settings.profile === 'STATIC' && isRunning && !!activeUrls[tab.id];
+    const mockUrl = `http://localhost:${activePort}/${activeUrls[tab.id]}`;
+    const rulesClass = clsx(!warnings['url'] && classes.rules, !!warnings['url'] && classes.rulesOffset);
+
     return (
         <div role="tabpanel" className={classes.root}>
             <FormGroup row>
@@ -117,27 +92,30 @@ function ProjectContent(props) {
                     placeholder="Enter request URL"
                     value={tab.url}
                     onChange={handleUrlChange}
-                    className={clsx(classes.field, classes.urlField)}/>
-                {settings.profile === 'STATIC' && isRunning && !!activeUrls[tab.id] && <TextField
+                    className={clsx(classes.field, classes.urlField)}
+                />
+                {showMockUrl &&
+                 <TextField
                     label="Mock URL"
-                    value={`http://localhost:${activePort}/${activeUrls[tab.id]}`}
+                    value={mockUrl}
                     InputProps={{readOnly: true}}
-                    className={clsx(classes.field, classes.urlField)}/>}
+                    className={clsx(classes.field, classes.urlField)}
+                 />}
             </FormGroup>
-            <div className={clsx(!warnings['url'] && classes.rulesWrapper, !!warnings['url'] && classes.rulesWrapper2)}>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<Add/>}
-                    onClick={handleAddRule}
-                >
-                    Add rule
-                </Button>
-                <div className={classes.rules}>
-                    {tab.rules.map((rule, index) =>
-                        <Rule rule={rule} index={index} lastIndex={tab.rules.length - 1} onModifyRule={handleModifyRule} onShiftRule={handleShiftRule} onDeleteRule={handleDeleteRule}/>)}
-                </div>
+            <div className={rulesClass}>
+                {tab.rules.map((rule, index) =>
+                    <Rule
+                        rule={rule}
+                        index={index}
+                        lastIndex={tab.rules.length - 1}
+                        onModifyRule={handleModifyRule}
+                        onShiftRule={handleShiftRule}
+                        onDeleteRule={handleDeleteRule}
+                    />)}
             </div>
+            <Fab color="secondary" onClick={handleAddRule} className={classes.button}>
+                <Add/>
+            </Fab>
         </div>
     );
 }
