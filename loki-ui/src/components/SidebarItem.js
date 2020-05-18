@@ -153,7 +153,8 @@ function SidebarItem(props) {
                         margin="dense"
                         label="New name"
                         defaultValue={project.name}
-                        fullWidth/>
+                        fullWidth
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="secondary">

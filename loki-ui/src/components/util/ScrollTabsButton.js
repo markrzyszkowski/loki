@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function TabScrollButton(props) {
+function ScrollTabsButton(props) {
     const {direction, visible, onClick} = props;
 
     const classes = useStyles();
@@ -29,10 +29,10 @@ function TabScrollButton(props) {
     );
 }
 
-TabScrollButton.propTypes = {
+ScrollTabsButton.propTypes = {
     direction: PropTypes.oneOf(['left', 'right']).isRequired,
     visible: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired
 };
 
-export default TabScrollButton;
+export default ScrollTabsButton;

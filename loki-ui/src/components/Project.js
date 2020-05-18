@@ -8,8 +8,8 @@ import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import ProjectContent from './ProjectContent';
 import ProjectTab from './ProjectTab';
-import ProjectTabScrollButton from './ProjectTabScrollButton';
-import { ScrollTopButton } from './Util';
+import ScrollTabsButton from './util/ScrollTabsButton';
+import ScrollTopButton from './util/ScrollTopButton';
 import { newTab } from '../project';
 import { validators } from '../warning';
 
@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row'
     },
+    toolbar: theme.mixins.toolbar,
     square: {
         minWidth: '48px',
         borderRadius: 0
@@ -43,9 +44,9 @@ function Project(props) {
         onModifyProjectState(index, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
-    const handleModifyTab = (tabIndex, tabProperties, field) => {
+    const handleModifyTab = (tabIndex, properties, field) => {
         const tabsCopy = [...project.tabs];
-        tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...tabProperties};
+        tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...properties};
 
         const warningsCopy = {...projectState.warnings};
         if (field) {
@@ -60,6 +61,21 @@ function Project(props) {
 
         onModifyProject(index, {tabs: tabsCopy});
         onModifyProjectState(index, {modified: true, warnings: warningsCopy});
+    };
+
+    const handleDuplicateTab = tabIndex => {
+        const tabCopy = {...project.tabs[tabIndex]};
+
+        const tabId = uuid();
+
+        const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}];
+
+        const warningsCopy = {...projectState.warnings};
+        warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
+        validators.url({...project, tabs: tabsCopy}, warningsCopy);
+
+        onModifyProject(index, {tabs: tabsCopy});
+        onModifyProjectState(index, {activeTab: project.tabs.length, warnings: warningsCopy});
     };
 
     const handleDeleteTab = tabIndex => {
@@ -83,33 +99,21 @@ function Project(props) {
         }
     };
 
-    const handleDuplicateTab = tabIndex => {
-        const tabCopy = {...project.tabs[tabIndex]};
-
-        const tabId = uuid();
-
-        const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}];
-
-        const warningsCopy = {...projectState.warnings};
-        warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
-        validators.url({...project, tabs: tabsCopy}, warningsCopy);
-
-        onModifyProject(index, {tabs: tabsCopy});
-        onModifyProjectState(index, {activeTab: project.tabs.length, warnings: warningsCopy});
-    };
+    const hasTabs = project.tabs.length > 0;
 
     return (
         <>
+            <div className={classes.toolbar}/>
             <Paper square className={classes.root}>
                 <Tabs
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="scrollable"
+                    id="scroll-top-anchor"
+                    scrollButtons="on"
+                    ScrollButtonComponent={ScrollTabsButton}
                     value={projectState.activeTab}
                     onChange={handleSelectTab}
-                    id="scroll-top-anchor"
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="scrollable"
-                    scrollButtons="on"
-                    ScrollButtonComponent={ProjectTabScrollButton}
                 >
                     {project.tabs.map((tab, index) =>
                         <ProjectTab
@@ -117,24 +121,25 @@ function Project(props) {
                             index={index}
                             warnings={projectState.warnings[tab.id] || {}}
                             onModifyTab={handleModifyTab}
-                            onDeleteTab={handleDeleteTab}
                             onDuplicateTab={handleDuplicateTab}
+                            onDeleteTab={handleDeleteTab}
                         />)}
                 </Tabs>
                 <Button onClick={handleAddTab} className={classes.square}>
                     <Add/>
                 </Button>
             </Paper>
-            {!!project.tabs.length && <ProjectContent
-                tab={project.tabs[projectState.activeTab]}
-                index={projectState.activeTab}
-                settings={project.settings}
-                warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
-                isRunning={projectState.running}
-                activePort={projectState.activePort}
-                activeUrls={projectState.activeUrls}
-                onModifyTab={handleModifyTab}
-            />}
+            {hasTabs &&
+             <ProjectContent
+                 tab={project.tabs[projectState.activeTab]}
+                 index={projectState.activeTab}
+                 settings={project.settings}
+                 warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
+                 isRunning={projectState.running}
+                 activePort={projectState.activePort}
+                 activeUrls={projectState.activeUrls}
+                 onModifyTab={handleModifyTab}
+             />}
             <ScrollTopButton anchor="scroll-top-anchor"/>
         </>
     );

@@ -21,92 +21,99 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ProjectTab(props) {
-    const {tab, index, warnings, onModifyTab, onDeleteTab, onDuplicateTab, ...other} = props;
+    const {tab, index, warnings, onModifyTab, onDuplicateTab, onDeleteTab, ...other} = props;
 
-    const [menuState, setMenuState] = useState({mouseY: null, mouseX: null});
+    const [menuPosition, setMenuPosition] = useState(null);
+    const [showDialog, setShowDialog] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [dialogError, setDialogError] = useState(false);
-    const [showModifyTabDialog, setShowModifyTabDialog] = useState(false);
-    const [showDeleteTabDialog, setShowDeleteTabDialog] = useState(false);
 
     const classes = useStyles();
 
-    const handleModifyTab = event => {
-        handleCloseMenu(event);
-        setShowModifyTabDialog(true);
-    };
-
-    const handleDeleteTab = event => {
-        handleCloseMenu(event);
-        setShowDeleteTabDialog(true);
-    };
-
-    const handleDuplicateTab = event => {
-        handleCloseMenu(event);
-        onDuplicateTab(index);
-    };
-
     const handleOpenMenu = event => {
         event.preventDefault();
-        setMenuState({
-            mouseY: event.clientY - 4,
-            mouseX: event.clientX - 2
+
+        setMenuPosition({
+            top: event.clientY - 4,
+            left: event.clientX - 2
         });
     };
 
     const handleCloseMenu = event => {
         event.stopPropagation();
-        setMenuState({mouseY: null, mouseX: null});
+
+        setMenuPosition(null);
     };
 
-    const handleModifyAction = () => {
-        const text = document.getElementById(`new-tab-name-${index}`).value.trim();
-        if (text) {
-            if (text !== tab.name) {
-                onModifyTab(index, {name: text});
+    const handleOpenDialog = event => {
+        handleCloseMenu(event);
+
+        setShowDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setShowDialog(false);
+    };
+
+    const handleOpenConfirmation = event => {
+        handleCloseMenu(event);
+
+        setShowConfirmation(true);
+    };
+
+    const handleCloseConfirmation = () => {
+        setShowConfirmation(false);
+    };
+
+    const handleRenameTab = () => {
+        const name = document.getElementById(`new-tab-name-${index}`).value.trim();
+
+        if (name) {
+            if (name !== tab.name) {
+                onModifyTab(index, {name: name});
             }
+            setShowDialog(false);
             setDialogError(false);
-            setShowModifyTabDialog(false);
         } else {
             setDialogError(true);
         }
     };
 
-    const handleCancelModifyAction = () => {
-        setShowModifyTabDialog(false);
+    const handleDuplicateTab = event => {
+        handleCloseMenu(event);
+
+        onDuplicateTab(index);
     };
 
-    const handleDeleteAction = () => {
-        setShowDeleteTabDialog(false);
+    const handleDeleteTab = () => {
+        setShowConfirmation(false);
+
         onDeleteTab(index);
     };
 
-    const handleCancelDeleteAction = () => {
-        setShowDeleteTabDialog(false);
-    };
+    const hasWarnings = Object.keys(warnings).length > 0;
+    const rootClass = hasWarnings ? classes.warning : null;
 
     return (
         <>
-            <Tab component="div" onContextMenu={handleOpenMenu} label={
-                <>
-                    <EllipsizeWithTooltip text={tab.name} maxLength={16} interactive={false}/>
-                    <Menu
-                        open={menuState.mouseY !== null}
-                        onClose={handleCloseMenu}
-                        anchorReference="anchorPosition"
-                        anchorPosition={
-                            menuState.mouseY !== null && menuState.mouseX !== null
-                            ? {top: menuState.mouseY, left: menuState.mouseX}
-                            : undefined}
-                    >
-                        <MenuItem onClick={handleModifyTab}>Edit</MenuItem>
-                        <MenuItem onClick={handleDeleteTab}>Delete</MenuItem>
-                        <MenuItem onClick={handleDuplicateTab}>Duplicate</MenuItem>
-                        <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
-                    </Menu>
-                </>
-            } classes={{root: !!Object.keys(warnings).length ? classes.warning : null}} {...other}/>
-            <Dialog open={showModifyTabDialog} onClose={handleCancelModifyAction}>
-                <DialogTitle>{tab.name}</DialogTitle>
+            <Tab
+                component="div"
+                onContextMenu={handleOpenMenu}
+                label={
+                    <>
+                        <EllipsizeWithTooltip text={tab.name} maxLength={16} interactive={false}/>
+                        <Menu open={menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
+                            <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
+                            <MenuItem onClick={handleDuplicateTab}>Duplicate</MenuItem>
+                            <MenuItem onClick={handleOpenConfirmation}>Delete</MenuItem>
+                            <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
+                        </Menu>
+                    </>}
+                classes={{root: rootClass}}
+                {...other}
+            />
+            <Dialog open={showDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Rename {tab.name}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -115,18 +122,19 @@ function ProjectTab(props) {
                         margin="dense"
                         label="New name"
                         defaultValue={tab.name}
-                        fullWidth/>
+                        fullWidth
+                    />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelModifyAction} color="secondary">
+                    <Button onClick={handleCloseDialog} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={handleModifyAction} color="primary">
+                    <Button onClick={handleRenameTab} color="primary">
                         Set
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={showDeleteTabDialog} onClose={handleCancelDeleteAction}>
+            <Dialog open={showConfirmation} onClose={handleCloseConfirmation}>
                 <DialogTitle>Delete {tab.name}?</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -134,10 +142,10 @@ function ProjectTab(props) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelDeleteAction} color="secondary">
+                    <Button onClick={handleCloseConfirmation} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={handleDeleteAction} color="primary">
+                    <Button onClick={handleDeleteTab} color="primary">
                         Confirm
                     </Button>
                 </DialogActions>
@@ -151,8 +159,8 @@ ProjectTab.propTypes = {
     index: PropTypes.number.isRequired,
     warnings: PropTypes.object.isRequired,
     onModifyTab: PropTypes.func.isRequired,
-    onDeleteTab: PropTypes.func.isRequired,
-    onDuplicateTab: PropTypes.func.isRequired
+    onDuplicateTab: PropTypes.func.isRequired,
+    onDeleteTab: PropTypes.func.isRequired
 };
 
 export default ProjectTab;
