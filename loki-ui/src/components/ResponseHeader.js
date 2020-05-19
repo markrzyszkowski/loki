@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(1)
     },
     button: {
-        minWidth: 64
+        minWidth: 61
     }
 }));
 
@@ -41,25 +41,25 @@ function ResponseHeader(props) {
     };
 
     return (
-        <div className={classes.fields}>
-            <FormGroup row>
-                <TextField
-                    label="Key"
-                    value={header.key}
-                    onChange={handleKeyChange}
-                    className={classes.field}
-                />
-                <TextField
-                    label="Value"
-                    value={header.value}
-                    onChange={handleValueChange}
-                    className={classes.field}
-                />
-                <IconButton onClick={handleDeleteHeader} className={classes.button}>
-                    <Delete/>
-                </IconButton>
-            </FormGroup>
-        </div>
+        <FormGroup row className={classes.fields}>
+            <TextField
+                label="Key"
+                size="small"
+                value={header.key}
+                onChange={handleKeyChange}
+                className={classes.field}
+            />
+            <TextField
+                label="Value"
+                size="small"
+                value={header.value}
+                onChange={handleValueChange}
+                className={classes.field}
+            />
+            <IconButton onClick={handleDeleteHeader} className={classes.button}>
+                <Delete/>
+            </IconButton>
+        </FormGroup>
     );
 }
 

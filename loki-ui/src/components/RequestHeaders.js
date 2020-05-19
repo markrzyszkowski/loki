@@ -6,9 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, ExpandMore } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
-import ResponseHeader from './ResponseHeader';
+import RequestHeader from './RequestHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
-import { defaultHeader } from '../defaults';
+import { defaultHeaderWithConditions } from '../defaults';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -43,17 +43,17 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function ResponseHeaders(props) {
-    const {headers, headersExpanded, onModifyResponse} = props;
+function RequestHeaders(props) {
+    const {headers, headersExpanded, onModifyRequest} = props;
 
     const classes = useStyles();
 
     const handleStateChange = (_, expanded) => {
-        onModifyResponse({headersExpanded: expanded});
+        onModifyRequest({headersExpanded: expanded});
     };
 
     const handleAddHeader = () => {
-        onModifyResponse({headers: [...headers, defaultHeader()]});
+        onModifyRequest({headers: [...headers, defaultHeaderWithConditions()]});
 
         // validate
     };
@@ -64,7 +64,7 @@ function ResponseHeaders(props) {
 
         // validate
 
-        onModifyResponse({headers: headersCopy});
+        onModifyRequest({headers: headersCopy});
     };
 
     const handleHeaderKeyChange = (index, key) => {
@@ -73,7 +73,16 @@ function ResponseHeaders(props) {
 
         // validate
 
-        onModifyResponse({headers: headersCopy});
+        onModifyRequest({headers: headersCopy});
+    };
+
+    const handleHeaderKeyIgnoreCaseChange = (index, ignoreCase) => {
+        const headersCopy = [...headers];
+        headersCopy[index] = {...headersCopy[index], keyIgnoreCase: ignoreCase};
+
+        // validate
+
+        onModifyRequest({headers: headersCopy});
     };
 
     const handleHeaderValueChange = (index, value) => {
@@ -82,7 +91,25 @@ function ResponseHeaders(props) {
 
         // validate
 
-        onModifyResponse({headers: headersCopy});
+        onModifyRequest({headers: headersCopy});
+    };
+
+    const handleHeaderValueIgnoreCaseChange = (index, ignoreCase) => {
+        const headersCopy = [...headers];
+        headersCopy[index] = {...headersCopy[index], valueIgnoreCase: ignoreCase};
+
+        // validate
+
+        onModifyRequest({headers: headersCopy});
+    };
+
+    const handleHeaderConditionChange = (index, condition) => {
+        const headersCopy = [...headers];
+        headersCopy[index] = {...headersCopy[index], condition: condition};
+
+        // validate
+
+        onModifyRequest({headers: headersCopy});
     };
 
     const contentClass = classes.content;
@@ -99,7 +126,7 @@ function ResponseHeaders(props) {
              >
                  Add header
              </Button>}
-            {hasHeaders &&
+             {hasHeaders &&
              <div className={classes.fullWidth}>
                  <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
                      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
@@ -117,12 +144,15 @@ function ResponseHeaders(props) {
                                  Add header
                              </Button>
                              {headers.map((header, index) =>
-                                 <ResponseHeader
+                                 <RequestHeader
                                      header={header}
                                      index={index}
                                      onDeleteHeader={handleDeleteHeader}
                                      onKeyChange={handleHeaderKeyChange}
+                                     onKeyIgnoreCaseChange={handleHeaderKeyIgnoreCaseChange}
                                      onValueChange={handleHeaderValueChange}
+                                     onValueIgnoreCaseChange={handleHeaderValueIgnoreCaseChange}
+                                     onConditionChange={handleHeaderConditionChange}
                                  />
                              )}
                          </div>
@@ -133,10 +163,10 @@ function ResponseHeaders(props) {
     );
 }
 
-ResponseHeaders.propTypes = {
+RequestHeaders.propTypes = {
     headers: PropTypes.array.isRequired,
     headersExpanded: PropTypes.bool.isRequired,
-    onModifyResponse: PropTypes.func.isRequired
+    onModifyRequest: PropTypes.func.isRequired
 };
 
-export default ResponseHeaders;
+export default RequestHeaders;

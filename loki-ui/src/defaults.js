@@ -42,11 +42,11 @@ const defaultRule = () => {
         name: `Untitled rule`,
         request: {
             method: '',
-            methodCondition: '',
+            methodCondition: 'EQUAL',
             headers: [],
             parameters: [],
             body: '',
-            bodyCondition: '',
+            bodyCondition: 'EQUAL',
             bodyIgnoreCase: false,
             bodyIgnoreWhitespace: false,
             expanded: true,
@@ -65,4 +65,39 @@ const defaultRule = () => {
     };
 };
 
-export { defaultTab, defaultProject, defaultState, defaultRule };
+const defaultHeader = () => {
+    return {
+        key: '',
+        value: ''
+    };
+};
+
+const defaultHeaderWithConditions = () => {
+    return {
+        key: '',
+        value: '',
+        condition: 'EQUAL',
+        keyIgnoreCase: false,
+        valueIgnoreCase: false
+    };
+};
+
+const defaultParameterWithConditions = () => {
+    return {
+        key: '',
+        value: '',
+        condition: 'EQUAL',
+        keyIgnoreCase: false,
+        valueIgnoreCase: false
+    };
+};
+
+export {
+    defaultTab,
+    defaultProject,
+    defaultState,
+    defaultRule,
+    defaultHeader,
+    defaultHeaderWithConditions,
+    defaultParameterWithConditions
+};
