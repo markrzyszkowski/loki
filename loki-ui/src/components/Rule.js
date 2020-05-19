@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
 import Request from './Request';
 import Response from './Response';
-import RuleHeader from './RuleHeader';
+import RuleHeading from './RuleHeading';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -34,7 +34,7 @@ function Rule(props) {
 
     return (
         <ExpansionPanel square expanded={rule.expanded} onChange={handleStateChange}>
-            <RuleHeader
+            <RuleHeading
                 rule={rule}
                 index={index}
                 lastIndex={lastIndex}

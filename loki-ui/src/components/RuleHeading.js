@@ -14,7 +14,7 @@ import { ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/ico
 import * as PropTypes from 'prop-types';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 
-function RuleHeader(props) {
+function RuleHeading(props) {
     const {rule, index, lastIndex, onShiftRule, onModifyRule, onDeleteRule} = props;
 
     const [menuPosition, setMenuPosition] = useState(null);
@@ -143,7 +143,7 @@ function RuleHeader(props) {
     );
 }
 
-RuleHeader.propTypes = {
+RuleHeading.propTypes = {
     rule: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     lastIndex: PropTypes.number.isRequired,
@@ -152,4 +152,4 @@ RuleHeader.propTypes = {
     onDeleteRule: PropTypes.func.isRequired
 };
 
-export default RuleHeader;
+export default RuleHeading;
