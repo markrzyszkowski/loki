@@ -48,7 +48,7 @@ function ProjectContent(props) {
     };
 
     const handleAddRule = () => {
-        onModifyTab(index, {rules: [...tab.rules, defaultRule(tab.rules.length + 1)]});
+        onModifyTab(index, {rules: [...tab.rules, defaultRule()]});
     };
 
     const handleModifyRule = (ruleIndex, properties) => {
