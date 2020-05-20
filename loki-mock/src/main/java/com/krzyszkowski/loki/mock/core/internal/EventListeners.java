@@ -5,7 +5,6 @@ import com.krzyszkowski.loki.api.messages.ErrorResponse;
 import com.krzyszkowski.loki.api.messages.configuration.FetchConfigurationRequest;
 import com.krzyszkowski.loki.api.messages.configuration.FetchConfigurationResponse;
 import com.krzyszkowski.loki.api.messages.configuration.ReadyRequest;
-import com.krzyszkowski.loki.mock.core.MockConfigurator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

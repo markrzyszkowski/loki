@@ -1,7 +1,6 @@
-package com.krzyszkowski.loki.mock.core;
+package com.krzyszkowski.loki.mock.core.internal;
 
 import com.krzyszkowski.loki.api.configuration.Configuration;
-import com.krzyszkowski.loki.mock.core.internal.MockRepository;
 import com.krzyszkowski.loki.mock.core.services.MockService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.krzyszkowski.loki.mock.core;
+package com.krzyszkowski.loki.mock.core.internal;
 
 import com.krzyszkowski.loki.api.configuration.Configuration;
 
