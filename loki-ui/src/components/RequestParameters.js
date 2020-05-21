@@ -109,7 +109,7 @@ function RequestParameters(props) {
 
         // validate
 
-        onModifyRequest({headers: parametersCopy});
+        onModifyRequest({parameters: parametersCopy});
     };
 
     const contentClass = classes.content;
