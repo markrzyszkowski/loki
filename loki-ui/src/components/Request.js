@@ -49,7 +49,7 @@ function Request(props) {
     };
 
     const handleMethodChange = event => {
-        const method = event.target.value;
+        const method = event.target.value.toUpperCase();
 
         onModifyRequest({method: method});
     };
@@ -92,9 +92,9 @@ function Request(props) {
             <ExpansionPanelDetails className={classes.content}>
                 <FormGroup row className={classes.fields}>
                     <TextField
-                        label="Method"
+                        label="HTTP method"
                         size="small"
-                        placeholder="Enter method"
+                        placeholder="Enter HTTP method"
                         value={request.method}
                         onChange={handleMethodChange}
                         className={classes.field}
