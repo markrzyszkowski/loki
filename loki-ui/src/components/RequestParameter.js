@@ -44,6 +44,10 @@ function RequestParameter(props) {
         event.stopPropagation();
     };
 
+    const handleDeleteParameter = () => {
+        onDeleteParameter(index);
+    };
+
     const handleKeyChange = event => {
         const key = event.target.value;
 
@@ -110,7 +114,7 @@ function RequestParameter(props) {
                 control={<Checkbox checked={parameter.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
                 label="ignore case"
             />
-            <IconButton onClick={onDeleteParameter} className={classes.button}>
+            <IconButton onClick={handleDeleteParameter} className={classes.button}>
                 <Delete/>
             </IconButton>
         </FormGroup>
