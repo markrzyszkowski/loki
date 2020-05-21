@@ -95,11 +95,11 @@ function RequestParameter(props) {
             />
             <Select value={parameter.condition} onChange={handleConditionChange} className={classes.select}>
                 <MenuItem value="PRESENT">PRESENT</MenuItem>
-                <MenuItem value="NOT PRESENT">NOT PRESENT</MenuItem>
+                <MenuItem value="NOT_PRESENT">NOT PRESENT</MenuItem>
                 <MenuItem value="EQUAL">EQUAL</MenuItem>
-                <MenuItem value="NOT EQUAL">NOT EQUAL</MenuItem>
+                <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
                 <MenuItem value="CONTAINS">CONTAINS</MenuItem>
-                <MenuItem value="NOT CONTAINS">NOT CONTAINS</MenuItem>
+                <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
             </Select>
             <TextField
                 label="Value"
