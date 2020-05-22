@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Rule(props) {
-    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDeleteRule} = props;
+    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
 
     const classes = useStyles();
 
@@ -40,6 +40,7 @@ function Rule(props) {
                 lastIndex={lastIndex}
                 onShiftRule={onShiftRule}
                 onModifyRule={onModifyRule}
+                onDuplicateRule={onDuplicateRule}
                 onDeleteRule={onDeleteRule}
             />
             <ExpansionPanelDetails className={classes.content}>
@@ -56,6 +57,7 @@ Rule.propTypes = {
     lastIndex: PropTypes.number.isRequired,
     onModifyRule: PropTypes.func.isRequired,
     onShiftRule: PropTypes.func.isRequired,
+    onDuplicateRule: PropTypes.func.isRequired,
     onDeleteRule: PropTypes.func.isRequired
 };
 

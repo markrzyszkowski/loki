@@ -15,7 +15,7 @@ import * as PropTypes from 'prop-types';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 
 function RuleHeading(props) {
-    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDeleteRule} = props;
+    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
 
     const [menuPosition, setMenuPosition] = useState(null);
     const [showDialog, setShowDialog] = useState(false);
@@ -82,6 +82,12 @@ function RuleHeading(props) {
         }
     };
 
+    const handleDuplicateRule = event => {
+        handleCloseMenu(event);
+
+        onDuplicateRule(index);
+    };
+
     const handleDeleteRule = event => {
         handleCloseMenu(event);
 
@@ -113,6 +119,7 @@ function RuleHeading(props) {
                 />
                 <Menu open={!!menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
+                    <MenuItem onClick={handleDuplicateRule}>Duplicate</MenuItem>
                     <MenuItem onClick={handleDeleteRule}>Delete</MenuItem>
                     <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                 </Menu>
@@ -149,6 +156,7 @@ RuleHeading.propTypes = {
     lastIndex: PropTypes.number.isRequired,
     onShiftRule: PropTypes.func.isRequired,
     onModifyRule: PropTypes.func.isRequired,
+    onDuplicateRule: PropTypes.func.isRequired,
     onDeleteRule: PropTypes.func.isRequired
 };
 

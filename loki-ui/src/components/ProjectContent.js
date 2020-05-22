@@ -8,7 +8,9 @@ import { Add } from '@material-ui/icons';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import Rule from './Rule';
-import { defaultRule } from '../defaults';
+import { defaultRule, defaultState } from '../defaults';
+import { v4 as uuid } from 'uuid';
+import { validators } from '../warning';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -72,6 +74,16 @@ function ProjectContent(props) {
         }
     };
 
+    const handleDuplicateRule = ruleIndex => {
+        const ruleCopy = {...tab.rules[ruleIndex]};
+
+        const rulesCopy = [...tab.rules, {...ruleCopy, name: `Copy of ${ruleCopy.name}`}];
+
+        // validate
+
+        onModifyTab(index, {rules: rulesCopy});
+    };
+
     const handleDeleteRule = ruleIndex => {
         const rulesCopy = [...tab.rules];
         rulesCopy.splice(ruleIndex, 1);
@@ -113,6 +125,7 @@ function ProjectContent(props) {
                         lastIndex={tab.rules.length - 1}
                         onShiftRule={handleShiftRule}
                         onModifyRule={handleModifyRule}
+                        onDuplicateRule={handleDuplicateRule}
                         onDeleteRule={handleDeleteRule}
                     />)}
             </div>
