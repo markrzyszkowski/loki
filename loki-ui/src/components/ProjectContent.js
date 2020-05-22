@@ -8,9 +8,7 @@ import { Add } from '@material-ui/icons';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import Rule from './Rule';
-import { defaultRule, defaultState } from '../defaults';
-import { v4 as uuid } from 'uuid';
-import { validators } from '../warning';
+import { defaultRule } from '../defaults';
 
 const useStyles = makeStyles(theme => ({
     root: {
