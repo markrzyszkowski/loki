@@ -77,7 +77,7 @@ const defaultHeaderWithConditions = () => {
         key: '',
         value: '',
         condition: 'EQUAL',
-        keyIgnoreCase: false,
+        keyIgnoreCase: true,
         valueIgnoreCase: false
     };
 };
