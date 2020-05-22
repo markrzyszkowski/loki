@@ -2,7 +2,7 @@ package com.krzyszkowski.loki.mock.core.services;
 
 import com.krzyszkowski.loki.api.mock.Header;
 import com.krzyszkowski.loki.api.mock.Response;
-import com.krzyszkowski.loki.mock.core.internal.MockRepository;
+import com.krzyszkowski.loki.mock.core.internal.MockConditionRepository;
 import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Profile;
@@ -18,23 +18,24 @@ import java.util.List;
 @Profile("static")
 public class StaticMockService implements MockService {
 
-    private final MockRepository mockRepository;
+    private final MockConditionRepository mockConditionRepository;
     private final ObjectFactory<RuleMatcher> ruleMatcherFactory;
 
-    public StaticMockService(MockRepository mockRepository, ObjectFactory<RuleMatcher> ruleMatcherFactory) {
-        this.mockRepository = mockRepository;
+    public StaticMockService(MockConditionRepository mockConditionRepository,
+                             ObjectFactory<RuleMatcher> ruleMatcherFactory) {
+        this.mockConditionRepository = mockConditionRepository;
         this.ruleMatcherFactory = ruleMatcherFactory;
     }
 
     @Override
     public ResponseEntity<byte[]> handle(HttpServletRequest request, HttpServletResponse response) {
-        var mock = mockRepository.findMock(request.getRequestURI().substring(1)).orElseThrow();
+        var mock = mockConditionRepository.findMock(request.getRequestURI().substring(1)).orElseThrow();
 
         var rule = ruleMatcherFactory.getObject()
-                                     .searchIn(mock.getRules())
+                                     .searchIn(mock)
                                      .forRuleMatching(request);
         if (rule.isPresent()) {
-            var ruleResponse = rule.get().getResponse();
+            var ruleResponse = rule.get();
 
             populateResponse(response, ruleResponse);
 

@@ -1,6 +1,7 @@
 package com.krzyszkowski.loki.mock.core.internal;
 
 import com.krzyszkowski.loki.api.configuration.Configuration;
+import com.krzyszkowski.loki.mock.core.internal.conditions.MockConditionCreator;
 import com.krzyszkowski.loki.mock.core.services.MockService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -18,14 +19,17 @@ import java.util.UUID;
 public class StaticMockConfigurator implements MockConfigurator {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final MockRepository mockRepository;
+    private final MockConditionRepository mockConditionRepository;
+    private final MockConditionCreator mockConditionCreator;
     private final MockService mockService;
 
     public StaticMockConfigurator(RequestMappingHandlerMapping requestMappingHandlerMapping,
-                                  MockRepository mockRepository,
+                                  MockConditionRepository mockConditionRepository,
+                                  MockConditionCreator mockConditionCreator,
                                   MockService mockService) {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.mockRepository = mockRepository;
+        this.mockConditionRepository = mockConditionRepository;
+        this.mockConditionCreator = mockConditionCreator;
         this.mockService = mockService;
     }
 
@@ -45,7 +49,9 @@ public class StaticMockConfigurator implements MockConfigurator {
 
                          urls.put(mock.getId(), urlHash);
 
-                         mockRepository.addMock(urlHash, mock);
+                         var condition = mockConditionCreator.create(mock);
+
+                         mockConditionRepository.addMock(urlHash, condition);
                      });
 
         return urls;

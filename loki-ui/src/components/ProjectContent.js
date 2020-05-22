@@ -1,6 +1,7 @@
 import React from 'react';
 import Fab from '@material-ui/core/Fab';
 import FormGroup from '@material-ui/core/FormGroup';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
@@ -92,14 +93,15 @@ function ProjectContent(props) {
                     placeholder="Enter request URL"
                     value={tab.url}
                     onChange={handleUrlChange}
+                    InputProps={{startAdornment: <InputAdornment position="start">http://</InputAdornment>}}
                     className={clsx(classes.field, classes.urlField)}
                 />
                 {showMockUrl &&
                  <TextField
-                    label="Mock URL"
-                    value={mockUrl}
-                    InputProps={{readOnly: true}}
-                    className={clsx(classes.field, classes.urlField)}
+                     label="Mock URL"
+                     value={mockUrl}
+                     InputProps={{readOnly: true}}
+                     className={clsx(classes.field, classes.urlField)}
                  />}
             </FormGroup>
             <div className={rulesClass}>

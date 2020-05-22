@@ -1,6 +1,7 @@
 package com.krzyszkowski.loki.mock.core.internal;
 
 import com.krzyszkowski.loki.api.configuration.Configuration;
+import com.krzyszkowski.loki.mock.core.internal.conditions.MockConditionCreator;
 import com.krzyszkowski.loki.mock.core.services.MockService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -17,14 +18,17 @@ import java.util.Map;
 public class ProxyMockConfigurator implements MockConfigurator {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final MockRepository mockRepository;
+    private final MockConditionRepository mockConditionRepository;
+    private final MockConditionCreator mockConditionCreator;
     private final MockService mockService;
 
     public ProxyMockConfigurator(RequestMappingHandlerMapping requestMappingHandlerMapping,
-                                 MockRepository mockRepository,
+                                 MockConditionRepository mockConditionRepository,
+                                 MockConditionCreator mockConditionCreator,
                                  MockService mockService) {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.mockRepository = mockRepository;
+        this.mockConditionRepository = mockConditionRepository;
+        this.mockConditionCreator = mockConditionCreator;
         this.mockService = mockService;
     }
 
@@ -41,7 +45,9 @@ public class ProxyMockConfigurator implements MockConfigurator {
         configuration.getMocks().forEach(mock -> {
             urls.put(mock.getId(), "**");
 
-            mockRepository.addMock(mock.getUrl(), mock);
+            var condition = mockConditionCreator.create(mock);
+
+            mockConditionRepository.addMock(mock.getUrl(), condition);
         });
 
         return urls;

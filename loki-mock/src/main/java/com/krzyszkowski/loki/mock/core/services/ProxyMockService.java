@@ -2,7 +2,7 @@ package com.krzyszkowski.loki.mock.core.services;
 
 import com.krzyszkowski.loki.api.mock.Header;
 import com.krzyszkowski.loki.api.mock.Response;
-import com.krzyszkowski.loki.mock.core.internal.MockRepository;
+import com.krzyszkowski.loki.mock.core.internal.MockConditionRepository;
 import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Profile;
@@ -17,27 +17,41 @@ import java.util.List;
 @Profile("proxy")
 public class ProxyMockService implements MockService {
 
-    private final MockRepository mockRepository;
+    private final MockConditionRepository mockConditionRepository;
     private final ObjectFactory<RuleMatcher> ruleMatcherFactory;
     private final ProxyService proxyService;
 
-    public ProxyMockService(MockRepository mockRepository,
+    public ProxyMockService(MockConditionRepository mockConditionRepository,
                             ObjectFactory<RuleMatcher> ruleMatcherFactory,
                             ProxyService proxyService) {
-        this.mockRepository = mockRepository;
+        this.mockConditionRepository = mockConditionRepository;
         this.ruleMatcherFactory = ruleMatcherFactory;
         this.proxyService = proxyService;
     }
 
     @Override
     public ResponseEntity<?> handle(HttpServletRequest request, HttpServletResponse response) {
-        var mock = mockRepository.findMock(request.getRequestURL().toString());
+        var url = request.getRequestURL().toString();
+
+        if (url.startsWith("http://")) {
+            url = url.replaceFirst("http://", "");
+        } else if (url.startsWith("https://")) {
+            url = url.replaceFirst("https://", "");
+        }
+
+        var mock = mockConditionRepository.findMock(url);
+
+        if (mock.isEmpty() && url.endsWith("/")) {
+            mock = mockConditionRepository.findMock(url.substring(0, url.length() - 1));
+        }
+
         if (mock.isPresent()) {
             var rule = ruleMatcherFactory.getObject()
-                                         .searchIn(mock.get().getRules())
+                                         .searchIn(mock.get())
                                          .forRuleMatching(request);
+
             if (rule.isPresent()) {
-                var ruleResponse = rule.get().getResponse();
+                var ruleResponse = rule.get();
 
                 populateResponse(response, ruleResponse);
 

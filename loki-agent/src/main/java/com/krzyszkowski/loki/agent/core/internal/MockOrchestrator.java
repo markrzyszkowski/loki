@@ -42,10 +42,6 @@ public class MockOrchestrator {
     private String mockJar;
 
     public void startMockProcess(UUID mockId, Profile profile, int port) throws IOException {
-        System.out.println(Path.of(logFile).toString());
-        System.out.println(Path.of(logFile).getParent().toString());
-        System.out.println(Path.of(logFile).getParent().resolve(String.format("mock-%s", mockId.toString())));
-
         var command = List.of(JAVA,
                               String.format(SERVER_PORT, port),
                               String.format(PROFILE, profile.toString().toLowerCase()),
