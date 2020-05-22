@@ -16,6 +16,7 @@ public class DefaultProjectService implements ProjectService {
 
     private final StorageService storageService;
     private final ProjectImporter projectImporter;
+    private final ProjectExporter projectExporter;
     private final ObjectMapper objectMapper;
 
     public DefaultProjectService(StorageService storageService,
