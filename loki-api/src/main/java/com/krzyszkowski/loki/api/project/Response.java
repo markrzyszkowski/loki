@@ -17,4 +17,5 @@ public class Response {
     private List<Header> headers;
     private String body;
     private boolean expanded;
+    private boolean headersExpanded;
 }

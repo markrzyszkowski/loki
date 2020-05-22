@@ -1,16 +1,14 @@
 package com.krzyszkowski.loki.agent.core.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.krzyszkowski.loki.agent.core.internal.ProjectExporter;
 import com.krzyszkowski.loki.agent.core.internal.ProjectImporter;
 import com.krzyszkowski.loki.api.project.Project;
-import com.krzyszkowski.loki.api.project.Tab;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -20,9 +18,12 @@ public class DefaultProjectService implements ProjectService {
     private final ProjectImporter projectImporter;
     private final ObjectMapper objectMapper;
 
-    public DefaultProjectService(StorageService storageService, ProjectImporter projectImporter) {
+    public DefaultProjectService(StorageService storageService,
+                                 ProjectImporter projectImporter,
+                                 ProjectExporter projectExporter) {
         this.storageService = storageService;
         this.projectImporter = projectImporter;
+        this.projectExporter = projectExporter;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -43,12 +44,30 @@ public class DefaultProjectService implements ProjectService {
     @Override
     public Optional<Project> importProject(String path) {
         try {
-            return Optional.of(projectImporter.importProject(path));
+            var projectBytes = storageService.readFile(path);
+
+            return Optional.of(projectImporter.importProject(projectBytes));
         } catch (IOException e) {
             log.error("Error occured while trying to import project");
             log.error("Exception: {}", e.toString());
 
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean exportProject(String path, Project project) {
+        try {
+            var projectBytes = projectExporter.exportProject(path, project);
+
+            storageService.writeFile(path, projectBytes);
+
+            return true;
+        } catch (IOException e) {
+            log.error("Error occured while trying to save project");
+            log.error("Exception: {}", e.toString());
+
+            return false;
         }
     }
 

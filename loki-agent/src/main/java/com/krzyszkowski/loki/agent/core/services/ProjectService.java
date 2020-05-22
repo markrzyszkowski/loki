@@ -10,5 +10,7 @@ public interface ProjectService {
 
     Optional<Project> importProject(String path);
 
+    boolean exportProject(String path, Project project);
+
     boolean saveProject(String path, Project project);
 }

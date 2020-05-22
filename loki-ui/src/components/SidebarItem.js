@@ -40,6 +40,7 @@ function SidebarItem(props) {
         onModifyProjectState,
         onSaveProject,
         onDuplicateProject,
+        onExportProject,
         onCloseProject
     } = props;
 
@@ -105,6 +106,12 @@ function SidebarItem(props) {
         onDuplicateProject(index);
     };
 
+    const handleExportProject = event => {
+        handleCloseMenu(event);
+
+        onExportProject(index);
+    };
+
     const selected = index === currentIndex;
     const containerClass = projectState.running && projectState.modified
                            ? classes.modified
@@ -130,6 +137,7 @@ function SidebarItem(props) {
                     {unsaved && <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
                     <MenuItem onClick={handleDuplicateProject}>Duplicate</MenuItem>
+                    <MenuItem onClick={handleExportProject}>Export</MenuItem>
                     <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                 </Menu>
                 <ListItemSecondaryAction>
@@ -178,6 +186,7 @@ SidebarItem.propTypes = {
     onModifyProjectState: PropTypes.func.isRequired,
     onSaveProject: PropTypes.func.isRequired,
     onDuplicateProject: PropTypes.func.isRequired,
+    onExportProject: PropTypes.func.isRequired,
     onCloseProject: PropTypes.func.isRequired
 };
 

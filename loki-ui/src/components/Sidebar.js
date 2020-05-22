@@ -27,6 +27,7 @@ function Sidebar(props) {
         onModifyProjectState,
         onSaveProject,
         onDuplicateProject,
+        onExportProject,
         onCloseProject
     } = props;
 
@@ -48,6 +49,7 @@ function Sidebar(props) {
                         onModifyProjectState={onModifyProjectState}
                         onSaveProject={onSaveProject}
                         onDuplicateProject={onDuplicateProject}
+                        onExportProject={onExportProject}
                         onCloseProject={onCloseProject}
                     />)}
             </List>
@@ -65,6 +67,7 @@ Sidebar.propTypes = {
     onModifyProjectState: PropTypes.func.isRequired,
     onSaveProject: PropTypes.func.isRequired,
     onDuplicateProject: PropTypes.func.isRequired,
+    onExportProject: PropTypes.func.isRequired,
     onCloseProject: PropTypes.func.isRequired
 };
 

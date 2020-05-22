@@ -43,7 +43,7 @@ function setupIpc(webContents, properties) {
                 {
                     name: 'Supported files',
                     extensions: [
-                        '*' // TODO change
+                        'har'
                     ]
                 }
             ]
@@ -51,6 +51,25 @@ function setupIpc(webContents, properties) {
 
         log.info(`Dialog for import project action yielded path: ${paths}`);
         webContents.send('import-project', paths ? paths[0] : null);
+    });
+
+    ipc.on('export-project', () => {
+        log.debug('Export project action received; showing dialog...');
+        const path = dialog.showSaveDialogSync({
+            title: 'Export project',
+            buttonLabel: 'Export',
+            filters: [
+                {
+                    name: 'HAR file',
+                    extensions: [
+                        'har'
+                    ]
+                }
+            ]
+        });
+
+        log.info(`Dialog for export project action yielded path: ${path}`);
+        webContents.send('export-project', path ? path : null);
     });
 
     ipc.on('save-project', () => {

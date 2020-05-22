@@ -9,7 +9,7 @@ import Toolbar from './Toolbar';
 import { defaultProject, defaultState } from '../defaults';
 import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
-import { openProject, importProject, saveProject } from '../project';
+import { openProject, importProject, exportProject, saveProject } from '../project';
 import { handleApiError } from '../util';
 import { checkWarnings } from '../warning';
 
@@ -168,6 +168,24 @@ function Workspace(props) {
         setCurrentProjectIndex(projects.length);
     };
 
+    const handleExportProject = index => {
+        ipc.once('export-project', (ipcEvent, path) => {
+            if (path) {
+                exportProject(path, projects[index]).catch(error => {
+                    handleApiError(error, alert);
+                });
+            }
+
+            backdrop.hide();
+        });
+
+        if (!ipc.isDummy) {
+            backdrop.show();
+        }
+
+        ipc.send('export-project');
+    };
+
     const handleCloseProject = index => {
         if (projects.length) {
             if (projectStates[index].running) {
@@ -230,6 +248,7 @@ function Workspace(props) {
                     onNewProject={handleNewProject}
                     onOpenProject={handleOpenProject}
                     onImportProject={handleImportProject}
+                    onExportProject={handleExportProject}
                     onModifyProject={handleModifyProject}
                     onModifyProjectState={handleModifyProjectState}
                     onStartMock={handleStartMock}
@@ -245,6 +264,7 @@ function Workspace(props) {
                     onModifyProjectState={handleModifyProjectState}
                     onSaveProject={handleSaveProject}
                     onDuplicateProject={handleDuplicateProject}
+                    onExportProject={handleExportProject}
                     onCloseProject={handleCloseProject}
                 />
                 <main className={classes.content}>

@@ -5,15 +5,15 @@ import com.krzyszkowski.loki.api.project.Project;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProjectImporter {
+public class ProjectExporter {
 
     private final ProjectParserResolver resolver;
 
-    public ProjectImporter(ProjectParserResolver resolver) {
+    public ProjectExporter(ProjectParserResolver resolver) {
         this.resolver = resolver;
     }
 
-    public Project importProject(byte[] project) {
-        return resolver.parseInput(project);
+    public byte[] exportProject(String path, Project project) {
+        return resolver.parseOutput(path, project);
     }
 }

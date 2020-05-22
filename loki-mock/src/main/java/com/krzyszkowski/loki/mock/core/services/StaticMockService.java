@@ -34,6 +34,7 @@ public class StaticMockService implements MockService {
         var rule = ruleMatcherFactory.getObject()
                                      .searchIn(mock)
                                      .forRuleMatching(request);
+
         if (rule.isPresent()) {
             var ruleResponse = rule.get();
 

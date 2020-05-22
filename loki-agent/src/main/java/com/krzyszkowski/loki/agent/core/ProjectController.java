@@ -83,6 +83,35 @@ public class ProjectController {
                                                    .build());
     }
 
+    @PostMapping("/export")
+    public ResponseEntity<?> exportProject(@Valid @RequestBody SaveProjectRequest saveProjectRequest, Errors errors) {
+        if (errors.hasErrors()) {
+            var errorResponse = Mappers.parseErrors(errors);
+
+            log.error("Received malformed request to export project");
+            log.error("Errors: {}", errorResponse.getErrors());
+
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        var path = saveProjectRequest.getPath();
+        var project = saveProjectRequest.getProject();
+
+        log.debug("Received request to export project [id='{}', name='{}'] to file '{}'",
+                  project.getId(),
+                  project.getName(),
+                  path);
+
+        var projectExported = projectService.exportProject(path, project);
+
+        return projectExported
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(ErrorResponse.builder()
+                                                   .errors(List.of("Could not export project data to selected file"))
+                                                   .build());
+    }
+
     @PostMapping("/save")
     public ResponseEntity<?> saveProject(@Valid @RequestBody SaveProjectRequest saveProjectRequest, Errors errors) {
         if (errors.hasErrors()) {

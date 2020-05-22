@@ -17,6 +17,15 @@ const importProject = path => {
     });
 };
 
+const exportProject = (path, project) => {
+    return axios.post(`http://localhost:${agentPort}/api/project/export`, {
+        path: path,
+        project: project
+    }).then(response => {
+        return response.data;
+    });
+};
+
 const saveProject = (path, project) => {
     return axios.post(`http://localhost:${agentPort}/api/project/save`, {
         path: path,
@@ -26,4 +35,4 @@ const saveProject = (path, project) => {
     });
 };
 
-export { openProject, importProject, saveProject };
+export { openProject, importProject, exportProject, saveProject };
