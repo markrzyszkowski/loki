@@ -22,7 +22,6 @@ public class HeadersCondition implements Predicate<HttpServletRequest> {
     public boolean test(HttpServletRequest httpServletRequest) {
         for (var header : headers) {
             var hdrs = transformTestedHeaders(new ServletServerHttpRequest(httpServletRequest).getHeaders(),
-                                              header.isKeyIgnoreCase(),
                                               header.isValueIgnoreCase());
 
             var condition = header.getCondition();
@@ -69,14 +68,11 @@ public class HeadersCondition implements Predicate<HttpServletRequest> {
     }
 
     private Map<String, List<String>> transformTestedHeaders(Map<String, List<String>> tested,
-                                                             boolean keyIgnoreCase,
                                                              boolean valueIgnoreCase) {
         return tested.entrySet()
                      .stream()
                      .collect(Collectors.toMap(
-                             entry -> keyIgnoreCase
-                                     ? entry.getKey().toLowerCase()
-                                     : entry.getKey(),
+                             entry -> entry.getKey().toLowerCase(),
                              entry -> valueIgnoreCase
                                      ? entry.getValue().stream()
                                             .map(String::toLowerCase)
@@ -85,24 +81,17 @@ public class HeadersCondition implements Predicate<HttpServletRequest> {
     }
 
     private boolean headerPresent(HeaderWithCondition header, Map<String, List<String>> tested) {
-        var key = header.getKey();
+        var key = header.getKey().toLowerCase();
 
-        return header.isKeyIgnoreCase()
-               && tested.get(key.toLowerCase()) != null
-               || tested.get(key) != null;
+        return tested.get(key) != null;
     }
 
     private boolean headerEquals(HeaderWithCondition header, Map<String, List<String>> tested) {
-        var key = header.getKey();
+        var key = header.getKey().toLowerCase();
         var value = header.getValue();
-        var keyIgnoreCase = header.isKeyIgnoreCase();
         var valueIgnoreCase = header.isValueIgnoreCase();
 
-        if (keyIgnoreCase && valueIgnoreCase) {
-            return tested.get(key.toLowerCase()).contains(value.toLowerCase());
-        } else if (keyIgnoreCase) {
-            return tested.get(key.toLowerCase()).contains(value);
-        } else if (valueIgnoreCase) {
+        if (valueIgnoreCase) {
             return tested.get(key).contains(value.toLowerCase());
         } else {
             return tested.get(key).contains(value);
@@ -110,20 +99,11 @@ public class HeadersCondition implements Predicate<HttpServletRequest> {
     }
 
     private boolean headerContains(HeaderWithCondition header, Map<String, List<String>> tested) {
-        var key = header.getKey();
+        var key = header.getKey().toLowerCase();
         var value = header.getValue();
-        var keyIgnoreCase = header.isKeyIgnoreCase();
         var valueIgnoreCase = header.isValueIgnoreCase();
 
-        if (keyIgnoreCase && valueIgnoreCase) {
-            return tested.get(key.toLowerCase())
-                         .stream()
-                         .anyMatch(val -> val.toLowerCase().contains(value.toLowerCase()));
-        } else if (keyIgnoreCase) {
-            return tested.get(key.toLowerCase())
-                         .stream()
-                         .anyMatch(val -> val.contains(value));
-        } else if (valueIgnoreCase) {
+        if (valueIgnoreCase) {
             return tested.get(key)
                          .stream()
                          .anyMatch(val -> val.toLowerCase().contains(value.toLowerCase()));

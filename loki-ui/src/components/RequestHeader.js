@@ -32,7 +32,6 @@ function RequestHeader(props) {
         index,
         onDeleteHeader,
         onKeyChange,
-        onKeyIgnoreCaseChange,
         onValueChange,
         onValueIgnoreCaseChange,
         onConditionChange
@@ -52,12 +51,6 @@ function RequestHeader(props) {
         const key = event.target.value;
 
         onKeyChange(index, key);
-    };
-
-    const handleKeyIgnoreCaseChange = event => {
-        const ignoreCase = event.target.checked;
-
-        onKeyIgnoreCaseChange(index, ignoreCase);
     };
 
     const handleValueChange = event => {
@@ -86,12 +79,6 @@ function RequestHeader(props) {
                 value={header.key}
                 onChange={handleKeyChange}
                 className={classes.field}
-            />
-            <FormControlLabel
-                onClick={ignoreEvent}
-                onFocus={ignoreEvent}
-                control={<Checkbox checked={header.keyIgnoreCase} onChange={handleKeyIgnoreCaseChange}/>}
-                label="ignore case"
             />
             <Select value={header.condition} onChange={handleConditionChange} className={classes.select}>
                 <MenuItem value="PRESENT">PRESENT</MenuItem>
@@ -126,7 +113,6 @@ RequestHeader.propTypes = {
     index: PropTypes.number.isRequired,
     onDeleteHeader: PropTypes.func.isRequired,
     onKeyChange: PropTypes.func.isRequired,
-    onKeyIgnoreCaseChange: PropTypes.func.isRequired,
     onValueChange: PropTypes.func.isRequired,
     onValueIgnoreCaseChange: PropTypes.func.isRequired,
     onConditionChange: PropTypes.func.isRequired

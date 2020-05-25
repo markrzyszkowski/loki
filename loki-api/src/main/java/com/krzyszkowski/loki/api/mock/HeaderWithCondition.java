@@ -15,6 +15,5 @@ public class HeaderWithCondition {
     private String key;
     private String value;
     private Condition condition;
-    private boolean keyIgnoreCase;
     private boolean valueIgnoreCase;
 }

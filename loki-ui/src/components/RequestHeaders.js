@@ -76,15 +76,6 @@ function RequestHeaders(props) {
         onModifyRequest({headers: headersCopy});
     };
 
-    const handleHeaderKeyIgnoreCaseChange = (index, ignoreCase) => {
-        const headersCopy = [...headers];
-        headersCopy[index] = {...headersCopy[index], keyIgnoreCase: ignoreCase};
-
-        // validate
-
-        onModifyRequest({headers: headersCopy});
-    };
-
     const handleHeaderValueChange = (index, value) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], value: value};
@@ -149,7 +140,6 @@ function RequestHeaders(props) {
                                      index={index}
                                      onDeleteHeader={handleDeleteHeader}
                                      onKeyChange={handleHeaderKeyChange}
-                                     onKeyIgnoreCaseChange={handleHeaderKeyIgnoreCaseChange}
                                      onValueChange={handleHeaderValueChange}
                                      onValueIgnoreCaseChange={handleHeaderValueIgnoreCaseChange}
                                      onConditionChange={handleHeaderConditionChange}
