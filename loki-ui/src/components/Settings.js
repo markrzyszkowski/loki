@@ -5,18 +5,27 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import IconButton from '@material-ui/core/IconButton';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { Settings as SettingsIcon } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
-    setting: {
-        marginBottom: '10px'
+    profile: {
+        marginBottom: 10
+    },
+    port: {
+        marginBottom: 10
+    },
+    remote: {
+        marginTop: 20,
+        marginBottom: 10
     }
 }));
 
@@ -51,6 +60,12 @@ function Settings(props) {
         onChangeSettings(index, {port: port});
     };
 
+    const handleBlockRemoteRequestsChange = event => {
+        const blockRemoteRequests = event.target.checked;
+
+        onChangeSettings(index, {blockRemoteRequests: blockRemoteRequests});
+    };
+
     return (
         <>
             <IconButton color="inherit" onClick={handleOpenDialog}>
@@ -59,7 +74,7 @@ function Settings(props) {
             <Dialog open={showDialog} scroll="paper" onClose={handleCloseDialog}>
                 <DialogTitle>{`${project.name} settings`}</DialogTitle>
                 <DialogContent>
-                    <div className={classes.setting}>
+                    <div className={classes.profile}>
                         <FormLabel>Mock profile</FormLabel>
                         <RadioGroup
                             row
@@ -71,7 +86,7 @@ function Settings(props) {
                             <FormControlLabel value="PROXY" control={<Radio/>} label="Proxy"/>
                         </RadioGroup>
                     </div>
-                    <div className={classes.setting}>
+                    <div className={classes.port}>
                         <FormLabel>Mock port</FormLabel>
                         <TextField
                             value={project.settings.port}
@@ -80,6 +95,14 @@ function Settings(props) {
                             onChange={handlePortChange}
                             fullWidth
                         />
+                    </div>
+                    <div className={classes.remote}>
+                        <FormLabel>Remote requests</FormLabel>
+                        <FormGroup row>
+                            <FormControlLabel
+                                control={<Switch checked={project.settings.blockRemoteRequests} onChange={handleBlockRemoteRequestsChange}/>}
+                                label="Block"/>
+                        </FormGroup>
                     </div>
                 </DialogContent>
                 <DialogActions>

@@ -15,7 +15,8 @@ const defaultProject = () => {
         name: 'Untitled project',
         settings: {
             profile: 'STATIC',
-            port: 0
+            port: 0,
+            blockRemoteRequests: false
         },
         tabs: [
             defaultTab()

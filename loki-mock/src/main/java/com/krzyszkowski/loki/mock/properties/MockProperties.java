@@ -20,6 +20,8 @@ public class MockProperties {
 
     private String id;
 
+    private boolean blockRemoteRequests;
+
     @MinDataSize(value = 1L, unit = DataUnit.MEGABYTES)
     @MaxDataSize(value = 1024L, unit = DataUnit.MEGABYTES)
     private DataSize maxRequestSize;

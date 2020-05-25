@@ -140,7 +140,6 @@ public class HarInputParser implements ProjectInputParser {
                                                               .key(harHeader.getName())
                                                               .value(harHeader.getValue())
                                                               .condition(Condition.EQUAL)
-                                                              .keyIgnoreCase(true)
                                                               .valueIgnoreCase(false)
                                                               .build())
                          .collect(Collectors.toList());
