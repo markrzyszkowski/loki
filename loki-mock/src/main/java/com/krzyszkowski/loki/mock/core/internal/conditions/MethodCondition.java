@@ -22,6 +22,6 @@ public class MethodCondition implements Predicate<HttpServletRequest> {
     }
 
     private boolean methodEquals(HttpServletRequest httpServletRequest) {
-        return httpServletRequest.getMethod().equals(method);
+        return httpServletRequest.getMethod().equalsIgnoreCase(method);
     }
 }
