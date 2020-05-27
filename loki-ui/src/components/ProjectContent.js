@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ProjectContent(props) {
-    const {tab, index, settings, warnings, isRunning, activePort, activeUrls, onModifyTab} = props;
+    const {tab, index, settings, warnings, isRunning, port, urls, onModifyTab} = props;
 
     const classes = useStyles();
 
@@ -89,8 +89,8 @@ function ProjectContent(props) {
         onModifyTab(index, {rules: rulesCopy});
     };
 
-    const showMockUrl = settings.profile === 'STATIC' && isRunning && !!activeUrls[tab.id];
-    const mockUrl = `http://localhost:${activePort}/${activeUrls[tab.id]}`;
+    const showMockUrl = settings.profile === 'STATIC' && isRunning && !!urls[tab.id];
+    const mockUrl = `http://localhost:${port}/${urls[tab.id]}`;
     const rulesClass = clsx(!warnings['url'] && classes.rules, !!warnings['url'] && classes.rulesOffset);
 
     return (
@@ -140,8 +140,8 @@ ProjectContent.propTypes = {
     settings: PropTypes.object.isRequired,
     warnings: PropTypes.object.isRequired,
     isRunning: PropTypes.bool.isRequired,
-    activePort: PropTypes.number.isRequired,
-    activeUrls: PropTypes.object.isRequired,
+    port: PropTypes.number.isRequired,
+    urls: PropTypes.object.isRequired,
     onModifyTab: PropTypes.func.isRequired
 };
 

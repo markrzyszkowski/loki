@@ -132,8 +132,8 @@ function Project(props) {
                  settings={project.settings}
                  warnings={state.warnings[project.tabs[state.activeTab].id] || {}}
                  isRunning={state.running}
-                 activePort={state.activePort}
-                 activeUrls={state.activeUrls}
+                 port={state.port}
+                 urls={state.urls}
                  onModifyTab={handleModifyTab}
              />}
             <ScrollTopButton anchor="scroll-top-anchor"/>

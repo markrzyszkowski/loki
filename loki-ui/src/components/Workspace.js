@@ -222,8 +222,8 @@ function Workspace(props) {
             handleModifyState(index, {
                 running: true,
                 waiting: false,
-                activePort: configuration.port,
-                activeUrls: configuration.urls
+                port: configuration.port,
+                urls: configuration.urls
             });
         }).catch(error => {
             handleApiError(error, alert);

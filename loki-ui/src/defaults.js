@@ -33,8 +33,8 @@ const defaultState = () => {
         neverSaved: true,
         path: null,
         warnings: {},
-        activePort: 0,
-        activeUrls: {}
+        port: 0,
+        urls: {}
     };
 };
 
