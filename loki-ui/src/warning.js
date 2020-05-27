@@ -64,8 +64,12 @@ const validators = {
     url: validateUrls
 };
 
+function warningsPresent(warnings) {
+    return Object.entries(warnings).flatMap(([_, tab]) => Object.keys(tab)).length > 0;
+}
+
 function warningCount(warnings) {
     return Object.entries(warnings).flatMap(([_, tab]) => Object.keys(tab)).length;
 }
 
-export { checkWarnings, validators, warningCount };
+export { checkWarnings, validators, warningsPresent, warningsCount };

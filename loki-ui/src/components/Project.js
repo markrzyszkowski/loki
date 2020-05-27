@@ -26,29 +26,28 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Project(props) {
-    const {project, projectState, index, onModifyProject, onModifyProjectState} = props;
+    const {project, state, index, onModifyProjectAndState, onModifyState} = props;
 
     const classes = useStyles();
 
     const handleSelectTab = (_, value) => {
-        onModifyProjectState(index, {activeTab: value});
+        onModifyState(index, {activeTab: value});
     };
 
     const handleAddTab = () => {
         const tab = defaultTab();
 
-        const warningsCopy = {...projectState.warnings};
+        const warningsCopy = {...state.warnings};
         validators.url({...project, tabs: [...project.tabs, tab]}, warningsCopy);
 
-        onModifyProject(index, {tabs: [...project.tabs, tab]});
-        onModifyProjectState(index, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: [...project.tabs, tab]},{activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
     const handleModifyTab = (tabIndex, properties, field) => {
         const tabsCopy = [...project.tabs];
         tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...properties};
 
-        const warningsCopy = {...projectState.warnings};
+        const warningsCopy = {...state.warnings};
         if (field) {
             const validate = validators[field];
 
@@ -59,8 +58,7 @@ function Project(props) {
             }
         }
 
-        onModifyProject(index, {tabs: tabsCopy});
-        onModifyProjectState(index, {modified: true, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: tabsCopy}, {modified: true, warnings: warningsCopy});
     };
 
     const handleDuplicateTab = tabIndex => {
@@ -70,12 +68,11 @@ function Project(props) {
 
         const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}];
 
-        const warningsCopy = {...projectState.warnings};
+        const warningsCopy = {...state.warnings};
         warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
         validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
-        onModifyProject(index, {tabs: tabsCopy});
-        onModifyProjectState(index, {activeTab: project.tabs.length, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: project.tabs.length, warnings: warningsCopy});
     };
 
     const handleDeleteTab = tabIndex => {
@@ -83,18 +80,16 @@ function Project(props) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
 
-            const warningsCopy = {...projectState.warnings};
+            const warningsCopy = {...state.warnings};
             delete warningsCopy[project.tabs[tabIndex].id];
             validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
-            onModifyProject(index, {tabs: tabsCopy});
-
-            if (tabIndex === projectState.activeTab && tabIndex === 0) {
-                onModifyProjectState(index, {activeTab: 0, warnings: warningsCopy});
-            } else if (tabIndex <= projectState.activeTab) {
-                onModifyProjectState(index, {activeTab: projectState.activeTab - 1, warnings: warningsCopy});
+            if (tabIndex === state.activeTab && tabIndex === 0) {
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: 0, warnings: warningsCopy});
+            } else if (tabIndex <= state.activeTab) {
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: state.activeTab - 1, warnings: warningsCopy});
             } else {
-                onModifyProjectState(index, {warnings: warningsCopy});
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {warnings: warningsCopy});
             }
         }
     };
@@ -112,7 +107,7 @@ function Project(props) {
                     id="scroll-top-anchor"
                     scrollButtons="on"
                     ScrollButtonComponent={ScrollTabsButton}
-                    value={projectState.activeTab}
+                    value={state.activeTab}
                     onChange={handleSelectTab}
                 >
                     {project.tabs.map((tab, index) =>
@@ -120,7 +115,7 @@ function Project(props) {
                             key={tab.id}
                             tab={tab}
                             index={index}
-                            warnings={projectState.warnings[tab.id] || {}}
+                            warnings={state.warnings[tab.id] || {}}
                             onModifyTab={handleModifyTab}
                             onDuplicateTab={handleDuplicateTab}
                             onDeleteTab={handleDeleteTab}
@@ -132,13 +127,13 @@ function Project(props) {
             </Paper>
             {hasTabs &&
              <ProjectContent
-                 tab={project.tabs[projectState.activeTab]}
-                 index={projectState.activeTab}
+                 tab={project.tabs[state.activeTab]}
+                 index={state.activeTab}
                  settings={project.settings}
-                 warnings={projectState.warnings[project.tabs[projectState.activeTab].id] || {}}
-                 isRunning={projectState.running}
-                 activePort={projectState.activePort}
-                 activeUrls={projectState.activeUrls}
+                 warnings={state.warnings[project.tabs[state.activeTab].id] || {}}
+                 isRunning={state.running}
+                 activePort={state.activePort}
+                 activeUrls={state.activeUrls}
                  onModifyTab={handleModifyTab}
              />}
             <ScrollTopButton anchor="scroll-top-anchor"/>
@@ -148,10 +143,10 @@ function Project(props) {
 
 Project.propTypes = {
     project: PropTypes.object.isRequired,
-    projectState: PropTypes.object.isRequired,
+    state: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
-    onModifyProject: PropTypes.func.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired
+    onModifyProjectAndState: PropTypes.func.isRequired,
+    onModifyState: PropTypes.func.isRequired
 };
 
 export default Project;

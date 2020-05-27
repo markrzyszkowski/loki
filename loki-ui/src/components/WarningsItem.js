@@ -9,7 +9,7 @@ function WarningsItem(props) {
     const {name, tab, field, warning, onNavigateToWarning} = props;
 
     const handleNavigateToWarning = () => {
-        onNavigateToWarning(tab, field);
+        onNavigateToWarning(tab);
     };
 
     return (

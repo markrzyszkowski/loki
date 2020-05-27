@@ -10,12 +10,12 @@ import { Close } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 function SidebarItemButton(props) {
-    const {project, projectState, index, onSaveProject, onCloseProject} = props;
+    const {project, state, index, onSaveProject, onCloseProject} = props;
 
     const [showDialog, setShowDialog] = useState(false);
 
     const handleOpenDialog = () => {
-        if (projectState.modified) {
+        if (state.modified) {
             setShowDialog(true);
         } else {
             onCloseProject(index);
@@ -69,7 +69,7 @@ function SidebarItemButton(props) {
 
 SidebarItemButton.propTypes = {
     project: PropTypes.object.isRequired,
-    projectState: PropTypes.object.isRequired,
+    state: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     onSaveProject: PropTypes.func.isRequired,
     onCloseProject: PropTypes.func.isRequired

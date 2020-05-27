@@ -26,11 +26,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Workspace(props) {
-    const {project, backdrop, alert} = props;
+    const {initialProject, backdrop, alert} = props;
 
-    const [projects, setProjects] = useState([project]);
-    const [projectStates, setProjectStates] = useState([checkWarnings(project, defaultState())]);
-    const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+    const [projects, setProjects] = useState([{
+        project: initialProject,
+        state: checkWarnings(initialProject, defaultState())
+    }]);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const classes = useStyles();
 
@@ -39,37 +41,41 @@ function Workspace(props) {
     };
 
     const handleShortcutKeyUp = () => {
-        handleSaveProject(currentProjectIndex);
+        handleSaveProject(currentIndex);
     };
 
     const handleNewProject = () => {
         const project = defaultProject();
 
-        setProjects([...projects, project]);
-        setProjectStates([...projectStates, checkWarnings(project, defaultState())]);
-        setCurrentProjectIndex(projects.length);
+        setProjects([...projects, {
+            project: project,
+            state: checkWarnings(project, defaultState())
+        }]);
+        setCurrentIndex(projects.length);
     };
 
     const handleOpenProject = () => {
         const getProjectIndex = newProject => {
-            return projects.findIndex(project => project.id === newProject.id);
+            return projects.findIndex(prj => prj.project.id === newProject.id);
         };
 
         const isAlreadyOpen = newProject => {
             return getProjectIndex(newProject) !== -1;
         };
 
-        ipc.once('open-project', (ipcEvent, path) => {
+        ipc.once('open-project', (_, path) => {
             if (path) {
                 openProject(path).then(project => {
                     if (isAlreadyOpen(project)) {
-                        setCurrentProjectIndex(getProjectIndex(project));
+                        setCurrentIndex(getProjectIndex(project));
                     } else {
                         const state = {...defaultState(), neverSaved: false, path: path};
 
-                        setProjects([...projects, project]);
-                        setProjectStates([...projectStates, checkWarnings(project, state)]);
-                        setCurrentProjectIndex(projects.length);
+                        setProjects([...projects, {
+                            project: project,
+                            state: checkWarnings(project, state)
+                        }]);
+                        setCurrentIndex(projects.length);
                     }
                 }).catch(error => {
                     handleApiError(error, alert);
@@ -87,14 +93,16 @@ function Workspace(props) {
     };
 
     const handleImportProject = () => {
-        ipc.once('import-project', (ipcEvent, path) => {
+        ipc.once('import-project', (_, path) => {
             if (path) {
                 importProject(path).then(project => {
                     const state = {...defaultState(), path: path};
 
-                    setProjects([...projects, project]);
-                    setProjectStates([...projectStates, checkWarnings(project, state)]);
-                    setCurrentProjectIndex(projects.length);
+                    setProjects([...projects, {
+                        project: project,
+                        state: checkWarnings(project, state)
+                    }]);
+                    setCurrentIndex(projects.length);
                 }).catch(error => {
                     handleApiError(error, alert);
                 });
@@ -110,37 +118,40 @@ function Workspace(props) {
         ipc.send('import-project');
     };
 
-    const handleModifyProject = (index, properties) => {
+    const handleModifyProjectAndState = (index, projectProperties, stateProperties) => {
         const projectsCopy = [...projects];
-        projectsCopy[index] = {...projectsCopy[index], ...properties};
+        projectsCopy[index].project = {...projectsCopy[index].project, ...projectProperties};
+        projectsCopy[index].state = {...projectsCopy[index].state, ...stateProperties};
 
         setProjects(projectsCopy);
     };
 
-    const handleModifyProjectState = (index, properties) => {
-        const projectStatesCopy = [...projectStates];
-        projectStatesCopy[index] = {...projectStatesCopy[index], ...properties};
+    const handleModifyState = (index, properties) => {
+        const projectsCopy = [...projects];
+        projectsCopy[index].state = {...projectsCopy[index].state, ...properties};
 
-        setProjectStates(projectStatesCopy);
+        setProjects(projectsCopy);
     };
 
     const handleSelectProject = index => {
-        setCurrentProjectIndex(index);
+        setCurrentIndex(index);
     };
 
     const handleSaveProject = index => {
         if (projects.length) {
-            if (projectStates[index].modified || projectStates[index].neverSaved) {
+            const state = projects[index].state;
+
+            if (state.modified || state.neverSaved) {
                 const save = path => {
-                    saveProject(path, projects[index]).then(() => {
-                        handleModifyProjectState(index, {modified: false, neverSaved: false, path: path});
+                    saveProject(path, projects[index].project).then(() => {
+                        handleModifyState(index, {modified: false, neverSaved: false, path: path});
                     }).catch(error => {
                         handleApiError(error, alert);
                     });
                 };
 
-                if (projectStates[index].neverSaved) {
-                    ipc.once('save-project', (ipcEvent, path) => {
+                if (state.neverSaved) {
+                    ipc.once('save-project', (_, path) => {
                         if (path) {
                             save(path);
                         }
@@ -154,24 +165,26 @@ function Workspace(props) {
 
                     ipc.send('save-project');
                 } else {
-                    save(projectStates[index].path);
+                    save(state.path);
                 }
             }
         }
     };
 
     const handleDuplicateProject = index => {
-        const projectCopy = {...projects[index]};
+        const projectCopy = {...projects[index].project};
 
-        setProjects([...projects, {...projectCopy, id: uuid(), name: `Copy of ${projectCopy.name}`}]);
-        setProjectStates([...projectStates, defaultState()]);
-        setCurrentProjectIndex(projects.length);
+        setProjects([...projects, {
+            project: {...projectCopy, id: uuid(), name: `Copy of ${projectCopy.name}`},
+            state: defaultState()
+        }]);
+        setCurrentIndex(projects.length);
     };
 
     const handleExportProject = index => {
-        ipc.once('export-project', (ipcEvent, path) => {
+        ipc.once('export-project', (_, path) => {
             if (path) {
-                exportProject(path, projects[index]).catch(error => {
+                exportProject(path, projects[index].project).catch(error => {
                     handleApiError(error, alert);
                 });
             }
@@ -188,31 +201,25 @@ function Workspace(props) {
 
     const handleCloseProject = index => {
         if (projects.length) {
-            if (projectStates[index].running) {
+            if (projects[index].state.running) {
                 handleStopMock(index);
             }
 
-            const projectsCopy = [...projects];
-            projectsCopy.splice(index, 1);
-            setProjects(projectsCopy);
+            setProjects(projects.filter((_, idx) => idx !== index));
 
-            const projectStatesCopy = [...projectStates];
-            projectStatesCopy.splice(index, 1);
-            setProjectStates(projectStatesCopy);
-
-            if (index === currentProjectIndex && index === 0) {
-                setCurrentProjectIndex(0);
-            } else if (index <= currentProjectIndex) {
-                setCurrentProjectIndex(currentProjectIndex - 1);
+            if (index === currentIndex && index === 0) {
+                setCurrentIndex(0);
+            } else if (index <= currentIndex) {
+                setCurrentIndex(currentIndex - 1);
             }
         }
     };
 
     const handleStartMock = index => {
-        handleModifyProjectState(index, {waiting: true});
+        handleModifyState(index, {waiting: true});
 
-        startMock(projects[index]).then(configuration => {
-            handleModifyProjectState(index, {
+        startMock(projects[index].project).then(configuration => {
+            handleModifyState(index, {
                 running: true,
                 waiting: false,
                 activePort: configuration.port,
@@ -220,17 +227,17 @@ function Workspace(props) {
             });
         }).catch(error => {
             handleApiError(error, alert);
-            handleModifyProjectState(index, {waiting: false});
+            handleModifyState(index, {waiting: false});
         });
     };
 
     const handleStopMock = index => {
-        handleModifyProjectState(index, {waiting: true});
+        handleModifyState(index, {waiting: true});
 
-        stopMock(projects[index]).catch(error => {
+        stopMock(projects[index].project).catch(error => {
             handleApiError(error, alert);
         }).finally(() => {
-            handleModifyProjectState(index, {running: false, waiting: false});
+            handleModifyState(index, {running: false, waiting: false});
         });
     };
 
@@ -243,25 +250,22 @@ function Workspace(props) {
             <div className={classes.root}>
                 <Toolbar
                     projects={projects}
-                    projectStates={projectStates}
-                    currentIndex={currentProjectIndex}
+                    currentIndex={currentIndex}
                     onNewProject={handleNewProject}
                     onOpenProject={handleOpenProject}
                     onImportProject={handleImportProject}
                     onExportProject={handleExportProject}
-                    onModifyProject={handleModifyProject}
-                    onModifyProjectState={handleModifyProjectState}
+                    onModifyProjectAndState={handleModifyProjectAndState}
+                    onModifyState={handleModifyState}
                     onStartMock={handleStartMock}
                     onStopMock={handleStopMock}
                 />
                 <Sidebar
                     projects={projects}
-                    projectStates={projectStates}
-                    currentIndex={currentProjectIndex}
+                    currentIndex={currentIndex}
                     width={sidebarWidth}
                     onSelectProject={handleSelectProject}
-                    onModifyProject={handleModifyProject}
-                    onModifyProjectState={handleModifyProjectState}
+                    onModifyProjectAndState={handleModifyProjectAndState}
                     onSaveProject={handleSaveProject}
                     onDuplicateProject={handleDuplicateProject}
                     onExportProject={handleExportProject}
@@ -270,11 +274,11 @@ function Workspace(props) {
                 <main className={classes.content}>
                     {!!projects.length &&
                      <Project
-                         project={projects[currentProjectIndex]}
-                         projectState={projectStates[currentProjectIndex]}
-                         index={currentProjectIndex}
-                         onModifyProject={handleModifyProject}
-                         onModifyProjectState={handleModifyProjectState}
+                         project={projects[currentIndex].project}
+                         state={projects[currentIndex].state}
+                         index={currentIndex}
+                         onModifyProjectAndState={handleModifyProjectAndState}
+                         onModifyState={handleModifyState}
                      />}
                 </main>
             </div>
@@ -283,7 +287,7 @@ function Workspace(props) {
 }
 
 Workspace.propTypes = {
-    project: PropTypes.object.isRequired,
+    initialProject: PropTypes.object.isRequired,
     backdrop: PropTypes.object.isRequired,
     alert: PropTypes.object.isRequired
 };

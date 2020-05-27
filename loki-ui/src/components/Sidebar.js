@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
         flexShrink: 0
     },
     offset: theme.mixins.toolbar,
-    projectsList: {
+    projects: {
         padding: 0
     }
 }));
@@ -19,12 +19,10 @@ const useStyles = makeStyles(theme => ({
 function Sidebar(props) {
     const {
         projects,
-        projectStates,
         currentIndex,
         width,
         onSelectProject,
-        onModifyProject,
-        onModifyProjectState,
+        onModifyProjectAndState,
         onSaveProject,
         onDuplicateProject,
         onExportProject,
@@ -36,17 +34,16 @@ function Sidebar(props) {
     return (
         <Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawer}}>
             <div className={classes.offset}/>
-            <List className={classes.projectsList}>
-                {projects.map((project, index) =>
+            <List className={classes.projects}>
+                {projects.map((prj, index) =>
                     <SidebarItem
-                        key={project.id}
-                        project={project}
-                        projectState={projectStates[index]}
+                        key={prj.project.id}
+                        project={prj.project}
+                        state={prj.state}
                         index={index}
                         currentIndex={currentIndex}
                         onSelectProject={onSelectProject}
-                        onModifyProject={onModifyProject}
-                        onModifyProjectState={onModifyProjectState}
+                        onModifyProjectAndState={onModifyProjectAndState}
                         onSaveProject={onSaveProject}
                         onDuplicateProject={onDuplicateProject}
                         onExportProject={onExportProject}
@@ -59,12 +56,10 @@ function Sidebar(props) {
 
 Sidebar.propTypes = {
     projects: PropTypes.array.isRequired,
-    projectStates: PropTypes.array.isRequired,
     currentIndex: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
     onSelectProject: PropTypes.func.isRequired,
-    onModifyProject: PropTypes.func.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired,
+    onModifyProjectAndState: PropTypes.func.isRequired,
     onSaveProject: PropTypes.func.isRequired,
     onDuplicateProject: PropTypes.func.isRequired,
     onExportProject: PropTypes.func.isRequired,

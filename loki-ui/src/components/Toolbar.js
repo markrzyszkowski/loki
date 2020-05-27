@@ -9,7 +9,7 @@ import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/ic
 import * as PropTypes from 'prop-types';
 import Settings from './Settings';
 import Warnings from './Warnings';
-import { warningCount } from '../warning';
+import { warningsPresent } from '../warning';
 
 const useStyles = makeStyles(theme => ({
     appBar: {
@@ -41,13 +41,12 @@ const useStyles = makeStyles(theme => ({
 function Toolbar(props) {
     const {
         projects,
-        projectStates,
         currentIndex,
         onNewProject,
         onOpenProject,
         onImportProject,
-        onModifyProject,
-        onModifyProjectState,
+        onModifyProjectAndState,
+        onModifyState,
         onStartMock,
         onStopMock
     } = props;
@@ -63,15 +62,14 @@ function Toolbar(props) {
     };
 
     const handleChangeSettings = (index, settings) => {
-        onModifyProject(index, {settings: {...projects[index].settings, ...settings}});
-        onModifyProjectState(index, {modified: true});
+        onModifyProjectAndState(index, {settings: {...projects[index].project.settings, ...settings}}, {modified: true});
     };
 
     const hasProjects = projects.length > 0;
-    const hasTabs = hasProjects && projects[currentIndex].tabs.length > 0;
-    const hasWarnings = hasProjects && warningCount(projectStates[currentIndex].warnings) > 0;
-    const running = hasProjects && projectStates[currentIndex].running;
-    const waiting = hasProjects && projectStates[currentIndex].waiting;
+    const hasTabs = hasProjects && projects[currentIndex].project.tabs.length > 0;
+    const hasWarnings = hasProjects && warningsPresent(projects[currentIndex].state.warnings);
+    const running = hasProjects && projects[currentIndex].state.running;
+    const waiting = hasProjects && projects[currentIndex].state.waiting;
     const loading = hasProjects && !running && waiting;
 
     return (
@@ -110,10 +108,10 @@ function Toolbar(props) {
                  <div className={classes.actions}>
                      {hasWarnings &&
                       <Warnings
-                          project={projects[currentIndex]}
-                          projectState={projectStates[currentIndex]}
+                          project={projects[currentIndex].project}
+                          state={projects[currentIndex].state}
                           index={currentIndex}
-                          onModifyProjectState={onModifyProjectState}
+                          onModifyState={onModifyState}
                       />}
                      {!hasWarnings && !running && !waiting &&
                       <Fab variant="extended" size="small" onClick={handleStartMock} className={classes.offset}>
@@ -128,8 +126,7 @@ function Toolbar(props) {
                  </div>}
                 {hasProjects &&
                  <Settings
-                     project={projects[currentIndex]}
-                     projectState={projectStates[currentIndex]}
+                     project={projects[currentIndex].project}
                      index={currentIndex}
                      onChangeSettings={handleChangeSettings}
                  />}
@@ -140,13 +137,12 @@ function Toolbar(props) {
 
 Toolbar.propTypes = {
     projects: PropTypes.array.isRequired,
-    projectStates: PropTypes.array.isRequired,
     currentIndex: PropTypes.number.isRequired,
     onNewProject: PropTypes.func.isRequired,
     onOpenProject: PropTypes.func.isRequired,
     onImportProject: PropTypes.func.isRequired,
-    onModifyProject: PropTypes.func.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired,
+    onModifyProjectAndState: PropTypes.func.isRequired,
+    onModifyState: PropTypes.func.isRequired,
     onStartMock: PropTypes.func.isRequired,
     onStopMock: PropTypes.func.isRequired
 };

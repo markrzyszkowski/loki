@@ -10,10 +10,10 @@ import { Error } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import WarningsItem from './WarningsItem';
 import { flection } from '../util';
-import { warningCount } from '../warning';
+import { warningsCount } from '../warning';
 
 function Warnings(props) {
-    const {project, projectState, index, onModifyProjectState} = props;
+    const {project, state, index, onModifyState} = props;
 
     const [showDialog, setShowDialog] = useState(false);
 
@@ -25,17 +25,17 @@ function Warnings(props) {
         setShowDialog(false);
     };
 
-    const handleNavigateToWarning = (tab, field) => {
+    const handleNavigateToWarning = tab => {
         const tabIndex = project.tabs.findIndex(t => t.id === tab);
 
         setShowDialog(false);
 
-        if (tabIndex !== projectState.activeTab) {
-            onModifyProjectState(index, {activeTab: tabIndex});
+        if (tabIndex !== state.activeTab) {
+            onModifyState(index, {activeTab: tabIndex});
         }
     };
 
-    const count = warningCount(projectState.warnings);
+    const count = warningsCount(state.warnings);
 
     return (
         <>
@@ -48,7 +48,7 @@ function Warnings(props) {
                 <DialogTitle>{`Warnings for ${project.name}`}</DialogTitle>
                 <DialogContent>
                     <List>
-                        {Object.entries(projectState.warnings)
+                        {Object.entries(state.warnings)
                                .flatMap(([tab, warnings]) => Object.entries(warnings).map(([field, warning]) =>
                                    <WarningsItem
                                        name={project.tabs.find(t => t.id === tab).name}
@@ -72,9 +72,9 @@ function Warnings(props) {
 
 Warnings.propTypes = {
     project: PropTypes.object.isRequired,
-    projectState: PropTypes.object.isRequired,
+    state: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired
+    onModifyState: PropTypes.func.isRequired
 };
 
 export default Warnings;

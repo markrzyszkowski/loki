@@ -41,7 +41,7 @@ function App() {
     return (
         <>
             <CssBaseline/>
-            {project && <Workspace project={project} backdrop={backdrop} alert={alert}/>}
+            {project && <Workspace initialProject={project} backdrop={backdrop} alert={alert}/>}
             {!project && <Initializer backdrop={backdrop} alert={alert} onProjectInit={handleProjectInit}/>}
             <Backdrop open={backdrop.open} className={classes.backdrop}/>
             <Alert alert={alert}/>

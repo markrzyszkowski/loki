@@ -15,7 +15,7 @@ import { Error, Save } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import SidebarItemButton from './SidebarItemButton';
 import Ellipsis from './util/Ellipsis';
-import { warningCount } from '../warning';
+import { warningsPresent } from '../warning';
 
 const useStyles = makeStyles(theme => ({
     default: {
@@ -32,12 +32,11 @@ const useStyles = makeStyles(theme => ({
 function SidebarItem(props) {
     const {
         project,
-        projectState,
+        state,
         index,
         currentIndex,
         onSelectProject,
-        onModifyProject,
-        onModifyProjectState,
+        onModifyProjectAndState,
         onSaveProject,
         onDuplicateProject,
         onExportProject,
@@ -90,8 +89,7 @@ function SidebarItem(props) {
 
         if (name) {
             if (name !== project.name) {
-                onModifyProject(index, {name: name});
-                onModifyProjectState(index, {modified: true});
+                onModifyProjectAndState(index, {name: name}, {modified: true});
             }
             setShowDialog(false);
             setDialogError(false);
@@ -113,11 +111,11 @@ function SidebarItem(props) {
     };
 
     const selected = index === currentIndex;
-    const containerClass = projectState.running && projectState.modified
+    const containerClass = state.running && state.modified
                            ? classes.modified
-                           : projectState.running ? classes.running : classes.default;
-    const hasWarnings = warningCount(projectState.warnings) > 0;
-    const unsaved = projectState.modified || projectState.neverSaved;
+                           : state.running ? classes.running : classes.default;
+    const hasWarnings = warningsPresent(state.warnings);
+    const unsaved = state.modified || state.neverSaved;
 
     return (
         <>
@@ -132,7 +130,7 @@ function SidebarItem(props) {
                     <Ellipsis text={project.name} maxLength={20} interactive={false}/>
                 }/>
                 {hasWarnings && <Error color="secondary"/>}
-                {unsaved && <Save color={projectState.modified ? 'secondary' : 'primary'}/>}
+                {unsaved && <Save color={state.modified ? 'secondary' : 'primary'}/>}
                 <Menu open={!!menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                     {unsaved && <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
@@ -143,7 +141,7 @@ function SidebarItem(props) {
                 <ListItemSecondaryAction>
                     <SidebarItemButton
                         project={project}
-                        projectState={projectState}
+                        state={state}
                         index={index}
                         onSaveProject={onSaveProject}
                         onCloseProject={onCloseProject}
@@ -178,12 +176,11 @@ function SidebarItem(props) {
 
 SidebarItem.propTypes = {
     project: PropTypes.object.isRequired,
-    projectState: PropTypes.object.isRequired,
+    state: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     currentIndex: PropTypes.number.isRequired,
     onSelectProject: PropTypes.func.isRequired,
-    onModifyProject: PropTypes.func.isRequired,
-    onModifyProjectState: PropTypes.func.isRequired,
+    onModifyProjectAndState: PropTypes.func.isRequired,
     onSaveProject: PropTypes.func.isRequired,
     onDuplicateProject: PropTypes.func.isRequired,
     onExportProject: PropTypes.func.isRequired,
