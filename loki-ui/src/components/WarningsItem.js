@@ -6,7 +6,7 @@ import { Error } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 function WarningsItem(props) {
-    const {name, tab, field, warning, onNavigateToWarning} = props;
+    const {name, tab, warning, onNavigateToWarning} = props;
 
     const handleNavigateToWarning = () => {
         onNavigateToWarning(tab);
@@ -25,7 +25,6 @@ function WarningsItem(props) {
 WarningsItem.propTypes = {
     name: PropTypes.string.isRequired,
     tab: PropTypes.string.isRequired,
-    field: PropTypes.string.isRequired,
     warning: PropTypes.string.isRequired,
     onNavigateToWarning: PropTypes.func.isRequired
 };

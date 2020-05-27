@@ -53,7 +53,6 @@ function Warnings(props) {
                                    <WarningsItem
                                        name={project.tabs.find(t => t.id === tab).name}
                                        tab={tab}
-                                       field={field}
                                        warning={warning}
                                        onNavigateToWarning={handleNavigateToWarning}
                                    />
