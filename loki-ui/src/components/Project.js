@@ -40,18 +40,18 @@ function Project(props) {
         const warningsCopy = {...state.warnings};
         validators.url({...project, tabs: [...project.tabs, tab]}, warningsCopy);
 
-        onModifyProjectAndState(index, {tabs: [...project.tabs, tab]},{activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: [...project.tabs, tab]}, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
-    const handleModifyTab = (tabIndex, properties, field) => {
+    const handleModifyTab = (tabIndex, properties, validatorType) => {
         const tabsCopy = [...project.tabs];
         tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...properties};
 
         const warningsCopy = {...state.warnings};
-        if (field) {
-            const validate = validators[field];
+        if (validatorType) {
+            const validate = validators[validatorType];
 
-            if (field === 'url') {
+            if (validatorType === 'url') {
                 validate({...project, tabs: tabsCopy}, warningsCopy);
             } else {
                 // non url field validation

@@ -51,6 +51,8 @@ function Request(props) {
     const handleMethodChange = event => {
         const method = event.target.value.toUpperCase();
 
+        // validate
+
         onModifyRequest({method: method});
     };
 
@@ -62,6 +64,8 @@ function Request(props) {
 
     const handleBodyChange = event => {
         const body = event.target.value;
+
+        // validate
 
         onModifyRequest({body: body});
     };
