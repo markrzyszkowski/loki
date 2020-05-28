@@ -117,7 +117,7 @@ function ProjectContent(props) {
             <div className={rulesClass}>
                 {tab.rules.map((rule, index) =>
                     <Rule
-                        key={index}
+                        key={rule.id}
                         rule={rule}
                         index={index}
                         lastIndex={tab.rules.length - 1}

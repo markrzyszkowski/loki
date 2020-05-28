@@ -41,6 +41,7 @@ const defaultState = () => {
 
 const defaultRule = () => {
     return {
+        id: uuid(),
         name: `Untitled rule`,
         request: {
             method: '',
