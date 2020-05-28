@@ -26,6 +26,9 @@ public class EventListeners {
     @Value("${logging.file.name}")
     private String logFile;
 
+    @Value("${logging.file.max-history}")
+    private int maxHistory;
+
     @Value("${loki.agent.electron.port}")
     private int electronPort;
 
@@ -56,7 +59,7 @@ public class EventListeners {
     }
 
     private void removeOldLogs() throws IOException {
-        var retentionThreshold = Instant.from(ZonedDateTime.now().minusDays(7));
+        var retentionThreshold = Instant.from(ZonedDateTime.now().minusDays(maxHistory));
 
         BiPredicate<Path, BasicFileAttributes> retentionPredicate = (path, attributes) ->
                 path.getFileName().toString().startsWith("mock-")
