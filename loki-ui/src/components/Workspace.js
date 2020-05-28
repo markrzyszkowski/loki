@@ -11,7 +11,7 @@ import ipc from '../ipc';
 import { startMock, stopMock } from '../mock';
 import { openProject, importProject, exportProject, saveProject } from '../project';
 import { handleApiError } from '../util';
-import { checkWarnings } from '../warning';
+import { checkWarnings } from '../warnings';
 
 const sidebarWidth = 280;
 

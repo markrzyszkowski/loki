@@ -43,20 +43,24 @@ function ProjectContent(props) {
     const handleUrlChange = event => {
         const url = event.target.value;
 
+        // TODO validate
+
         if (url !== tab.url) {
-            onModifyTab(index, {url: url}, 'url');
+            onModifyTab(index, {url: url}, warnings);
         }
     };
 
     const handleAddRule = () => {
         onModifyTab(index, {rules: [...tab.rules, defaultRule()]});
+
+        // TODO validate
     };
 
-    const handleModifyRule = (ruleIndex, properties) => {
+    const handleModifyRule = (ruleIndex, properties, warnings) => {
         const rulesCopy = [...tab.rules];
         rulesCopy[ruleIndex] = {...rulesCopy[ruleIndex], ...properties};
 
-        onModifyTab(index, {rules: rulesCopy});
+        onModifyTab(index, {rules: rulesCopy}, warnings);
     };
 
     const handleShiftRule = (ruleIndex, offset) => {
@@ -77,7 +81,7 @@ function ProjectContent(props) {
 
         const rulesCopy = [...tab.rules, {...ruleCopy, name: `Copy of ${ruleCopy.name}`}];
 
-        // validate
+        // TODO validate
 
         onModifyTab(index, {rules: rulesCopy});
     };
@@ -85,6 +89,8 @@ function ProjectContent(props) {
     const handleDeleteRule = ruleIndex => {
         const rulesCopy = [...tab.rules];
         rulesCopy.splice(ruleIndex, 1);
+
+        // TODO validate
 
         onModifyTab(index, {rules: rulesCopy});
     };
@@ -121,6 +127,7 @@ function ProjectContent(props) {
                         rule={rule}
                         index={index}
                         lastIndex={tab.rules.length - 1}
+                        warnings={warnings}
                         onShiftRule={handleShiftRule}
                         onModifyRule={handleModifyRule}
                         onDuplicateRule={handleDuplicateRule}

@@ -9,6 +9,7 @@ import * as PropTypes from 'prop-types';
 import ResponseHeader from './ResponseHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultHeader } from '../defaults';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ResponseHeaders(props) {
-    const {headers, headersExpanded, onModifyResponse} = props;
+    const {headers, headersExpanded, ruleId, warnings, onModifyResponse} = props;
 
     const classes = useStyles();
 
@@ -55,14 +56,14 @@ function ResponseHeaders(props) {
     const handleAddHeader = () => {
         onModifyResponse({headers: [...headers, defaultHeader()]});
 
-        // validate
+        // TODO validate
     };
 
     const handleDeleteHeader = index => {
         const headersCopy = [...headers];
         headersCopy.splice(index, 1);
 
-        // validate
+        // TODO validate
 
         onModifyResponse({headers: headersCopy});
     };
@@ -71,18 +72,18 @@ function ResponseHeaders(props) {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], key: key};
 
-        // validate
+        validators.headerKey(key, ruleId, 'response', index, warnings);
 
-        onModifyResponse({headers: headersCopy});
+        onModifyResponse({headers: headersCopy}, warnings);
     };
 
     const handleHeaderValueChange = (index, value) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], value: value};
 
-        // validate
+        validators.headerValue(value, ruleId, 'response', index, warnings);
 
-        onModifyResponse({headers: headersCopy});
+        onModifyResponse({headers: headersCopy}, warnings);
     };
 
     const contentClass = classes.content;
@@ -120,6 +121,8 @@ function ResponseHeaders(props) {
                                  <ResponseHeader
                                      header={header}
                                      index={index}
+                                     ruleId={ruleId}
+                                     warnings={warnings}
                                      onDeleteHeader={handleDeleteHeader}
                                      onKeyChange={handleHeaderKeyChange}
                                      onValueChange={handleHeaderValueChange}
@@ -136,6 +139,8 @@ function ResponseHeaders(props) {
 ResponseHeaders.propTypes = {
     headers: PropTypes.array.isRequired,
     headersExpanded: PropTypes.bool.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyResponse: PropTypes.func.isRequired
 };
 

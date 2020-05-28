@@ -30,6 +30,8 @@ function RequestHeader(props) {
     const {
         header,
         index,
+        ruleId,
+        warnings,
         onDeleteHeader,
         onKeyChange,
         onValueChange,
@@ -48,15 +50,19 @@ function RequestHeader(props) {
     };
 
     const handleKeyChange = event => {
-        const key = event.target.value;
+        const key = event.target.value.trim();
 
-        onKeyChange(index, key);
+        if (key !== header.key) {
+            onKeyChange(index, key);
+        }
     };
 
     const handleValueChange = event => {
-        const value = event.target.value;
+        const value = event.target.value.trim();
 
-        onValueChange(index, value);
+        if (value !== header.value) {
+            onValueChange(index, value);
+        }
     };
 
     const handleValueIgnoreCaseChange = event => {
@@ -74,6 +80,8 @@ function RequestHeader(props) {
     return (
         <FormGroup row className={classes.fields}>
             <TextField
+                error={!!warnings[`${ruleId}-request-header-${index}-key`]}
+                helperText={warnings[`${ruleId}-request-header-${index}-key`]}
                 label="Key"
                 size="small"
                 value={header.key}
@@ -89,6 +97,8 @@ function RequestHeader(props) {
                 <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
             </Select>
             <TextField
+                error={!!warnings[`${ruleId}-request-header-${index}-value`]}
+                helperText={warnings[`${ruleId}-request-header-${index}-value`]}
                 label="Value"
                 size="small"
                 value={header.value}
@@ -111,6 +121,8 @@ function RequestHeader(props) {
 RequestHeader.propTypes = {
     header: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onDeleteHeader: PropTypes.func.isRequired,
     onKeyChange: PropTypes.func.isRequired,
     onValueChange: PropTypes.func.isRequired,

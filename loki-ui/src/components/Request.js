@@ -14,6 +14,7 @@ import * as PropTypes from 'prop-types';
 import RequestHeaders from './RequestHeaders';
 import RequestParameters from './RequestParameters';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Request(props) {
-    const {request, onModifyRequest} = props;
+    const {request, ruleId, warnings, onModifyRequest} = props;
 
     const classes = useStyles();
 
@@ -49,11 +50,13 @@ function Request(props) {
     };
 
     const handleMethodChange = event => {
-        const method = event.target.value.toUpperCase();
+        const method = event.target.value.trim().toUpperCase();
 
-        // validate
+        if (method !== request.method) {
+            validators.httpMethod(method, ruleId, warnings);
 
-        onModifyRequest({method: method});
+            onModifyRequest({method: method}, warnings);
+        }
     };
 
     const handleMethodConditionChange = event => {
@@ -65,13 +68,17 @@ function Request(props) {
     const handleBodyChange = event => {
         const body = event.target.value;
 
-        // validate
+        if (body !== request.body) {
+            validators.body(body, ruleId, 'request', warnings);
 
-        onModifyRequest({body: body});
+            onModifyRequest({body: body}, warnings);
+        }
     };
 
     const handleBodyConditionChange = event => {
         const condition = event.target.value;
+
+        // TODO validate
 
         onModifyRequest({bodyCondition: condition});
     };
@@ -96,6 +103,8 @@ function Request(props) {
             <ExpansionPanelDetails className={classes.content}>
                 <FormGroup row className={classes.fields}>
                     <TextField
+                        error={!!warnings[`${ruleId}-request-method`]}
+                        helperText={warnings[`${ruleId}-request-method`]}
                         label="HTTP method"
                         size="small"
                         placeholder="Enter HTTP method"
@@ -111,15 +120,21 @@ function Request(props) {
                 <RequestParameters
                     parameters={request.parameters}
                     parametersExpanded={request.parametersExpanded}
+                    ruleId={ruleId}
+                    warnings={warnings}
                     onModifyRequest={onModifyRequest}
                 />
                 <RequestHeaders
                     headers={request.headers}
                     headersExpanded={request.headersExpanded}
+                    ruleId={ruleId}
+                    warnings={warnings}
                     onModifyRequest={onModifyRequest}
                 />
                 <FormGroup row className={classes.fields}>
                     <TextField
+                        error={!!warnings[`${ruleId}-request-body`]}
+                        helperText={warnings[`${ruleId}-request-body`]}
                         label="Body"
                         size="small"
                         placeholder="Enter body content"
@@ -157,6 +172,8 @@ function Request(props) {
 
 Request.propTypes = {
     request: PropTypes.object.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyRequest: PropTypes.func.isRequired
 };
 

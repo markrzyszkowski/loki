@@ -15,7 +15,7 @@ import { Error, Save } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import SidebarItemButton from './SidebarItemButton';
 import Ellipsis from './util/Ellipsis';
-import { warningsPresent } from '../warning';
+import { warningsPresent } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     default: {

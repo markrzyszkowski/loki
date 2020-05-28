@@ -30,6 +30,8 @@ function RequestParameter(props) {
     const {
         parameter,
         index,
+        ruleId,
+        warnings,
         onDeleteParameter,
         onKeyChange,
         onKeyIgnoreCaseChange,
@@ -49,9 +51,11 @@ function RequestParameter(props) {
     };
 
     const handleKeyChange = event => {
-        const key = event.target.value;
+        const key = event.target.value.trim();
 
-        onKeyChange(index, key);
+        if (key !== parameter.key) {
+            onKeyChange(index, key);
+        }
     };
 
     const handleKeyIgnoreCaseChange = event => {
@@ -61,9 +65,11 @@ function RequestParameter(props) {
     };
 
     const handleValueChange = event => {
-        const value = event.target.value;
+        const value = event.target.value.trim();
 
-        onValueChange(index, value);
+        if (value !== parameter.value) {
+            onValueChange(index, value);
+        }
     };
 
     const handleValueIgnoreCaseChange = event => {
@@ -81,6 +87,8 @@ function RequestParameter(props) {
     return (
         <FormGroup row className={classes.fields}>
             <TextField
+                error={!!warnings[`${ruleId}-request-parameter-${index}-key`]}
+                helperText={warnings[`${ruleId}-request-parameter-${index}-key`]}
                 label="Key"
                 size="small"
                 value={parameter.key}
@@ -102,6 +110,8 @@ function RequestParameter(props) {
                 <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
             </Select>
             <TextField
+                error={!!warnings[`${ruleId}-request-parameter-${index}-value`]}
+                helperText={warnings[`${ruleId}-request-parameter-${index}-value`]}
                 label="Value"
                 size="small"
                 value={parameter.value}
@@ -124,6 +134,8 @@ function RequestParameter(props) {
 RequestParameter.propTypes = {
     parameter: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onDeleteParameter: PropTypes.func.isRequired,
     onKeyChange: PropTypes.func.isRequired,
     onKeyIgnoreCaseChange: PropTypes.func.isRequired,

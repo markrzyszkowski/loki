@@ -9,7 +9,7 @@ import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/ic
 import * as PropTypes from 'prop-types';
 import Settings from './Settings';
 import Warnings from './Warnings';
-import { warningsPresent } from '../warning';
+import { warningsPresent } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     appBar: {

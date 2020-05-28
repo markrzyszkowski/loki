@@ -11,7 +11,7 @@ import ProjectTab from './ProjectTab';
 import ScrollTabsButton from './util/ScrollTabsButton';
 import ScrollTopButton from './util/ScrollTopButton';
 import { defaultTab } from '../defaults';
-import { validators } from '../warning';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,34 +35,41 @@ function Project(props) {
     };
 
     const handleAddTab = () => {
-        const tab = defaultTab();
+        const tabsCopy = [...project.tabs, defaultTab()];
+
+        // TODO validate
 
         const warningsCopy = {...state.warnings};
-        validators.url({...project, tabs: [...project.tabs, tab]}, warningsCopy);
+        validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
-        onModifyProjectAndState(index, {tabs: [...project.tabs, tab]}, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
-    const handleModifyTab = (tabIndex, properties, validatorType) => {
+    const handleModifyTab = (tabIndex, properties, warnings) => {
         const tabsCopy = [...project.tabs];
         tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...properties};
 
-        const warningsCopy = {...state.warnings};
-        if (validatorType) {
-            const validate = validators[validatorType];
+        // TODO validate
 
-            if (validatorType === 'url') {
-                validate({...project, tabs: tabsCopy}, warningsCopy);
-            } else {
-                // non url field validation
-            }
-        }
+        const warningsCopy = {...state.warnings};
+        warningsCopy[project.tabs[state.activeTab].id] = {...warningsCopy[project.tabs[state.activeTab].id], ...warnings};
+        // if (validatorType) {
+        //     const validate = validators[validatorType];
+        //
+        //     if (validatorType === 'url') {
+        //         validate({...project, tabs: tabsCopy}, warningsCopy);
+        //     } else {
+        //         // non url field validation
+        //     }
+        // }
 
         onModifyProjectAndState(index, {tabs: tabsCopy}, {modified: true, warnings: warningsCopy});
     };
 
     const handleDuplicateTab = tabIndex => {
         const tabCopy = {...project.tabs[tabIndex]};
+
+        // TODO validate
 
         const tabId = uuid();
 
@@ -79,6 +86,8 @@ function Project(props) {
         if (project.tabs.length) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
+
+            // TODO validate
 
             const warningsCopy = {...state.warnings};
             delete warningsCopy[project.tabs[tabIndex].id];

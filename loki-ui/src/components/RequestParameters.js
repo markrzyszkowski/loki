@@ -9,6 +9,7 @@ import * as PropTypes from 'prop-types';
 import RequestParameter from './RequestParameter';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultParameterWithConditions } from '../defaults';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function RequestParameters(props) {
-    const {parameters, parametersExpanded, onModifyRequest} = props;
+    const {parameters, parametersExpanded, ruleId, warnings, onModifyRequest} = props;
 
     const classes = useStyles();
 
@@ -55,14 +56,14 @@ function RequestParameters(props) {
     const handleAddParameter = () => {
         onModifyRequest({parameters: [...parameters, defaultParameterWithConditions()]});
 
-        // validate
+        // TODO validate
     };
 
     const handleDeleteParameter = index => {
         const parametersCopy = [...parameters];
         parametersCopy.splice(index, 1);
 
-        // validate
+        // TODO validate
 
         onModifyRequest({parameters: parametersCopy});
     };
@@ -71,16 +72,14 @@ function RequestParameters(props) {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], key: key};
 
-        // validate
+        validators.parameterKey(key, ruleId, index, warnings);
 
-        onModifyRequest({parameters: parametersCopy});
+        onModifyRequest({parameters: parametersCopy}, warnings);
     };
 
     const handleParameterKeyIgnoreCaseChange = (index, ignoreCase) => {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], keyIgnoreCase: ignoreCase};
-
-        // validate
 
         onModifyRequest({parameters: parametersCopy});
     };
@@ -89,16 +88,14 @@ function RequestParameters(props) {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], value: value};
 
-        // validate
+        validators.parameterValue(value, ruleId, index, warnings);
 
-        onModifyRequest({parameters: parametersCopy});
+        onModifyRequest({parameters: parametersCopy}, warnings);
     };
 
     const handleParameterValueIgnoreCaseChange = (index, ignoreCase) => {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], valueIgnoreCase: ignoreCase};
-
-        // validate
 
         onModifyRequest({parameters: parametersCopy});
     };
@@ -107,7 +104,7 @@ function RequestParameters(props) {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], condition: condition};
 
-        // validate
+        // TODO validate
 
         onModifyRequest({parameters: parametersCopy});
     };
@@ -147,6 +144,8 @@ function RequestParameters(props) {
                                   <RequestParameter
                                     parameter={parameter}
                                     index={index}
+                                    ruleId={ruleId}
+                                    warnings={warnings}
                                     onDeleteParameter={handleDeleteParameter}
                                     onKeyChange={handleParameterKeyChange}
                                     onKeyIgnoreCaseChange={handleParameterKeyIgnoreCaseChange}
@@ -166,6 +165,8 @@ function RequestParameters(props) {
 RequestParameters.propTypes = {
     parameters: PropTypes.array.isRequired,
     parametersExpanded: PropTypes.bool.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyRequest: PropTypes.func.isRequired
 };
 

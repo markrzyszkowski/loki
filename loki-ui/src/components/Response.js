@@ -9,6 +9,7 @@ import { ExpandMore } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import ResponseHeaders from './ResponseHeaders';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Response(props) {
-    const {response, onModifyResponse} = props;
+    const {response, ruleId, warnings, onModifyResponse} = props;
 
     const classes = useStyles();
 
@@ -33,19 +34,21 @@ function Response(props) {
     };
 
     const handleStatusCodeChange = event => {
-        const statusCode = parseInt(event.target.value);
+        const statusCode = event.target.value.trim();
 
-        // validate
+        if (statusCode !== response.statusCode) {
+            validators.statusCode(statusCode, ruleId, warnings);
 
-        onModifyResponse({statusCode: statusCode});
+            onModifyResponse({statusCode: statusCode});
+        }
     };
 
     const handleBodyChange = event => {
         const body = event.target.value;
 
-        // validate
-
-        onModifyResponse({body: body});
+        if (body !== response.body) {
+            onModifyResponse({body: body}, warnings);
+        }
     };
 
     return (
@@ -56,6 +59,8 @@ function Response(props) {
             <ExpansionPanelDetails className={classes.content}>
                 <FormGroup row className={classes.fields}>
                     <TextField
+                        error={!!warnings[`${ruleId}-response-statusCode`]}
+                        helperText={warnings[`${ruleId}-response-statusCode`]}
                         label="Status code"
                         placeholder="Enter status code"
                         value={response.statusCode}
@@ -68,9 +73,13 @@ function Response(props) {
                 <ResponseHeaders
                     headers={response.headers}
                     headersExpanded={response.headersExpanded}
+                    ruleId={ruleId}
+                    warnings={warnings}
                     onModifyResponse={onModifyResponse}
                 />
                 <TextField
+                    error={!!warnings[`${ruleId}-response-body`]}
+                    helperText={warnings[`${ruleId}-response-body`]}
                     label="Body"
                     placeholder="Enter body content"
                     multiline
@@ -86,6 +95,8 @@ function Response(props) {
 
 Response.propTypes = {
     response: PropTypes.object.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyResponse: PropTypes.func.isRequired
 };
 

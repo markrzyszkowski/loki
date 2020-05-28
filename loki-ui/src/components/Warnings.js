@@ -10,7 +10,7 @@ import { Error } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import WarningsItem from './WarningsItem';
 import { flection } from '../util';
-import { warningsCount } from '../warning';
+import { warningsCount } from '../warnings';
 
 function Warnings(props) {
     const {project, state, index, onModifyState} = props;

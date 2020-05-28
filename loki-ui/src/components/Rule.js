@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Rule(props) {
-    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
+    const {rule, index, lastIndex, warnings, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
 
     const classes = useStyles();
 
@@ -24,12 +24,12 @@ function Rule(props) {
         onModifyRule(index, {expanded: expanded});
     };
 
-    const handleModifyRequest = properties => {
-        onModifyRule(index, {request: {...rule.request, ...properties}});
+    const handleModifyRequest = (properties, warnings) => {
+        onModifyRule(index, {request: {...rule.request, ...properties}}, warnings);
     };
 
-    const handleModifyResponse = properties => {
-        onModifyRule(index, {response: {...rule.response, ...properties}});
+    const handleModifyResponse = (properties, warnings) => {
+        onModifyRule(index, {response: {...rule.response, ...properties}}, warnings);
     };
 
     return (
@@ -44,8 +44,16 @@ function Rule(props) {
                 onDeleteRule={onDeleteRule}
             />
             <ExpansionPanelDetails className={classes.content}>
-                <Request request={rule.request} onModifyRequest={handleModifyRequest}/>
-                <Response response={rule.response} onModifyResponse={handleModifyResponse}/>
+                <Request
+                    request={rule.request}
+                    ruleId={rule.id}
+                    warnings={warnings}
+                    onModifyRequest={handleModifyRequest}/>
+                <Response
+                    response={rule.response}
+                    ruleId={rule.id}
+                    warnings={warnings}
+                    onModifyResponse={handleModifyResponse}/>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
@@ -55,6 +63,7 @@ Rule.propTypes = {
     rule: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     lastIndex: PropTypes.number.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyRule: PropTypes.func.isRequired,
     onShiftRule: PropTypes.func.isRequired,
     onDuplicateRule: PropTypes.func.isRequired,

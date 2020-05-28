@@ -9,6 +9,7 @@ import * as PropTypes from 'prop-types';
 import RequestHeader from './RequestHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultHeaderWithConditions } from '../defaults';
+import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function RequestHeaders(props) {
-    const {headers, headersExpanded, onModifyRequest} = props;
+    const {headers, headersExpanded, ruleId, warnings, onModifyRequest} = props;
 
     const classes = useStyles();
 
@@ -55,14 +56,14 @@ function RequestHeaders(props) {
     const handleAddHeader = () => {
         onModifyRequest({headers: [...headers, defaultHeaderWithConditions()]});
 
-        // validate
+        // TODO validate
     };
 
     const handleDeleteHeader = index => {
         const headersCopy = [...headers];
         headersCopy.splice(index, 1);
 
-        // validate
+        // TODO validate
 
         onModifyRequest({headers: headersCopy});
     };
@@ -71,25 +72,23 @@ function RequestHeaders(props) {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], key: key};
 
-        // validate
+        validators.headerKey(key, ruleId, 'request', index, warnings);
 
-        onModifyRequest({headers: headersCopy});
+        onModifyRequest({headers: headersCopy}, warnings);
     };
 
     const handleHeaderValueChange = (index, value) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], value: value};
 
-        // validate
+        validators.headerValue(value, ruleId, 'request', index, warnings);
 
-        onModifyRequest({headers: headersCopy});
+        onModifyRequest({headers: headersCopy}, warnings);
     };
 
     const handleHeaderValueIgnoreCaseChange = (index, ignoreCase) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], valueIgnoreCase: ignoreCase};
-
-        // validate
 
         onModifyRequest({headers: headersCopy});
     };
@@ -98,7 +97,7 @@ function RequestHeaders(props) {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], condition: condition};
 
-        // validate
+        // TODO validate
 
         onModifyRequest({headers: headersCopy});
     };
@@ -117,7 +116,7 @@ function RequestHeaders(props) {
              >
                  Add header
              </Button>}
-             {hasHeaders &&
+            {hasHeaders &&
              <div className={classes.fullWidth}>
                  <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
                      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
@@ -138,6 +137,8 @@ function RequestHeaders(props) {
                                  <RequestHeader
                                      header={header}
                                      index={index}
+                                     ruleId={ruleId}
+                                     warnings={warnings}
                                      onDeleteHeader={handleDeleteHeader}
                                      onKeyChange={handleHeaderKeyChange}
                                      onValueChange={handleHeaderValueChange}
@@ -156,6 +157,8 @@ function RequestHeaders(props) {
 RequestHeaders.propTypes = {
     headers: PropTypes.array.isRequired,
     headersExpanded: PropTypes.bool.isRequired,
+    ruleId: PropTypes.string.isRequired,
+    warnings: PropTypes.object.isRequired,
     onModifyRequest: PropTypes.func.isRequired
 };
 
