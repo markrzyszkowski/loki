@@ -24,7 +24,8 @@ public class MockOrchestrator {
     private static final String LOG_LEVEL = "-Dlogging.level.com.krzyszkowski.loki=%s";
     private static final String MOCK_ID = "-Dloki.mock.id=%s";
     private static final String AGENT_PORT = "-Dloki.mock.agent.port=%d";
-    private static final String BLOCK_REMOTE = "-Dloki.mock.block-remote-requests=%b";
+    private static final String BLOCK_REMOTE_REQUESTS = "-Dloki.mock.block-remote-requests=%b";
+    private static final String MAX_REQUEST_SIZE = "-Dloki.mock.maxRequestSize=%d";
     private static final String JAR = "-jar";
 
     private final Map<UUID, Process> processes = new HashMap<>();
@@ -45,7 +46,8 @@ public class MockOrchestrator {
     public void startMockProcess(UUID mockId,
                                  Profile profile,
                                  int port,
-                                 boolean blockRemoteRequests) throws IOException {
+                                 boolean blockRemoteRequests,
+                                 int maxRequestSize) throws IOException {
         var command = List.of(JAVA,
                               String.format(SERVER_PORT, port),
                               String.format(PROFILE, profile.toString().toLowerCase()),
@@ -55,7 +57,8 @@ public class MockOrchestrator {
                               String.format(LOG_LEVEL, logLevel),
                               String.format(MOCK_ID, mockId.toString()),
                               String.format(AGENT_PORT, agentPort),
-                              String.format(BLOCK_REMOTE, blockRemoteRequests),
+                              String.format(BLOCK_REMOTE_REQUESTS, blockRemoteRequests),
+                              String.format(MAX_REQUEST_SIZE, maxRequestSize),
                               JAR,
                               mockJar);
 

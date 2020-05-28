@@ -8,6 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Switch from '@material-ui/core/Switch';
@@ -26,7 +27,10 @@ const useStyles = makeStyles(theme => ({
     remote: {
         marginTop: 20,
         marginBottom: 10
-    }
+    },
+    request: {
+        marginBottom: 10
+    },
 }));
 
 function Settings(props) {
@@ -66,6 +70,16 @@ function Settings(props) {
         onChangeSettings(index, {blockRemoteRequests: blockRemoteRequests});
     };
 
+    const handleMaxRequestSizeChange = event => {
+        let maxRequestSize = parseInt(event.target.value);
+
+        if (maxRequestSize > 1024) {
+            maxRequestSize = 1024;
+        }
+
+        onChangeSettings(index, {maxRequestSize: maxRequestSize});
+    };
+
     return (
         <>
             <IconButton color="inherit" onClick={handleOpenDialog}>
@@ -103,6 +117,17 @@ function Settings(props) {
                                 control={<Switch checked={project.settings.blockRemoteRequests} onChange={handleBlockRemoteRequestsChange}/>}
                                 label="Block"/>
                         </FormGroup>
+                    </div>
+                    <div className={classes.request}>
+                        <FormLabel>Max request size</FormLabel>
+                        <TextField
+                            value={project.settings.maxRequestSize}
+                            type="number"
+                            inputProps={{min: 1, max: 1024}}
+                            onChange={handleMaxRequestSizeChange}
+                            InputProps={{endAdornment: <InputAdornment position="end">MB</InputAdornment>}}
+                            fullWidth
+                        />
                     </div>
                 </DialogContent>
                 <DialogActions>

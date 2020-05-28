@@ -57,7 +57,11 @@ public class DefaultMockService implements MockService {
         }
 
         try {
-            mockOrchestrator.startMockProcess(uuid, settings.getProfile(), port, settings.isBlockRemoteRequests());
+            mockOrchestrator.startMockProcess(uuid,
+                                              settings.getProfile(),
+                                              port,
+                                              settings.isBlockRemoteRequests(),
+                                              settings.getMaxRequestSize());
         } catch (IOException e) {
             log.error("Could not start mock process");
             log.error("Exception: {}", e.toString());

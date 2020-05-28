@@ -14,4 +14,5 @@ public class Settings {
     private Profile profile;
     private int port;
     private boolean blockRemoteRequests;
+    private int maxRequestSize;
 }
