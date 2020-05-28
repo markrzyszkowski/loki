@@ -25,9 +25,9 @@ function validateUrls(project, warnings) {
     for (let url in duplicates) {
         if (duplicates[url].length > 1) {
             duplicates[url].forEach(id => {
-                warnings[id] = {...warnings[id]};
+                warnings[id] = warnings[id] || {};
                 if (!warnings[id]['url']) {
-                    warnings[id] = {...warnings[id], url: 'Mock URL must be unique in project scope'};
+                    warnings[id]['url'] = 'Mock URL must be unique in project scope';
                 }
             });
         }
@@ -43,10 +43,12 @@ function validateUrl(tab, warnings) {
                 delete warnings[tab.id]['url'];
             }
         } else {
-            warnings[tab.id] = {...warnings[tab.id], url: 'Mock URL must be valid'};
+            warnings[tab.id] = warnings[tab.id] || {};
+            warnings[tab.id]['url'] = 'Mock URL must be valid';
         }
     } else {
-        warnings[tab.id] = {...warnings[tab.id], url: 'Mock URL cannot be empty'};
+        warnings[tab.id] = warnings[tab.id] || {};
+        warnings[tab.id]['url'] = 'Mock URL cannot be empty';
     }
 }
 
