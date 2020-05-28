@@ -49,7 +49,7 @@ function Warnings(props) {
                 <DialogContent>
                     <List>
                         {Object.entries(state.warnings)
-                               .flatMap(([tab, warnings]) => Object.entries(warnings).map(([field, warning]) =>
+                               .flatMap(([tab, warnings]) => Object.entries(warnings).map(([_, warning]) =>
                                    <WarningsItem
                                        name={project.tabs.find(t => t.id === tab).name}
                                        tab={tab}
