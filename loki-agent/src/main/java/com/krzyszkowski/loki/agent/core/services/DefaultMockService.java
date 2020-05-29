@@ -77,10 +77,10 @@ public class DefaultMockService implements MockService {
         try {
             result.get(10, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            // log.error()
+            // TODO log.error()
             return Optional.empty();
         } catch (CancellationException e) { // ok
-            // log.info()
+            // TODO log.info()
             var finalPort = port;
             return configurationRepository.findUrls(uuid)
                                           .map(urls -> AppliedConfiguration.builder()
