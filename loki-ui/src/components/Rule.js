@@ -32,12 +32,15 @@ function Rule(props) {
         onModifyRule(index, {response: {...rule.response, ...properties}}, warnings);
     };
 
+    const hasWarnings = Object.keys(warnings).filter(id => id.startsWith(`${rule.id}`)).length > 0;
+
     return (
         <ExpansionPanel square expanded={rule.expanded} onChange={handleStateChange}>
             <RuleHeading
                 rule={rule}
                 index={index}
                 lastIndex={lastIndex}
+                hasWarnings={hasWarnings}
                 onShiftRule={onShiftRule}
                 onModifyRule={onModifyRule}
                 onDuplicateRule={onDuplicateRule}

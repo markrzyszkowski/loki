@@ -41,6 +41,10 @@ const useStyles = makeStyles(theme => ({
     },
     button: {
         marginBottom: theme.spacing(2)
+    },
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
     }
 }));
 
@@ -115,11 +119,13 @@ function RequestHeaders(props) {
         onModifyRequest({headers: headersCopy}, warningsCopy);
     };
 
-    const contentClass = classes.content;
     const hasHeaders = headers.length > 0;
+    const hasWarnings = hasHeaders
+                        && Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-request-header`)).length > 0;
+    const headingClass = hasWarnings ? classes.warning : null;
 
     return (
-        <div className={contentClass}>
+        <div className={classes.content}>
             {!hasHeaders &&
              <Button
                  variant="contained"
@@ -133,7 +139,7 @@ function RequestHeaders(props) {
              <div className={classes.fullWidth}>
                  <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
                      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                         <Typography>Headers</Typography>
+                         <Typography className={headingClass}>Headers</Typography>
                      </ExpansionPanelSummary>
                      <ExpansionPanelDetails>
                          <div className={classes.headers}>
@@ -148,6 +154,7 @@ function RequestHeaders(props) {
                              </Button>
                              {headers.map((header, index) =>
                                  <RequestHeader
+                                     key={index}
                                      header={header}
                                      index={index}
                                      ruleId={ruleId}

@@ -10,16 +10,25 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 
+const useStyles = makeStyles(theme => ({
+    warning: {
+        color: 'red'
+    }
+}));
+
 function RuleHeading(props) {
-    const {rule, index, lastIndex, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
+    const {rule, index, lastIndex, hasWarnings, onShiftRule, onModifyRule, onDuplicateRule, onDeleteRule} = props;
 
     const [menuPosition, setMenuPosition] = useState(null);
     const [showDialog, setShowDialog] = useState(false);
     const [dialogError, setDialogError] = useState(false);
+
+    const classes = useStyles();
 
     const handleOpenMenu = event => {
         event.preventDefault();
@@ -94,6 +103,8 @@ function RuleHeading(props) {
         onDeleteRule(index);
     };
 
+    const labelClass = hasWarnings ? classes.warning : null;
+
     return (
         <>
             <ExpansionPanelSummary expandIcon={<ExpandMore/>} onContextMenu={handleOpenMenu}>
@@ -116,6 +127,7 @@ function RuleHeading(props) {
                     onFocus={ignoreEvent}
                     control={<Checkbox checked={rule.active} onChange={handleActiveChange}/>}
                     label={<b>{rule.name}</b>}
+                    className={labelClass}
                 />
                 <Menu open={!!menuPosition} onClose={handleCloseMenu} anchorReference="anchorPosition" anchorPosition={menuPosition}>
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
@@ -154,6 +166,7 @@ RuleHeading.propTypes = {
     rule: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     lastIndex: PropTypes.number.isRequired,
+    hasWarnings: PropTypes.bool.isRequired,
     onShiftRule: PropTypes.func.isRequired,
     onModifyRule: PropTypes.func.isRequired,
     onDuplicateRule: PropTypes.func.isRequired,

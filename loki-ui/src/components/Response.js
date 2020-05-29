@@ -21,6 +21,10 @@ const useStyles = makeStyles(theme => ({
     },
     fields: {
         width: '100%'
+    },
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
     }
 }));
 
@@ -52,10 +56,13 @@ function Response(props) {
         }
     };
 
+    const hasWarnings = Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-response`)).length > 0;
+    const headingClass = hasWarnings ? classes.warning : null;
+
     return (
         <ExpansionPanel square expanded={response.expanded} onChange={handleStateChange}>
             <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                <Typography>Response</Typography>
+                <Typography className={headingClass}>Response</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.content}>
                 <FormGroup row className={classes.fields}>

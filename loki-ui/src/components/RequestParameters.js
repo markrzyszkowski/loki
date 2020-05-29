@@ -41,6 +41,10 @@ const useStyles = makeStyles(theme => ({
     },
     button: {
         marginBottom: theme.spacing(2)
+    },
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
     }
 }));
 
@@ -122,11 +126,13 @@ function RequestParameters(props) {
         onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
 
-    const contentClass = classes.content;
     const hasParameters = parameters.length > 0;
+    const hasWarnings = hasParameters
+                        && Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-request-parameter`)).length > 0;
+    const headingClass = hasWarnings ? classes.warning : null;
 
     return (
-        <div className={contentClass}>
+        <div className={classes.content}>
             {!hasParameters &&
              <Button
                  variant="contained"
@@ -136,41 +142,42 @@ function RequestParameters(props) {
              >
                  Add parameter
              </Button>}
-             {hasParameters &&
-              <div className={classes.fullWidth}>
-                  <ExpansionPanel square expanded={parametersExpanded} onChange={handleStateChange}>
-                      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                          <Typography>Parameters</Typography>
-                      </ExpansionPanelSummary>
-                      <ExpansionPanelDetails>
-                          <div className={classes.parameters}>
-                              <Button
-                                  variant="contained"
-                                  color="secondary"
-                                  startIcon={<Add/>}
-                                  onClick={handleAddParameter}
-                                  className={classes.button}
-                              >
-                                  Add parameter
-                              </Button>
-                              {parameters.map((parameter, index) =>
-                                  <RequestParameter
-                                    parameter={parameter}
-                                    index={index}
-                                    ruleId={ruleId}
-                                    warnings={warnings}
-                                    onDeleteParameter={handleDeleteParameter}
-                                    onKeyChange={handleParameterKeyChange}
-                                    onKeyIgnoreCaseChange={handleParameterKeyIgnoreCaseChange}
-                                    onValueChange={handleParameterValueChange}
-                                    onValueIgnoreCaseChange={handleParameterValueIgnoreCaseChange}
-                                    onConditionChange={handleParameterConditionChange}
-                                  />
-                              )}
-                          </div>
-                      </ExpansionPanelDetails>
-                  </ExpansionPanel>
-              </div>}
+            {hasParameters &&
+             <div className={classes.fullWidth}>
+                 <ExpansionPanel square expanded={parametersExpanded} onChange={handleStateChange}>
+                     <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                         <Typography className={headingClass}>Parameters</Typography>
+                     </ExpansionPanelSummary>
+                     <ExpansionPanelDetails>
+                         <div className={classes.parameters}>
+                             <Button
+                                 variant="contained"
+                                 color="secondary"
+                                 startIcon={<Add/>}
+                                 onClick={handleAddParameter}
+                                 className={classes.button}
+                             >
+                                 Add parameter
+                             </Button>
+                             {parameters.map((parameter, index) =>
+                                 <RequestParameter
+                                     key={index}
+                                     parameter={parameter}
+                                     index={index}
+                                     ruleId={ruleId}
+                                     warnings={warnings}
+                                     onDeleteParameter={handleDeleteParameter}
+                                     onKeyChange={handleParameterKeyChange}
+                                     onKeyIgnoreCaseChange={handleParameterKeyIgnoreCaseChange}
+                                     onValueChange={handleParameterValueChange}
+                                     onValueIgnoreCaseChange={handleParameterValueIgnoreCaseChange}
+                                     onConditionChange={handleParameterConditionChange}
+                                 />
+                             )}
+                         </div>
+                     </ExpansionPanelDetails>
+                 </ExpansionPanel>
+             </div>}
         </div>
     );
 }

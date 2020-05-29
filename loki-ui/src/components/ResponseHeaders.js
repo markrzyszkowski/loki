@@ -41,6 +41,10 @@ const useStyles = makeStyles(theme => ({
     },
     button: {
         marginBottom: theme.spacing(2)
+    },
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
     }
 }));
 
@@ -94,11 +98,13 @@ function ResponseHeaders(props) {
         onModifyResponse({headers: headersCopy}, warningsCopy);
     };
 
-    const contentClass = classes.content;
     const hasHeaders = headers.length > 0;
+    const hasWarnings = hasHeaders
+                        && Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-response-header`)).length > 0;
+    const headingClass = hasWarnings ? classes.warning : null;
 
     return (
-        <div className={contentClass}>
+        <div className={classes.content}>
             {!hasHeaders &&
              <Button
                  variant="contained"
@@ -112,7 +118,7 @@ function ResponseHeaders(props) {
              <div className={classes.fullWidth}>
                  <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
                      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                         <Typography>Headers</Typography>
+                         <Typography className={headingClass}>Headers</Typography>
                      </ExpansionPanelSummary>
                      <ExpansionPanelDetails>
                          <div className={classes.headers}>
@@ -127,6 +133,7 @@ function ResponseHeaders(props) {
                              </Button>
                              {headers.map((header, index) =>
                                  <ResponseHeader
+                                     key={index}
                                      header={header}
                                      index={index}
                                      ruleId={ruleId}

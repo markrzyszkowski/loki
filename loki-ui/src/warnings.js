@@ -79,6 +79,8 @@ function shiftIndexedWarnings(condition, index, warnings) {
                   } else {
                       modified = {...modified, [id]: warning};
                   }
+              } else {
+                  modified = {...modified, [id]: warning};
               }
           });
 

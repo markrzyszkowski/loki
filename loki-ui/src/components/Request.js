@@ -34,6 +34,10 @@ const useStyles = makeStyles(theme => ({
     },
     select: {
         margin: theme.spacing(1)
+    },
+    warning: {
+        color: 'red',
+        fontWeight: 'bold'
     }
 }));
 
@@ -103,12 +107,14 @@ function Request(props) {
         onModifyRequest({bodyIgnoreWhitespace: ignoreWhitespace});
     };
 
+    const hasWarnings = Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-request`)).length > 0;
+    const headingClass = hasWarnings ? classes.warning : null;
     const showBodyField = !request.bodyCondition.includes('PRESENT');
 
     return (
         <ExpansionPanel square expanded={request.expanded} onChange={handleStateChange}>
             <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                <Typography>Request</Typography>
+                <Typography className={headingClass}>Request</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.content}>
                 <FormGroup row className={classes.fields}>
