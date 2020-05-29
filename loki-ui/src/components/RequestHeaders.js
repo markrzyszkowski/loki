@@ -9,7 +9,7 @@ import * as PropTypes from 'prop-types';
 import RequestHeader from './RequestHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultHeaderWithConditions } from '../defaults';
-import { validators } from '../warnings';
+import { deleteWarnings, shiftIndexedWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -54,36 +54,44 @@ function RequestHeaders(props) {
     };
 
     const handleAddHeader = () => {
-        onModifyRequest({headers: [...headers, defaultHeaderWithConditions()]});
+        const header = defaultHeaderWithConditions();
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        validators.headerKey(header.key, ruleId, 'request', headers.length, warningsCopy);
+        validators.headerValue(header.value, ruleId, 'request', headers.length, warningsCopy);
+
+        onModifyRequest({headers: [...headers, header]}, warningsCopy);
     };
 
     const handleDeleteHeader = index => {
         const headersCopy = [...headers];
         headersCopy.splice(index, 1);
 
-        // TODO validate
+        let warningsCopy = {...warnings};
+        deleteWarnings(`${ruleId}-request-header-${index}`, warningsCopy);
+        warningsCopy = shiftIndexedWarnings('request-header', index, warningsCopy);
 
-        onModifyRequest({headers: headersCopy});
+        onModifyRequest({headers: headersCopy}, warningsCopy);
     };
 
     const handleHeaderKeyChange = (index, key) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], key: key};
 
-        validators.headerKey(key, ruleId, 'request', index, warnings);
+        const warningsCopy = {...warnings};
+        validators.headerKey(key, ruleId, 'request', index, warningsCopy);
 
-        onModifyRequest({headers: headersCopy}, warnings);
+        onModifyRequest({headers: headersCopy}, warningsCopy);
     };
 
     const handleHeaderValueChange = (index, value) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], value: value};
 
-        validators.headerValue(value, ruleId, 'request', index, warnings);
+        const warningsCopy = {...warnings};
+        validators.headerValue(value, ruleId, 'request', index, warningsCopy);
 
-        onModifyRequest({headers: headersCopy}, warnings);
+        onModifyRequest({headers: headersCopy}, warningsCopy);
     };
 
     const handleHeaderValueIgnoreCaseChange = (index, ignoreCase) => {
@@ -97,9 +105,14 @@ function RequestHeaders(props) {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], condition: condition};
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        if (!headers[index].condition.includes('PRESENT') && condition.includes('PRESENT')) {
+            deleteWarnings(`${ruleId}-request-header-${index}-value`, warningsCopy);
+        } else if (headers[index].condition.includes('PRESENT') && !condition.includes('PRESENT')) {
+            validators.headerValue(headersCopy[index].value, ruleId, 'request', index, warningsCopy);
+        }
 
-        onModifyRequest({headers: headersCopy});
+        onModifyRequest({headers: headersCopy}, warningsCopy);
     };
 
     const contentClass = classes.content;

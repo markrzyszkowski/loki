@@ -9,7 +9,7 @@ import * as PropTypes from 'prop-types';
 import ResponseHeader from './ResponseHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultHeader } from '../defaults';
-import { validators } from '../warnings';
+import { deleteWarnings, shiftIndexedWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -54,36 +54,44 @@ function ResponseHeaders(props) {
     };
 
     const handleAddHeader = () => {
-        onModifyResponse({headers: [...headers, defaultHeader()]});
+        const header = defaultHeader();
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        validators.headerKey(header.key, ruleId, 'response', headers.length, warningsCopy);
+        validators.headerValue(header.value, ruleId, 'response', headers.length, warningsCopy);
+
+        onModifyResponse({headers: [...headers, header]}, warningsCopy);
     };
 
     const handleDeleteHeader = index => {
         const headersCopy = [...headers];
         headersCopy.splice(index, 1);
 
-        // TODO validate
+        let warningsCopy = {...warnings};
+        deleteWarnings(`${ruleId}-response-header-${index}`, warningsCopy);
+        warningsCopy = shiftIndexedWarnings('response-header', index, warningsCopy);
 
-        onModifyResponse({headers: headersCopy});
+        onModifyResponse({headers: headersCopy}, warningsCopy);
     };
 
     const handleHeaderKeyChange = (index, key) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], key: key};
 
-        validators.headerKey(key, ruleId, 'response', index, warnings);
+        const warningsCopy = {...warnings};
+        validators.headerKey(key, ruleId, 'response', index, warningsCopy);
 
-        onModifyResponse({headers: headersCopy}, warnings);
+        onModifyResponse({headers: headersCopy}, warningsCopy);
     };
 
     const handleHeaderValueChange = (index, value) => {
         const headersCopy = [...headers];
         headersCopy[index] = {...headersCopy[index], value: value};
 
-        validators.headerValue(value, ruleId, 'response', index, warnings);
+        const warningsCopy = {...warnings};
+        validators.headerValue(value, ruleId, 'response', index, warningsCopy);
 
-        onModifyResponse({headers: headersCopy}, warnings);
+        onModifyResponse({headers: headersCopy}, warningsCopy);
     };
 
     const contentClass = classes.content;

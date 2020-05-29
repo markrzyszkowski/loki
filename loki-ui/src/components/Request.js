@@ -14,7 +14,8 @@ import * as PropTypes from 'prop-types';
 import RequestHeaders from './RequestHeaders';
 import RequestParameters from './RequestParameters';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
-import { validators } from '../warnings';
+import { deleteWarnings, validators } from '../warnings';
+import FormLabel from '@material-ui/core/FormLabel';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -53,9 +54,10 @@ function Request(props) {
         const method = event.target.value.trim().toUpperCase();
 
         if (method !== request.method) {
-            validators.httpMethod(method, ruleId, warnings);
+            const warningsCopy = {...warnings};
+            validators.httpMethod(method, ruleId, warningsCopy);
 
-            onModifyRequest({method: method}, warnings);
+            onModifyRequest({method: method}, warningsCopy);
         }
     };
 
@@ -69,18 +71,24 @@ function Request(props) {
         const body = event.target.value;
 
         if (body !== request.body) {
-            validators.body(body, ruleId, 'request', warnings);
+            const warningsCopy = {...warnings};
+            validators.body(body, ruleId, warningsCopy);
 
-            onModifyRequest({body: body}, warnings);
+            onModifyRequest({body: body}, warningsCopy);
         }
     };
 
     const handleBodyConditionChange = event => {
         const condition = event.target.value;
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        if (!request.bodyCondition.includes('PRESENT') && condition.includes('PRESENT')) {
+            deleteWarnings(`${ruleId}-request-body`, warningsCopy);
+        } else if (request.bodyCondition.includes('PRESENT') && !condition.includes('PRESENT')) {
+            validators.body(request.body, ruleId, warningsCopy);
+        }
 
-        onModifyRequest({bodyCondition: condition});
+        onModifyRequest({bodyCondition: condition}, warningsCopy);
     };
 
     const handleBodyIgnoreCaseChange = event => {
@@ -94,6 +102,8 @@ function Request(props) {
 
         onModifyRequest({bodyIgnoreWhitespace: ignoreWhitespace});
     };
+
+    const showBodyField = !request.bodyCondition.includes('PRESENT');
 
     return (
         <ExpansionPanel square expanded={request.expanded} onChange={handleStateChange}>
@@ -113,8 +123,8 @@ function Request(props) {
                         className={classes.field}
                     />
                     <Select value={request.methodCondition} onChange={handleMethodConditionChange} className={classes.select}>
-                        <MenuItem value='EQUAL'>EQUAL</MenuItem>
-                        <MenuItem value='NOT_EQUAL'>NOT EQUAL</MenuItem>
+                        <MenuItem value="EQUAL">EQUAL</MenuItem>
+                        <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
                     </Select>
                 </FormGroup>
                 <RequestParameters
@@ -132,25 +142,27 @@ function Request(props) {
                     onModifyRequest={onModifyRequest}
                 />
                 <FormGroup row className={classes.fields}>
-                    <TextField
-                        error={!!warnings[`${ruleId}-request-body`]}
-                        helperText={warnings[`${ruleId}-request-body`]}
-                        label="Body"
-                        size="small"
-                        placeholder="Enter body content"
-                        multiline
-                        rowsMax={20}
-                        value={request.body}
-                        onChange={handleBodyChange}
-                        className={classes.field}
-                    />
+                    {!showBodyField && <FormLabel>Body</FormLabel>}
+                    {showBodyField &&
+                     <TextField
+                         error={!!warnings[`${ruleId}-request-body`]}
+                         helperText={warnings[`${ruleId}-request-body`]}
+                         label="Body"
+                         size="small"
+                         placeholder="Enter body content"
+                         multiline
+                         rowsMax={20}
+                         value={request.body}
+                         onChange={handleBodyChange}
+                         className={classes.field}
+                     />}
                     <Select value={request.bodyCondition} onChange={handleBodyConditionChange} className={classes.select}>
-                        <MenuItem value='PRESENT'>PRESENT</MenuItem>
-                        <MenuItem value='NOT_PRESENT'>NOT PRESENT</MenuItem>
-                        <MenuItem value='EQUAL'>EQUAL</MenuItem>
-                        <MenuItem value='NOT_EQUAL'>NOT EQUAL</MenuItem>
-                        <MenuItem value='CONTAINS'>CONTAINS</MenuItem>
-                        <MenuItem value='NOT_CONTAINS'>NOT CONTAINS</MenuItem>
+                        <MenuItem value="PRESENT">PRESENT</MenuItem>
+                        <MenuItem value="NOT_PRESENT">NOT PRESENT</MenuItem>
+                        <MenuItem value="EQUAL">EQUAL</MenuItem>
+                        <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
+                        <MenuItem value="CONTAINS">CONTAINS</MenuItem>
+                        <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
                     </Select>
                     <FormControlLabel
                         onClick={ignoreEvent}

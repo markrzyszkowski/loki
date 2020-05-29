@@ -7,8 +7,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Add } from '@material-ui/icons';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
+import { v4 as uuid } from 'uuid';
 import Rule from './Rule';
 import { defaultRule } from '../defaults';
+import { copyWarnings, deleteWarnings } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -43,17 +45,15 @@ function ProjectContent(props) {
     const handleUrlChange = event => {
         const url = event.target.value;
 
-        // TODO validate
-
         if (url !== tab.url) {
-            onModifyTab(index, {url: url}, warnings);
+            const warningsCopy = {...warnings};
+
+            onModifyTab(index, {url: url}, warningsCopy);
         }
     };
 
     const handleAddRule = () => {
         onModifyTab(index, {rules: [...tab.rules, defaultRule()]});
-
-        // TODO validate
     };
 
     const handleModifyRule = (ruleIndex, properties, warnings) => {
@@ -79,20 +79,24 @@ function ProjectContent(props) {
     const handleDuplicateRule = ruleIndex => {
         const ruleCopy = {...tab.rules[ruleIndex]};
 
-        const rulesCopy = [...tab.rules, {...ruleCopy, name: `Copy of ${ruleCopy.name}`}];
+        const ruleId = uuid();
 
-        // TODO validate
+        const rulesCopy = [...tab.rules, {...ruleCopy, id: ruleId, name: `Copy of ${ruleCopy.name}`}];
 
-        onModifyTab(index, {rules: rulesCopy});
+        const warningsCopy = {...warnings};
+        copyWarnings(`${tab.rules[ruleIndex].id}`, ruleId, warningsCopy);
+
+        onModifyTab(index, {rules: rulesCopy}, warningsCopy);
     };
 
     const handleDeleteRule = ruleIndex => {
         const rulesCopy = [...tab.rules];
         rulesCopy.splice(ruleIndex, 1);
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        deleteWarnings(`${tab.rules[ruleIndex].id}`, warningsCopy);
 
-        onModifyTab(index, {rules: rulesCopy});
+        onModifyTab(index, {rules: rulesCopy}, warningsCopy);
     };
 
     const showMockUrl = settings.profile === 'STATIC' && isRunning && !!urls[tab.id];

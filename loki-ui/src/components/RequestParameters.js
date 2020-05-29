@@ -9,7 +9,7 @@ import * as PropTypes from 'prop-types';
 import RequestParameter from './RequestParameter';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { defaultParameterWithConditions } from '../defaults';
-import { validators } from '../warnings';
+import { deleteWarnings, shiftIndexedWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -54,27 +54,34 @@ function RequestParameters(props) {
     };
 
     const handleAddParameter = () => {
-        onModifyRequest({parameters: [...parameters, defaultParameterWithConditions()]});
+        const parameter = defaultParameterWithConditions();
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        validators.parameterKey(parameter.key, ruleId, parameters.length, warningsCopy);
+        validators.parameterValue(parameter.value, ruleId, parameters.length, warningsCopy);
+
+        onModifyRequest({parameters: [...parameters, parameter]}, warningsCopy);
     };
 
     const handleDeleteParameter = index => {
         const parametersCopy = [...parameters];
         parametersCopy.splice(index, 1);
 
-        // TODO validate
+        let warningsCopy = {...warnings};
+        deleteWarnings(`${ruleId}-request-parameter-${index}`, warningsCopy);
+        warningsCopy = shiftIndexedWarnings('request-parameter', index, warningsCopy);
 
-        onModifyRequest({parameters: parametersCopy});
+        onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
 
     const handleParameterKeyChange = (index, key) => {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], key: key};
 
-        validators.parameterKey(key, ruleId, index, warnings);
+        const warningsCopy = {...warnings};
+        validators.parameterKey(key, ruleId, index, warningsCopy);
 
-        onModifyRequest({parameters: parametersCopy}, warnings);
+        onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
 
     const handleParameterKeyIgnoreCaseChange = (index, ignoreCase) => {
@@ -88,9 +95,10 @@ function RequestParameters(props) {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], value: value};
 
-        validators.parameterValue(value, ruleId, index, warnings);
+        const warningsCopy = {...warnings};
+        validators.parameterValue(value, ruleId, index, warningsCopy);
 
-        onModifyRequest({parameters: parametersCopy}, warnings);
+        onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
 
     const handleParameterValueIgnoreCaseChange = (index, ignoreCase) => {
@@ -104,9 +112,14 @@ function RequestParameters(props) {
         const parametersCopy = [...parameters];
         parametersCopy[index] = {...parametersCopy[index], condition: condition};
 
-        // TODO validate
+        const warningsCopy = {...warnings};
+        if (!parameters[index].condition.includes('PRESENT') && condition.includes('PRESENT')) {
+            deleteWarnings(`${ruleId}-request-parameter-${index}-value`, warningsCopy);
+        } else if (parameters[index].condition.includes('PRESENT') && !condition.includes('PRESENT')) {
+            validators.parameterValue(parametersCopy[index].value, ruleId, index, warningsCopy);
+        }
 
-        onModifyRequest({parameters: parametersCopy});
+        onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
 
     const contentClass = classes.content;

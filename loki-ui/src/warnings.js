@@ -1,6 +1,56 @@
 function checkWarnings(project, state) {
     validateUrls(project, state.warnings);
+
+    project.tabs.forEach(tab => {
+        tab.rules.forEach(rule => {
+            validateHttpMethod(rule.request.method, rule.id, state.warnings[tab.id]);
+
+            rule.request.headers.forEach((header, index) => {
+                validateHeaderKey(header.key, rule.id, 'request', index, state.warnings[tab.id]);
+
+                if (!header.condition.includes('PRESENT')) {
+                    validateHeaderValue(header.value, rule.id, 'request', index, state.warnings[tab.id]);
+                }
+            });
+
+            rule.request.parameters.forEach((parameter, index) => {
+                validateParameterKey(parameter.key, rule.id, index, state.warnings[tab.id]);
+
+                if (!parameter.condition.includes('PRESENT')) {
+                    validateParameterValue(parameter.key, rule.id, index, state.warnings[tab.id]);
+                }
+            });
+
+            if (!rule.request.bodyCondition.includes('PRESENT')) {
+                validateBody(rule.request.body, rule.id, state.warnings[tab.id]);
+            }
+
+            validateStatusCode(rule.response.statusCode, rule.id, state.warnings[tab.id]);
+
+            rule.response.headers.forEach((header, index) => {
+                validateHeaderKey(header.key, rule.id, 'response', index, state.warnings[tab.id]);
+                validateHeaderValue(header.value, rule.id, 'response', index, state.warnings[tab.id]);
+            });
+        });
+    });
+
     return state;
+}
+
+function copyWarnings(prefix, ruleId, warnings) {
+    Object.entries(warnings)
+          .filter(([id]) => id.startsWith(prefix))
+          .forEach(([id, warning]) => {
+              warnings[id.replace(prefix, ruleId)] = warning;
+          });
+}
+
+function deleteWarnings(prefix, warnings) {
+    Object.keys(warnings)
+          .filter(id => id.startsWith(prefix))
+          .forEach(id => {
+              delete warnings[id];
+          });
 }
 
 function deleteEmptyWarnings(warnings) {
@@ -10,6 +60,29 @@ function deleteEmptyWarnings(warnings) {
           .forEach(id => {
               delete warnings[id];
           });
+}
+
+function shiftIndexedWarnings(condition, index, warnings) {
+    const regex = new RegExp(`${condition}-(\\d+)`);
+
+    let modified = {};
+
+    Object.entries(warnings)
+          .forEach(([id, warning]) => {
+              const match = regex.exec(id);
+
+              if (match) {
+                  const idx = parseInt(match[1]);
+
+                  if (idx > index) {
+                      modified = {...modified, [id.replace(regex, `${condition}-${idx - 1}`)]: warning};
+                  } else {
+                      modified = {...modified, [id]: warning};
+                  }
+              }
+          });
+
+    return modified;
 }
 
 function validateUrls(project, warnings) {
@@ -144,8 +217,8 @@ function validateHeaderValue(value, ruleId, rqrs, index, warnings) {
     }
 }
 
-function validateBody(body, ruleId, rqrs, warnings) {
-    const field = `${ruleId}-${rqrs}-body`;
+function validateBody(body, ruleId, warnings) {
+    const field = `${ruleId}-request-body`;
 
     if (isNotEmpty(body)) {
         if (warnings) {
@@ -238,4 +311,12 @@ function warningsCount(warnings) {
     return Object.entries(warnings).flatMap(([_, tab]) => Object.keys(tab)).length;
 }
 
-export { checkWarnings, validators, warningsPresent, warningsCount };
+export {
+    checkWarnings,
+    copyWarnings,
+    deleteWarnings,
+    shiftIndexedWarnings,
+    validators,
+    warningsPresent,
+    warningsCount
+};

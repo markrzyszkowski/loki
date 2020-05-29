@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Rule {
 
+    private String id;
     private String name;
     private Request request;
     private Response response;

@@ -37,8 +37,6 @@ function Project(props) {
     const handleAddTab = () => {
         const tabsCopy = [...project.tabs, defaultTab()];
 
-        // TODO validate
-
         const warningsCopy = {...state.warnings};
         validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
@@ -49,19 +47,15 @@ function Project(props) {
         const tabsCopy = [...project.tabs];
         tabsCopy[tabIndex] = {...tabsCopy[tabIndex], ...properties};
 
-        // TODO validate
-
         const warningsCopy = {...state.warnings};
-        warningsCopy[project.tabs[state.activeTab].id] = {...warningsCopy[project.tabs[state.activeTab].id], ...warnings};
-        // if (validatorType) {
-        //     const validate = validators[validatorType];
-        //
-        //     if (validatorType === 'url') {
-        //         validate({...project, tabs: tabsCopy}, warningsCopy);
-        //     } else {
-        //         // non url field validation
-        //     }
-        // }
+
+        if (warnings) {
+            warningsCopy[project.tabs[state.activeTab].id] = {...warnings};
+
+            if (properties['url']) {
+                validators.url({...project, tabs: tabsCopy}, warningsCopy);
+            }
+        }
 
         onModifyProjectAndState(index, {tabs: tabsCopy}, {modified: true, warnings: warningsCopy});
     };
@@ -69,14 +63,12 @@ function Project(props) {
     const handleDuplicateTab = tabIndex => {
         const tabCopy = {...project.tabs[tabIndex]};
 
-        // TODO validate
-
         const tabId = uuid();
 
         const tabsCopy = [...project.tabs, {...tabCopy, id: tabId, name: `Copy of ${tabCopy.name}`}];
 
         const warningsCopy = {...state.warnings};
-        warningsCopy[tabId] = warningsCopy[project.tabs[tabIndex].id];
+        warningsCopy[tabId] = {...warningsCopy[project.tabs[tabIndex].id]};
         validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
         onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: project.tabs.length, warnings: warningsCopy});
@@ -86,8 +78,6 @@ function Project(props) {
         if (project.tabs.length) {
             const tabsCopy = [...project.tabs];
             tabsCopy.splice(tabIndex, 1);
-
-            // TODO validate
 
             const warningsCopy = {...state.warnings};
             delete warningsCopy[project.tabs[tabIndex].id];

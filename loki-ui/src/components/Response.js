@@ -37,9 +37,10 @@ function Response(props) {
         const statusCode = event.target.value.trim();
 
         if (statusCode !== response.statusCode) {
-            validators.statusCode(statusCode, ruleId, warnings);
+            const warningsCopy = {...warnings};
+            validators.statusCode(statusCode, ruleId, warningsCopy);
 
-            onModifyResponse({statusCode: statusCode});
+            onModifyResponse({statusCode: statusCode}, warningsCopy);
         }
     };
 

@@ -84,6 +84,8 @@ function RequestParameter(props) {
         onConditionChange(index, condition);
     };
 
+    const showValueField = !parameter.condition.includes('PRESENT');
+
     return (
         <FormGroup row className={classes.fields}>
             <TextField
@@ -109,21 +111,24 @@ function RequestParameter(props) {
                 <MenuItem value="CONTAINS">CONTAINS</MenuItem>
                 <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
             </Select>
-            <TextField
-                error={!!warnings[`${ruleId}-request-parameter-${index}-value`]}
-                helperText={warnings[`${ruleId}-request-parameter-${index}-value`]}
-                label="Value"
-                size="small"
-                value={parameter.value}
-                onChange={handleValueChange}
-                className={classes.field}
-            />
-            <FormControlLabel
-                onClick={ignoreEvent}
-                onFocus={ignoreEvent}
-                control={<Checkbox checked={parameter.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
-                label="ignore case"
-            />
+            {showValueField &&
+             <>
+                 <TextField
+                     error={!!warnings[`${ruleId}-request-parameter-${index}-value`]}
+                     helperText={warnings[`${ruleId}-request-parameter-${index}-value`]}
+                     label="Value"
+                     size="small"
+                     value={parameter.value}
+                     onChange={handleValueChange}
+                     className={classes.field}
+                 />
+                 <FormControlLabel
+                     onClick={ignoreEvent}
+                     onFocus={ignoreEvent}
+                     control={<Checkbox checked={parameter.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
+                     label="ignore case"
+                 />
+             </>}
             <IconButton onClick={handleDeleteParameter} className={classes.button}>
                 <Delete/>
             </IconButton>

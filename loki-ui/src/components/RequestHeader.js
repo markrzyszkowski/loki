@@ -77,6 +77,8 @@ function RequestHeader(props) {
         onConditionChange(index, condition);
     };
 
+    const showValueField = !header.condition.includes('PRESENT');
+
     return (
         <FormGroup row className={classes.fields}>
             <TextField
@@ -96,21 +98,24 @@ function RequestHeader(props) {
                 <MenuItem value="CONTAINS">CONTAINS</MenuItem>
                 <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
             </Select>
-            <TextField
-                error={!!warnings[`${ruleId}-request-header-${index}-value`]}
-                helperText={warnings[`${ruleId}-request-header-${index}-value`]}
-                label="Value"
-                size="small"
-                value={header.value}
-                onChange={handleValueChange}
-                className={classes.field}
-            />
-            <FormControlLabel
-                onClick={ignoreEvent}
-                onFocus={ignoreEvent}
-                control={<Checkbox checked={header.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
-                label="ignore case"
-            />
+            {showValueField &&
+            <>
+                <TextField
+                    error={!!warnings[`${ruleId}-request-header-${index}-value`]}
+                    helperText={warnings[`${ruleId}-request-header-${index}-value`]}
+                    label="Value"
+                    size="small"
+                    value={header.value}
+                    onChange={handleValueChange}
+                    className={classes.field}
+                />
+                <FormControlLabel
+                    onClick={ignoreEvent}
+                    onFocus={ignoreEvent}
+                    control={<Checkbox checked={header.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
+                    label="ignore case"
+                />
+            </>}
             <IconButton onClick={handleDeleteHeader} className={classes.button}>
                 <Delete/>
             </IconButton>
