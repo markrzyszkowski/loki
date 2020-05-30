@@ -52,7 +52,7 @@ function Project(props) {
         if (warnings) {
             warningsCopy[project.tabs[state.activeTab].id] = {...warnings};
 
-            if (properties['url']) {
+            if (properties.hasOwnProperty('url')) {
                 validators.url({...project, tabs: tabsCopy}, warningsCopy);
             }
         }

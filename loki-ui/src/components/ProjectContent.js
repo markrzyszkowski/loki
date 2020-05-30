@@ -43,7 +43,7 @@ function ProjectContent(props) {
     const classes = useStyles();
 
     const handleUrlChange = event => {
-        const url = event.target.value;
+        const url = event.target.value.trim();
 
         if (url !== tab.url) {
             const warningsCopy = {...warnings};
