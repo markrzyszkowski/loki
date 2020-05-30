@@ -4,7 +4,7 @@ const defaultTab = () => {
     return {
         id: uuid(),
         name: 'Untitled mock',
-        url: 'http://a',
+        url: '',
         rules: []
     };
 };
