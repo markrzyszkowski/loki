@@ -8,12 +8,6 @@ version '0.0.1-SNAPSHOT'
 
 task npmBuild(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
-    doLast {
-        copy {
-            from "$buildDir"
-            into "$buildDir/resources/main/static"
-        }
-    }
 }
 
 task npmTest(type: NpmTask) {
@@ -25,5 +19,11 @@ task npmRun(type: NpmTask) {
     args = ['start']
 }
 
-processResources.dependsOn npmBuild
+task copyResources(type: Copy, dependsOn: npmBuild) {
+    from "$buildDir"
+    into "$buildDir/resources/main/static"
+    exclude("resources")
+}
+
+processResources.dependsOn copyResources
 test.dependsOn npmTest
