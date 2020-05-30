@@ -66,7 +66,6 @@ public class EventListeners {
                 && attributes.lastModifiedTime().compareTo(FileTime.from(retentionThreshold)) < 0;
 
         var filesToDelete = Files.find(Path.of(logFile).getParent(), 1, retentionPredicate)
-                                 .peek(path -> System.out.println(path.getFileName()))
                                  .collect(Collectors.toList());
 
         for (var path : filesToDelete) {
