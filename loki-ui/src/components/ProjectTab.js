@@ -119,7 +119,6 @@ function ProjectTab(props) {
                         autoFocus
                         error={dialogError}
                         id={`new-tab-name-${index}`}
-                        margin="dense"
                         label="New name"
                         defaultValue={tab.name}
                         fullWidth

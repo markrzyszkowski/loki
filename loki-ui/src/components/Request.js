@@ -5,7 +5,6 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -121,17 +120,25 @@ function Request(props) {
                     <TextField
                         error={!!warnings[`${ruleId}-request-method`]}
                         helperText={warnings[`${ruleId}-request-method`]}
-                        label="HTTP method"
+                        variant="outlined"
                         size="small"
+                        label="HTTP method"
                         placeholder="Enter HTTP method"
                         value={request.method}
                         onChange={handleMethodChange}
                         className={classes.field}
                     />
-                    <Select value={request.methodCondition} onChange={handleMethodConditionChange} className={classes.select}>
+                    <TextField
+                        select
+                        variant="outlined"
+                        size="small"
+                        value={request.methodCondition}
+                        onChange={handleMethodConditionChange}
+                        className={classes.select}
+                    >
                         <MenuItem value="EQUAL">EQUAL</MenuItem>
                         <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
-                    </Select>
+                    </TextField>
                 </FormGroup>
                 <RequestParameters
                     parameters={request.parameters}
@@ -153,8 +160,9 @@ function Request(props) {
                      <TextField
                          error={!!warnings[`${ruleId}-request-body`]}
                          helperText={warnings[`${ruleId}-request-body`]}
-                         label="Body"
+                         variant="outlined"
                          size="small"
+                         label="Body"
                          placeholder="Enter body content"
                          multiline
                          rowsMax={20}
@@ -162,14 +170,21 @@ function Request(props) {
                          onChange={handleBodyChange}
                          className={classes.field}
                      />}
-                    <Select value={request.bodyCondition} onChange={handleBodyConditionChange} className={classes.select}>
+                    <TextField
+                        select
+                        variant="outlined"
+                        size="small"
+                        value={request.bodyCondition}
+                        onChange={handleBodyConditionChange}
+                        className={classes.select}
+                    >
                         <MenuItem value="PRESENT">PRESENT</MenuItem>
                         <MenuItem value="NOT_PRESENT">NOT PRESENT</MenuItem>
                         <MenuItem value="EQUAL">EQUAL</MenuItem>
                         <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
                         <MenuItem value="CONTAINS">CONTAINS</MenuItem>
                         <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
-                    </Select>
+                    </TextField>
                     <FormControlLabel
                         onClick={ignoreEvent}
                         onFocus={ignoreEvent}

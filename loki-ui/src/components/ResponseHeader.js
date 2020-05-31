@@ -49,8 +49,9 @@ function ResponseHeader(props) {
             <TextField
                 error={!!warnings[`${ruleId}-response-header-${index}-key`]}
                 helperText={warnings[`${ruleId}-response-header-${index}-key`]}
-                label="Key"
+                variant="outlined"
                 size="small"
+                label="Key"
                 value={header.key}
                 onChange={handleKeyChange}
                 className={classes.field}
@@ -58,8 +59,9 @@ function ResponseHeader(props) {
             <TextField
                 error={!!warnings[`${ruleId}-response-header-${index}-value`]}
                 helperText={warnings[`${ruleId}-response-header-${index}-value`]}
-                label="Value"
+                variant="outlined"
                 size="small"
+                label="Value"
                 value={header.value}
                 onChange={handleValueChange}
                 className={classes.field}

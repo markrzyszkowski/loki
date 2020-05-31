@@ -155,7 +155,6 @@ function SidebarItem(props) {
                         autoFocus
                         error={dialogError}
                         id={`new-project-name-${index}`}
-                        margin="dense"
                         label="New name"
                         defaultValue={project.name}
                         fullWidth

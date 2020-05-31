@@ -143,7 +143,6 @@ function RuleHeading(props) {
                         autoFocus
                         error={dialogError}
                         id={`new-rule-name-${index}`}
-                        margin="dense"
                         label="New name"
                         defaultValue={rule.name}
                         fullWidth

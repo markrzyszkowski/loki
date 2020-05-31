@@ -4,7 +4,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { Delete } from '@material-ui/icons';
@@ -84,27 +83,36 @@ function RequestHeader(props) {
             <TextField
                 error={!!warnings[`${ruleId}-request-header-${index}-key`]}
                 helperText={warnings[`${ruleId}-request-header-${index}-key`]}
-                label="Key"
+                variant="outlined"
                 size="small"
+                label="Key"
                 value={header.key}
                 onChange={handleKeyChange}
                 className={classes.field}
             />
-            <Select value={header.condition} onChange={handleConditionChange} className={classes.select}>
+            <TextField
+                select
+                variant="outlined"
+                size="small"
+                value={header.condition}
+                onChange={handleConditionChange}
+                className={classes.select}
+            >
                 <MenuItem value="PRESENT">PRESENT</MenuItem>
                 <MenuItem value="NOT_PRESENT">NOT PRESENT</MenuItem>
                 <MenuItem value="EQUAL">EQUAL</MenuItem>
                 <MenuItem value="NOT_EQUAL">NOT EQUAL</MenuItem>
                 <MenuItem value="CONTAINS">CONTAINS</MenuItem>
                 <MenuItem value="NOT_CONTAINS">NOT CONTAINS</MenuItem>
-            </Select>
+            </TextField>
             {showValueField &&
             <>
                 <TextField
                     error={!!warnings[`${ruleId}-request-header-${index}-value`]}
                     helperText={warnings[`${ruleId}-request-header-${index}-value`]}
-                    label="Value"
+                    variant="outlined"
                     size="small"
+                    label="Value"
                     value={header.value}
                     onChange={handleValueChange}
                     className={classes.field}

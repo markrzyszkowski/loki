@@ -69,6 +69,8 @@ function Response(props) {
                     <TextField
                         error={!!warnings[`${ruleId}-response-statusCode`]}
                         helperText={warnings[`${ruleId}-response-statusCode`]}
+                        variant="outlined"
+                        size="small"
                         label="Status code"
                         placeholder="Enter status code"
                         value={response.statusCode}
@@ -88,6 +90,8 @@ function Response(props) {
                 <TextField
                     error={!!warnings[`${ruleId}-response-body`]}
                     helperText={warnings[`${ruleId}-response-body`]}
+                    variant="outlined"
+                    size="small"
                     label="Body"
                     placeholder="Enter body content"
                     multiline

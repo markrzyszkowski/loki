@@ -109,6 +109,7 @@ function ProjectContent(props) {
                 <TextField
                     error={!!warnings['url']}
                     helperText={warnings['url']}
+                    variant="outlined"
                     label="URL"
                     placeholder="Enter request URL"
                     value={tab.url}
@@ -118,6 +119,7 @@ function ProjectContent(props) {
                 />
                 {showMockUrl &&
                  <TextField
+                     variant="outlined"
                      label="Mock URL"
                      value={mockUrl}
                      InputProps={{readOnly: true}}
