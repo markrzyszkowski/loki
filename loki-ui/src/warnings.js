@@ -91,7 +91,7 @@ function validateUrls(project, warnings) {
     const duplicates = {};
 
     project.tabs.forEach(tab => {
-        validateUrl(tab, warnings);
+        validateUrl(tab.url, warnings[tab.id]);
 
         duplicates[tab.url] = duplicates[tab.url] || [];
         duplicates[tab.url].push(tab.id);
@@ -111,21 +111,21 @@ function validateUrls(project, warnings) {
     deleteEmptyWarnings(warnings);
 }
 
-function validateUrl(tab, warnings) {
+function validateUrl(url, warnings) {
     const field = 'url';
 
-    if (isNotEmpty(tab.url)) {
-        if (isValidUrl(tab.url)) {
-            if (warnings[tab.id]) {
-                delete warnings[tab.id]['url'];
+    if (isNotEmpty(url)) {
+        if (isValidUrl(url)) {
+            if (warnings) {
+                delete warnings[field];
             }
         } else {
-            warnings[tab.id] = warnings[tab.id] || {};
-            warnings[tab.id][field] = 'Mock URL must be valid';
+            warnings = warnings || {};
+            warnings[field] = 'Mock URL must be valid';
         }
     } else {
-        warnings[tab.id] = warnings[tab.id] || {};
-        warnings[tab.id][field] = 'Mock URL cannot be empty';
+        warnings = warnings || {};
+        warnings[field] = 'Mock URL cannot be empty';
     }
 }
 
@@ -250,46 +250,92 @@ function validateStatusCode(statusCode, ruleId, warnings) {
     }
 }
 
-function isNotEmpty(string) {
-    return string && string.length;
+function isNotEmpty(str) {
+    return str && str.length;
 }
 
-function containsWhitespace(string) {
-    return /\s/.test(string);
+function containsWhitespace(str) {
+    return /\s/.test(str);
 }
 
-function isValidUrl(string) {
-    try {
-        const url = new URL(`http://${string}`);
+function isValidUrl(str) {
+    if (!containsWhitespace(str) && !/^.*:/.test(str)) {
+        try {
+            new URL(`http://${str}`);
+        } catch (_) {
+            return false;
+        }
 
-        return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch (_) {
-        return false;
+        const match = /([^/?]*)([^?]*)(.*)/.exec(str);
+
+        let result = isValidUrlHostAndUserInfo(match[1]);
+
+        if (match[2]) {
+            result = result && isValidUrlPath(match[2]);
+        }
+
+        if (match[3]) {
+            result = result && isValidUrlQuery(match[3]);
+        }
+
+        return result;
     }
+
+    return false;
 }
 
-function isValidHttpMethod(string) {
-    return !containsWhitespace(string);
+function isValidUrlHostAndUserInfo(str) {
+    return !/[{}]/.test(str);
 }
 
-function isValidParameterKey(string) {
-    return !containsWhitespace(string);
+function isValidUrlPath(str) {
+    if (str) {
+        const matches = [...str.matchAll(/{{.*?}}/g)];
+
+        for (const match of matches) {
+            if (match[0].indexOf('/') !== -1) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
-function isValidParameterValue(string) {
-    return !containsWhitespace(string);
+function isValidUrlQuery(str) {
+    return !str;
 }
 
-function isValidHeaderKey(string) {
-    return !containsWhitespace(string);
+function isValidHttpMethod(str) {
+    return !containsWhitespace(str);
 }
 
-function isValidHeaderValue(string) {
-    return !containsWhitespace(string);
+function isValidUrlVariableKey(str) {
+    return !containsWhitespace(str);
 }
 
-function isValidStatusCode(string) {
-    const statusCode = parseInt(string);
+function isValidUrlVariableValue(str) {
+    return !containsWhitespace(str);
+}
+
+function isValidParameterKey(str) {
+    return !containsWhitespace(str);
+}
+
+function isValidParameterValue(str) {
+    return !containsWhitespace(str);
+}
+
+function isValidHeaderKey(str) {
+    return !containsWhitespace(str);
+}
+
+function isValidHeaderValue(str) {
+    return !containsWhitespace(str);
+}
+
+function isValidStatusCode(str) {
+    const statusCode = parseInt(str);
 
     return statusCode >= 100 && statusCode <= 599;
 }
