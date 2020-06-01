@@ -63,7 +63,7 @@ public class DefaultMockService implements MockService {
                                               settings.isBlockRemoteRequests(),
                                               settings.getMaxRequestSize());
         } catch (IOException e) {
-            log.error("Could not start mock process");
+            log.error("Could not start mock process with id {}", id);
             log.error("Exception: {}", e.toString());
         }
 
@@ -77,10 +77,13 @@ public class DefaultMockService implements MockService {
         try {
             result.get(10, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            // TODO log.error()
+            log.error("Mock process with id {} did not manage to start in 10 seconds", id);
+            log.error("Exception: {}", e.toString());
+
             return Optional.empty();
         } catch (CancellationException e) { // ok
-            // TODO log.info()
+            log.info("Mock process with id {} started successfuly", id);
+
             var finalPort = port;
             return configurationRepository.findUrls(uuid)
                                           .map(urls -> AppliedConfiguration.builder()
