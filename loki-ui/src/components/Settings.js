@@ -55,13 +55,19 @@ function Settings(props) {
     };
 
     const handlePortChange = event => {
-        let port = parseInt(event.target.value);
+        let port = event.target.value.trim();
 
-        if (port > 65535) {
-            port = 65535;
+        if (port !== project.settings.port) {
+            if (port && port.length) {
+                port  = parseInt(port);
+
+                if (port > 65535) {
+                    port = 65535;
+                }
+
+                onChangeSettings(index, {port: port});
+            }
         }
-
-        onChangeSettings(index, {port: port});
     };
 
     const handleBlockRemoteRequestsChange = event => {
@@ -71,13 +77,21 @@ function Settings(props) {
     };
 
     const handleMaxRequestSizeChange = event => {
-        let maxRequestSize = parseInt(event.target.value);
+        let maxRequestSize = event.target.value.trim();
 
-        if (maxRequestSize > 1024) {
-            maxRequestSize = 1024;
+        if (maxRequestSize !== project.settings.maxRequestSize) {
+            if (maxRequestSize && maxRequestSize.length) {
+                maxRequestSize = parseInt(maxRequestSize);
+
+                if (maxRequestSize < 1) {
+                    maxRequestSize = 1;
+                } else if (maxRequestSize > 1024) {
+                    maxRequestSize = 1024;
+                }
+
+                onChangeSettings(index, {maxRequestSize: maxRequestSize});
+            }
         }
-
-        onChangeSettings(index, {maxRequestSize: maxRequestSize});
     };
 
     return (
