@@ -290,10 +290,16 @@ function isValidUrlHostAndUserInfo(str) {
 
 function isValidUrlPath(str) {
     if (str) {
-        const matches = [...str.matchAll(/{{.*?}}/g)];
+        const matches = [...str.matchAll(/{{(.*?)}}/g)].map(match => match[1]);
 
-        for (const match of matches) {
-            if (match[0].indexOf('/') !== -1) {
+        const uniqueMatches = new Set(matches);
+
+        if (uniqueMatches.size !== matches.length) {
+            return false;
+        }
+
+        for (const match of uniqueMatches) {
+            if (match.indexOf('/') !== -1) {
                 return false;
             }
         }
