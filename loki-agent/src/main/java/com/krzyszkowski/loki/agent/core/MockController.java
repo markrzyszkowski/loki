@@ -79,7 +79,7 @@ public class MockController {
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                 .body(ErrorResponse.builder()
-                                                   .errors(List.of("Could not stop mock as it was not running"))
+                                                   .errors(List.of("Could not stop mock"))
                                                    .build());
     }
 }
