@@ -202,7 +202,9 @@ function Workspace(props) {
     const handleCloseProject = index => {
         if (projects.length) {
             if (projects[index].state.running) {
-                handleStopMock(index);
+                stopMock(projects[index].project).catch(error => {
+                    handleApiError(error, alert);
+                });
             }
 
             setProjects(projects.filter((_, idx) => idx !== index));
