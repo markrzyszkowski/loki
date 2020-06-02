@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -21,9 +22,10 @@ public class StartMockRequest {
     @NotBlank(message = "Id cannot be empty")
     private String id;
 
+    @Valid
     @NotNull(message = "Settings must be present")
     private Settings settings;
 
     @NotEmpty(message = "Mocks must be present")
-    private List<Mock> mocks;
+    private List<@Valid Mock> mocks;
 }

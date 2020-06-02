@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StartMockResponse {
 
-    private AppliedConfiguration appliedConfiguration;
+    private AppliedConfiguration configuration;
 }

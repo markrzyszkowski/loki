@@ -6,14 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class HeaderWithCondition {
 
+    @NotBlank(message = "Key cannot be empty")
     private String key;
+
+    @NotBlank(message = "Value cannot be empty")
     private String value;
+
     private Condition condition;
+
     private boolean valueIgnoreCase;
 }

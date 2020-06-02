@@ -19,6 +19,7 @@ public class SaveProjectRequest {
     @NotBlank(message = "Path cannot be empty")
     private String path;
 
+    @Valid
     @NotNull(message = "Project must be present")
     private Project project;
 }

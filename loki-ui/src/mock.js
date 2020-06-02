@@ -13,7 +13,7 @@ const startMock = project => {
             };
         })
     }).then(response => {
-        return response.data.appliedConfiguration;
+        return response.data.configuration;
     });
 };
 

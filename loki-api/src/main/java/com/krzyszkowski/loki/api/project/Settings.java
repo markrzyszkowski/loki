@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,7 +15,14 @@ import lombok.NoArgsConstructor;
 public class Settings {
 
     private Profile profile;
+
+    @Min(0)
+    @Max(65535)
     private int port;
+
     private boolean blockRemoteRequests;
+
+    @Min(1)
+    @Max(1024)
     private int maxRequestSize;
 }
