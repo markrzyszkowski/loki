@@ -5,15 +5,23 @@ import com.krzyszkowski.loki.api.mock.Response;
 import com.krzyszkowski.loki.mock.core.internal.MockConditionRepository;
 import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
 import com.krzyszkowski.loki.mock.core.internal.util.UrlHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.URL;
 import java.util.List;
 
+@Slf4j
 @Service
 @Profile("proxy")
 public class ProxyMockService implements MockService {
@@ -21,6 +29,9 @@ public class ProxyMockService implements MockService {
     private final MockConditionRepository mockConditionRepository;
     private final ObjectFactory<RuleMatcher> ruleMatcherFactory;
     private final ProxyService proxyService;
+
+    @Value("${server.port}")
+    private int port;
 
     public ProxyMockService(MockConditionRepository mockConditionRepository,
                             ObjectFactory<RuleMatcher> ruleMatcherFactory,
@@ -52,6 +63,12 @@ public class ProxyMockService implements MockService {
             }
         }
 
+        if (forwardWouldCauseLoop(request)) {
+            return ResponseEntity
+                    .status(HttpStatus.LOOP_DETECTED)
+                    .build();
+        }
+
         return proxyService.forward(request, response);
     }
 
@@ -65,5 +82,21 @@ public class ProxyMockService implements MockService {
 
     private void populateHeaders(HttpServletResponse response, List<Header> headers) {
         headers.forEach(header -> response.setHeader(header.getKey(), header.getValue()));
+    }
+
+    private boolean forwardWouldCauseLoop(HttpServletRequest request) {
+        try {
+            var url = new URL(request.getRequestURL().toString());
+            var address = InetAddress.getByName(url.getHost());
+
+            if (address.isLoopbackAddress() || NetworkInterface.getByInetAddress(address) != null) {
+                return url.getPort() == port;
+            }
+        } catch (IOException e) {
+            log.error("Error occured while checking if forward would cause loop");
+            log.error("Exception: {}", e.toString());
+        }
+
+        return false;
     }
 }
