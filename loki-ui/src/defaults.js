@@ -46,41 +46,34 @@ const defaultRule = () => {
         request: {
             method: 'GET',
             methodCondition: 'EQUAL',
-            headers: [],
+            urlVariables: [],
             parameters: [],
+            headers: [],
             body: '',
             bodyCondition: 'NOT_PRESENT',
             bodyIgnoreCase: false,
             bodyIgnoreWhitespace: false,
             expanded: true,
-            headersExpanded: true,
-            parametersExpanded: true
+            urlVariablesExpanded: false,
+            parametersExpanded: false,
+            headersExpanded: false
         },
         response: {
             statusCode: 200,
             headers: [],
             body: '',
             expanded: true,
-            headersExpanded: true
+            headersExpanded: false
         },
         active: true,
         expanded: true
     };
 };
 
-const defaultHeader = () => {
-    return {
-        key: '',
-        value: ''
-    };
-};
-
-const defaultHeaderWithConditions = () => {
+const defaultUrlVariable = () => {
     return {
         key: '',
         value: '',
-        condition: 'EQUAL',
-        valueIgnoreCase: false
     };
 };
 
@@ -94,12 +87,29 @@ const defaultParameterWithConditions = () => {
     };
 };
 
+const defaultHeaderWithConditions = () => {
+    return {
+        key: '',
+        value: '',
+        condition: 'EQUAL',
+        valueIgnoreCase: false
+    };
+};
+
+const defaultHeader = () => {
+    return {
+        key: '',
+        value: ''
+    };
+};
+
 export {
     defaultTab,
     defaultProject,
     defaultState,
     defaultRule,
-    defaultHeader,
+    defaultUrlVariable,
+    defaultParameterWithConditions,
     defaultHeaderWithConditions,
-    defaultParameterWithConditions
+    defaultHeader
 };

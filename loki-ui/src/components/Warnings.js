@@ -51,7 +51,7 @@ function Warnings(props) {
                         {Object.entries(state.warnings)
                                .flatMap(([tab, warnings]) => Object.entries(warnings).map(([field, warning]) =>
                                    <WarningsItem
-                                       key={field}
+                                       key={`${tab}-${field}`}
                                        name={project.tabs.find(t => t.id === tab).name}
                                        tab={tab}
                                        warning={warning}

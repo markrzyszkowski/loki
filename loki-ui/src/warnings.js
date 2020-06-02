@@ -5,12 +5,9 @@ function checkWarnings(project, state) {
         tab.rules.forEach(rule => {
             validateHttpMethod(rule.request.method, rule.id, state.warnings[tab.id]);
 
-            rule.request.headers.forEach((header, index) => {
-                validateHeaderKey(header.key, rule.id, 'request', index, state.warnings[tab.id]);
-
-                if (!header.condition.includes('PRESENT')) {
-                    validateHeaderValue(header.value, rule.id, 'request', index, state.warnings[tab.id]);
-                }
+            rule.request.urlVariables.forEach((variable, index) => {
+                validateUrlVariableKey(variable.key, rule.id, index, state.warnings[tab.id]);
+                validateUrlVariableValue(variable.value, rule.id, index, state.warnings[tab.id]);
             });
 
             rule.request.parameters.forEach((parameter, index) => {
@@ -18,6 +15,14 @@ function checkWarnings(project, state) {
 
                 if (!parameter.condition.includes('PRESENT')) {
                     validateParameterValue(parameter.key, rule.id, index, state.warnings[tab.id]);
+                }
+            });
+
+            rule.request.headers.forEach((header, index) => {
+                validateHeaderKey(header.key, rule.id, 'request', index, state.warnings[tab.id]);
+
+                if (!header.condition.includes('PRESENT')) {
+                    validateHeaderValue(header.value, rule.id, 'request', index, state.warnings[tab.id]);
                 }
             });
 
@@ -93,8 +98,10 @@ function validateUrls(project, warnings) {
     project.tabs.forEach(tab => {
         validateUrl(tab.url, warnings[tab.id]);
 
-        duplicates[tab.url] = duplicates[tab.url] || [];
-        duplicates[tab.url].push(tab.id);
+        const temp = tab.url.replace(/{{(.+?)}}/g, '{{-}}');
+
+        duplicates[temp] = duplicates[temp] || [];
+        duplicates[temp].push(tab.id);
     });
 
     for (let url in duplicates) {
@@ -144,6 +151,42 @@ function validateHttpMethod(method, ruleId, warnings) {
     } else {
         warnings = warnings || {};
         warnings[field] = 'HTTP method cannot be empty';
+    }
+}
+
+function validateUrlVariableKey(key, ruleId, index, warnings) {
+    const field = `${ruleId}-request-variable-${index}-key`;
+
+    if (isNotEmpty(key)) {
+        if (isValidUrlVariableKey(key)) {
+            if (warnings) {
+                delete warnings[field];
+            }
+        } else {
+            warnings = warnings || {};
+            warnings[field] = 'URL variable key must be valid';
+        }
+    } else {
+        warnings = warnings || {};
+        warnings[field] = 'URL variable key cannot be empty';
+    }
+}
+
+function validateUrlVariableValue(value, ruleId, index, warnings) {
+    const field = `${ruleId}-request-variable-${index}-value`;
+
+    if (isNotEmpty(value)) {
+        if (isValidUrlVariableValue(value)) {
+            if (warnings) {
+                delete warnings[field];
+            }
+        } else {
+            warnings = warnings || {};
+            warnings[field] = 'URL variable value must be valid';
+        }
+    } else {
+        warnings = warnings || {};
+        warnings[field] = 'URL variable value cannot be empty';
     }
 }
 
@@ -259,7 +302,7 @@ function containsWhitespace(str) {
 }
 
 function isValidUrl(str) {
-    if (!containsWhitespace(str) && !/^.*:/.test(str)) {
+    if (!containsWhitespace(str) && !/^.*:\/\//.test(str)) {
         try {
             new URL(`http://${str}`);
         } catch (_) {
@@ -290,8 +333,11 @@ function isValidUrlHostAndUserInfo(str) {
 
 function isValidUrlPath(str) {
     if (str) {
-        const matches = [...str.matchAll(/{{(.*?)}}/g)].map(match => match[1]);
+        if (str === '/') {
+            return false;
+        }
 
+        const matches = [...str.matchAll(/{{(.+?)}}/g)].map(match => match[1]);
         const uniqueMatches = new Set(matches);
 
         if (uniqueMatches.size !== matches.length) {
@@ -349,6 +395,8 @@ function isValidStatusCode(str) {
 const validators = {
     url: validateUrls,
     httpMethod: validateHttpMethod,
+    urlVariableKey: validateUrlVariableKey,
+    urlVariableValue: validateUrlVariableValue,
     parameterKey: validateParameterKey,
     parameterValue: validateParameterValue,
     headerKey: validateHeaderKey,

@@ -4,6 +4,7 @@ import com.krzyszkowski.loki.api.mock.Header;
 import com.krzyszkowski.loki.api.mock.Response;
 import com.krzyszkowski.loki.mock.core.internal.MockConditionRepository;
 import com.krzyszkowski.loki.mock.core.internal.RuleMatcher;
+import com.krzyszkowski.loki.mock.core.internal.util.UrlHelper;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -31,19 +32,9 @@ public class ProxyMockService implements MockService {
 
     @Override
     public ResponseEntity<?> handle(HttpServletRequest request, HttpServletResponse response) {
-        var url = request.getRequestURL().toString();
-
-        if (url.startsWith("http://")) {
-            url = url.replaceFirst("http://", "");
-        } else if (url.startsWith("https://")) {
-            url = url.replaceFirst("https://", "");
-        }
+        var url = sanitizeUrl(request.getRequestURL().toString());
 
         var mock = mockConditionRepository.findMock(url);
-
-        if (mock.isEmpty() && url.endsWith("/")) {
-            mock = mockConditionRepository.findMock(url.substring(0, url.length() - 1));
-        }
 
         if (mock.isPresent()) {
             var rule = ruleMatcherFactory.getObject()
@@ -62,6 +53,10 @@ public class ProxyMockService implements MockService {
         }
 
         return proxyService.forward(request, response);
+    }
+
+    private String sanitizeUrl(String url) {
+        return UrlHelper.stripEmptyPath(UrlHelper.stripProtocol(url));
     }
 
     private void populateResponse(HttpServletResponse response, Response ruleResponse) {

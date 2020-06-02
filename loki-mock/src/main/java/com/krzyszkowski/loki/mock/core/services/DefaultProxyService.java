@@ -1,14 +1,16 @@
 package com.krzyszkowski.loki.mock.core.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +75,10 @@ public class DefaultProxyService implements ProxyService {
                                                     String uri,
                                                     HttpEntity<byte[]> entity,
                                                     HttpServletResponse response) {
-        var restTemplate = new RestTemplate();
+        var restTemplate = new RestTemplateBuilder()
+                .errorHandler(new ProxyResponseErrorHandler())
+                .build();
+
         var proxyResponse = Objects.requireNonNull(restTemplate.execute(uri,
                                                                         Objects.requireNonNull(HttpMethod.resolve(method)),
                                                                         restTemplate.httpEntityCallback(entity),
@@ -121,5 +126,18 @@ public class DefaultProxyService implements ProxyService {
         private int status;
         private HttpHeaders headers;
         private Path bodyPath;
+    }
+
+    private static class ProxyResponseErrorHandler implements ResponseErrorHandler {
+
+        @Override
+        public boolean hasError(ClientHttpResponse response) {
+            return false;
+        }
+
+        @Override
+        public void handleError(ClientHttpResponse response) {
+            // intentionally left empty
+        }
     }
 }

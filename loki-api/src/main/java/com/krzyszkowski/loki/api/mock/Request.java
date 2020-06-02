@@ -15,8 +15,9 @@ public class Request {
 
     private String method;
     private Condition methodCondition;
-    private List<HeaderWithCondition> headers;
+    private List<UrlVariable> urlVariables;
     private List<ParameterWithCondition> parameters;
+    private List<HeaderWithCondition> headers;
     private String body;
     private Condition bodyCondition;
     private boolean bodyIgnoreCase;

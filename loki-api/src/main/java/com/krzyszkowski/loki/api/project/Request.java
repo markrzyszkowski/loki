@@ -15,13 +15,15 @@ public class Request {
 
     private String method;
     private Condition methodCondition;
-    private List<HeaderWithCondition> headers;
+    private List<UrlVariable> urlVariables;
     private List<ParameterWithCondition> parameters;
+    private List<HeaderWithCondition> headers;
     private String body;
     private Condition bodyCondition;
     private boolean bodyIgnoreCase;
     private boolean bodyIgnoreWhitespace;
     private boolean expanded;
-    private boolean headersExpanded;
+    private boolean urlVariablesExpanded;
     private boolean parametersExpanded;
+    private boolean headersExpanded;
 }

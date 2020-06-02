@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore } from '@material-ui/icons';
+import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import ResponseHeaders from './ResponseHeaders';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
@@ -13,14 +14,28 @@ import { validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     content: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        display: 'block',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1)
     },
-    fields: {
-        width: '100%'
+    statusCodeField: {
+        flexGrow: 1,
+        margin: theme.spacing(1)
+    },
+    panels: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3)
+    },
+    panelsOffset: {
+        marginTop: 1,
+        marginBottom: theme.spacing(3)
+    },
+    bodyField: {
+        flexGrow: 1,
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(3),
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1)
     },
     warning: {
         color: 'red',
@@ -58,6 +73,8 @@ function Response(props) {
 
     const hasWarnings = Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-response`)).length > 0;
     const headingClass = hasWarnings ? classes.warning : null;
+    const statusCodeWarning = warnings[`${ruleId}-response-statusCode`];
+    const panelsClass = clsx(!statusCodeWarning && classes.panels, !!statusCodeWarning && classes.panelsOffset);
 
     return (
         <ExpansionPanel square expanded={response.expanded} onChange={handleStateChange}>
@@ -65,10 +82,10 @@ function Response(props) {
                 <Typography className={headingClass}>Response</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.content}>
-                <FormGroup row className={classes.fields}>
+                <FormGroup row>
                     <TextField
-                        error={!!warnings[`${ruleId}-response-statusCode`]}
-                        helperText={warnings[`${ruleId}-response-statusCode`]}
+                        error={!!statusCodeWarning}
+                        helperText={statusCodeWarning}
                         variant="outlined"
                         size="small"
                         label="Status code"
@@ -77,29 +94,33 @@ function Response(props) {
                         type="number"
                         inputProps={{min: 100, max: 599}}
                         onChange={handleStatusCodeChange}
-                        fullWidth
+                        className={classes.statusCodeField}
                     />
                 </FormGroup>
-                <ResponseHeaders
-                    headers={response.headers}
-                    headersExpanded={response.headersExpanded}
-                    ruleId={ruleId}
-                    warnings={warnings}
-                    onModifyResponse={onModifyResponse}
-                />
-                <TextField
-                    error={!!warnings[`${ruleId}-response-body`]}
-                    helperText={warnings[`${ruleId}-response-body`]}
-                    variant="outlined"
-                    size="small"
-                    label="Body"
-                    placeholder="Enter body content"
-                    multiline
-                    rowsMax={20}
-                    value={response.body}
-                    onChange={handleBodyChange}
-                    fullWidth
-                />
+                <div className={panelsClass}>
+                    <ResponseHeaders
+                        headers={response.headers}
+                        headersExpanded={response.headersExpanded}
+                        ruleId={ruleId}
+                        warnings={warnings}
+                        onModifyResponse={onModifyResponse}
+                    />
+                </div>
+                <FormGroup row>
+                    <TextField
+                        error={!!warnings[`${ruleId}-response-body`]}
+                        helperText={warnings[`${ruleId}-response-body`]}
+                        variant="outlined"
+                        size="small"
+                        label="Body"
+                        placeholder="Enter body content"
+                        multiline
+                        rowsMax={20}
+                        value={response.body}
+                        onChange={handleBodyChange}
+                        className={classes.bodyField}
+                    />
+                </FormGroup>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );

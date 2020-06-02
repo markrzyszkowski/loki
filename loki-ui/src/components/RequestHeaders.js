@@ -5,6 +5,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, ExpandMore } from '@material-ui/icons';
+import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import RequestHeader from './RequestHeader';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
@@ -12,35 +13,22 @@ import { defaultHeaderWithConditions } from '../defaults';
 import { deleteWarnings, shiftIndexedWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
-    content: {
+    headers: {
+        display: 'block',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1)
+    },
+    center: {
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
+        justifyContent: 'center'
+    },
+    button: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3)
     },
-    contentOffset: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        marginTop: '2px',
+    buttonOffset: {
+        marginTop: 5,
         marginBottom: theme.spacing(3)
-    },
-    fullWidth: {
-        width: '100%'
-    },
-    headers: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(0)
-    },
-    button: {
-        marginBottom: theme.spacing(2)
     },
     warning: {
         color: 'red',
@@ -73,7 +61,7 @@ function RequestHeaders(props) {
 
         let warningsCopy = {...warnings};
         deleteWarnings(`${ruleId}-request-header-${index}`, warningsCopy);
-        warningsCopy = shiftIndexedWarnings('request-header', index, warningsCopy);
+        warningsCopy = shiftIndexedWarnings(`${ruleId}-request-header`, index, warningsCopy);
 
         onModifyRequest({headers: headersCopy}, warningsCopy);
     };
@@ -123,54 +111,43 @@ function RequestHeaders(props) {
     const hasWarnings = hasHeaders
                         && Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-request-header`)).length > 0;
     const headingClass = hasWarnings ? classes.warning : null;
+    const shouldOffsetButton = !!warnings[`${ruleId}-request-header-${headers.length - 1}-key`]
+                               || !!warnings[`${ruleId}-request-header-${headers.length - 1}-value`];
+    const buttonClass = clsx(!shouldOffsetButton && classes.button, shouldOffsetButton && classes.buttonOffset);
 
     return (
-        <div className={classes.content}>
-            {!hasHeaders &&
-             <Button
-                 variant="contained"
-                 color="secondary"
-                 startIcon={<Add/>}
-                 onClick={handleAddHeader}
-             >
-                 Add header
-             </Button>}
-            {hasHeaders &&
-             <div className={classes.fullWidth}>
-                 <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
-                     <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                         <Typography className={headingClass}>Headers</Typography>
-                     </ExpansionPanelSummary>
-                     <ExpansionPanelDetails>
-                         <div className={classes.headers}>
-                             <Button
-                                 variant="contained"
-                                 color="secondary"
-                                 startIcon={<Add/>}
-                                 onClick={handleAddHeader}
-                                 className={classes.button}
-                             >
-                                 Add header
-                             </Button>
-                             {headers.map((header, index) =>
-                                 <RequestHeader
-                                     key={index}
-                                     header={header}
-                                     index={index}
-                                     ruleId={ruleId}
-                                     warnings={warnings}
-                                     onDeleteHeader={handleDeleteHeader}
-                                     onKeyChange={handleHeaderKeyChange}
-                                     onValueChange={handleHeaderValueChange}
-                                     onValueIgnoreCaseChange={handleHeaderValueIgnoreCaseChange}
-                                     onConditionChange={handleHeaderConditionChange}
-                                 />
-                             )}
-                         </div>
-                     </ExpansionPanelDetails>
-                 </ExpansionPanel>
-             </div>}
-        </div>
+        <ExpansionPanel square expanded={headersExpanded} onChange={handleStateChange}>
+            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                <Typography className={headingClass}>Headers</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails className={classes.headers}>
+                {headers.map((header, index) =>
+                    <RequestHeader
+                        key={index}
+                        header={header}
+                        index={index}
+                        ruleId={ruleId}
+                        warnings={warnings}
+                        onDeleteHeader={handleDeleteHeader}
+                        onKeyChange={handleHeaderKeyChange}
+                        onValueChange={handleHeaderValueChange}
+                        onValueIgnoreCaseChange={handleHeaderValueIgnoreCaseChange}
+                        onConditionChange={handleHeaderConditionChange}
+                    />
+                )}
+                <div className={classes.center}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<Add/>}
+                        onClick={handleAddHeader}
+                        className={buttonClass}
+                    >
+                        Add header
+                    </Button>
+                </div>
+            </ExpansionPanelDetails>
+        </ExpansionPanel>
     );
 }
 

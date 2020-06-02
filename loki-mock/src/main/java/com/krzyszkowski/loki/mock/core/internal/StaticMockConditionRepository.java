@@ -1,6 +1,7 @@
 package com.krzyszkowski.loki.mock.core.internal;
 
 import com.krzyszkowski.loki.api.mock.Response;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +11,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Repository
-public class DefaultMockConditionRepository implements MockConditionRepository {
+@Profile("static")
+public class StaticMockConditionRepository implements MockConditionRepository {
 
     private final Map<String, Map<Predicate<HttpServletRequest>, Response>> repository = new HashMap<>();
 

@@ -2,9 +2,9 @@ import React from 'react';
 import FormGroup from '@material-ui/core/FormGroup';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import { Delete } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
     field: {
@@ -16,23 +16,23 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(1),
         marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(1)
     }
 }));
 
-function ResponseHeader(props) {
-    const {header, index, ruleId, warnings, onDeleteHeader, onKeyChange, onValueChange} = props;
+function RequestUrlVariable(props) {
+    const {variable, index, ruleId, warnings, onDeleteVariable, onKeyChange, onValueChange} = props;
 
     const classes = useStyles();
 
-    const handleDeleteHeader = () => {
-        onDeleteHeader(index);
+    const handleDeleteVariable = () => {
+        onDeleteVariable(index);
     };
 
     const handleKeyChange = event => {
         const key = event.target.value.trim();
 
-        if (key !== header.key) {
+        if (key !== variable.key) {
             onKeyChange(index, key);
         }
     };
@@ -40,48 +40,51 @@ function ResponseHeader(props) {
     const handleValueChange = event => {
         const value = event.target.value.trim();
 
-        if (value !== header.value) {
+        if (value !== variable.value) {
             onValueChange(index, value);
         }
     };
 
+    const showValueField = !variable.matchAll;
+
     return (
         <FormGroup row>
             <TextField
-                error={!!warnings[`${ruleId}-response-header-${index}-key`]}
-                helperText={warnings[`${ruleId}-response-header-${index}-key`]}
+                error={!!warnings[`${ruleId}-request-variable-${index}-key`]}
+                helperText={warnings[`${ruleId}-request-variable-${index}-key`]}
                 variant="outlined"
                 size="small"
                 label="Key"
-                value={header.key}
+                value={variable.key}
                 onChange={handleKeyChange}
                 className={classes.field}
             />
-            <TextField
-                error={!!warnings[`${ruleId}-response-header-${index}-value`]}
-                helperText={warnings[`${ruleId}-response-header-${index}-value`]}
-                variant="outlined"
-                size="small"
-                label="Value"
-                value={header.value}
-                onChange={handleValueChange}
-                className={classes.field}
-            />
-            <IconButton onClick={handleDeleteHeader} className={classes.button}>
+            {showValueField &&
+             <TextField
+                 error={!!warnings[`${ruleId}-request-variable-${index}-value`]}
+                 helperText={warnings[`${ruleId}-request-variable-${index}-value`]}
+                 variant="outlined"
+                 size="small"
+                 label="Value"
+                 value={variable.value}
+                 onChange={handleValueChange}
+                 className={classes.field}
+             />}
+            <IconButton onClick={handleDeleteVariable} className={classes.button}>
                 <Delete/>
             </IconButton>
         </FormGroup>
     );
 }
 
-ResponseHeader.propTypes = {
-    header: PropTypes.object.isRequired,
+RequestUrlVariable.propTypes = {
+    variable: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     ruleId: PropTypes.string.isRequired,
     warnings: PropTypes.object.isRequired,
-    onDeleteHeader: PropTypes.func.isRequired,
+    onDeleteVariable: PropTypes.func.isRequired,
     onKeyChange: PropTypes.func.isRequired,
-    onValueChange: PropTypes.func.isRequired
+    onValueChange: PropTypes.func.isRequired,
 };
 
-export default ResponseHeader;
+export default RequestUrlVariable;

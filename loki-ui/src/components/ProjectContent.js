@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Fab from '@material-ui/core/Fab';
 import FormGroup from '@material-ui/core/FormGroup';
+import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Popover from '@material-ui/core/Popover';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { Add } from '@material-ui/icons';
+import { Add, Help } from '@material-ui/icons';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
@@ -21,6 +24,12 @@ const useStyles = makeStyles(theme => ({
     },
     urlField: {
         flexGrow: 1
+    },
+    urlHelp: {
+        padding: theme.spacing(2)
+    },
+    examples: {
+        marginTop: theme.spacing(2)
     },
     button: {
         position: 'fixed',
@@ -40,7 +49,17 @@ const useStyles = makeStyles(theme => ({
 function ProjectContent(props) {
     const {tab, index, settings, warnings, isRunning, port, urls, onModifyTab} = props;
 
+    const [urlHelpAnchor, setUrlHelpAnchor] = useState(null);
+
     const classes = useStyles();
+
+    const handleOpenUrlHelp = event => {
+        setUrlHelpAnchor(event.currentTarget);
+    };
+
+    const handleCloseUrlHelp = () => {
+        setUrlHelpAnchor(null);
+    };
 
     const handleUrlChange = event => {
         const url = event.target.value.trim();
@@ -99,6 +118,48 @@ function ProjectContent(props) {
         onModifyTab(index, {rules: rulesCopy}, warningsCopy);
     };
 
+    const urlStartAdornment = <InputAdornment position="start">http://</InputAdornment>;
+    const urlEndAdornment =
+        <InputAdornment position="end">
+            <IconButton onClick={handleOpenUrlHelp}>
+                <Help/>
+            </IconButton>
+            <Popover
+                open={!!urlHelpAnchor}
+                anchorEl={urlHelpAnchor}
+                onClose={handleCloseUrlHelp}
+                anchorOrigin={{vertical: 'center', horizontal: 'center'}}
+                transformOrigin={{vertical: 'top', horizontal: 'right'}}
+            >
+                <div className={classes.urlHelp}>
+                    <Typography>
+                        You can define parts of the path of a URL as variables that will be later used for matching them against rules.
+                    </Typography>
+                    <Typography>
+                        To define URL variable simply surround it with double curly braces; like so: <b>{'{{var}}'}</b>.
+                    </Typography>
+                    <div className={classes.examples}>
+                        <Typography >Examples:</Typography>
+                        <Typography>
+                            <i>Incorrect:</i> en.wikipedia<b>{'{{var}}'}</b>.org/wiki/URL
+                        </Typography>
+                        <Typography>
+                            <i>Incorrect:</i> en.wikipedia.org/wi<b>{'{{ki/U}}'}</b>RL
+                        </Typography>
+                        <Typography>
+                            <i>Incorrect:</i> en.wikipedia.org/<b>{'{{var}}'}</b>/<b>{'{{var}}'}</b>
+                        </Typography>
+                        <Typography>
+                            <i>Correct:</i> en.wikipedia.org/<b>{'{{var}}'}</b>/URL
+                        </Typography>
+                        <Typography>
+                            <i>Correct:</i> en.wikipedia.org/<b>{'{{var1}}'}</b>/<b>{'{{var2}}'}</b>
+                        </Typography>
+                    </div>
+                </div>
+            </Popover>
+        </InputAdornment>;
+
     const showMockUrl = settings.profile === 'STATIC' && isRunning && !!urls[tab.id];
     const mockUrl = `http://localhost:${port}/${urls[tab.id]}`;
     const rulesClass = clsx(!warnings['url'] && classes.rules, !!warnings['url'] && classes.rulesOffset);
@@ -114,7 +175,7 @@ function ProjectContent(props) {
                     placeholder="Enter request URL"
                     value={tab.url}
                     onChange={handleUrlChange}
-                    InputProps={{startAdornment: <InputAdornment position="start">http://</InputAdornment>}}
+                    InputProps={{startAdornment: urlStartAdornment, endAdornment: urlEndAdornment}}
                     className={clsx(classes.field, classes.urlField)}
                 />
                 {showMockUrl &&

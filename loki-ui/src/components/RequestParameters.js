@@ -5,6 +5,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, ExpandMore } from '@material-ui/icons';
+import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import RequestParameter from './RequestParameter';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
@@ -12,35 +13,22 @@ import { defaultParameterWithConditions } from '../defaults';
 import { deleteWarnings, shiftIndexedWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
-    content: {
+    parameters: {
+        display: 'block',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1)
+    },
+    center: {
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
+        justifyContent: 'center'
+    },
+    button: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3)
     },
-    contentOffset: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        marginTop: '2px',
+    buttonOffset: {
+        marginTop: 5,
         marginBottom: theme.spacing(3)
-    },
-    fullWidth: {
-        width: '100%'
-    },
-    parameters: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(0)
-    },
-    button: {
-        marginBottom: theme.spacing(2)
     },
     warning: {
         color: 'red',
@@ -73,7 +61,7 @@ function RequestParameters(props) {
 
         let warningsCopy = {...warnings};
         deleteWarnings(`${ruleId}-request-parameter-${index}`, warningsCopy);
-        warningsCopy = shiftIndexedWarnings('request-parameter', index, warningsCopy);
+        warningsCopy = shiftIndexedWarnings(`${ruleId}-request-parameter`, index, warningsCopy);
 
         onModifyRequest({parameters: parametersCopy}, warningsCopy);
     };
@@ -130,55 +118,44 @@ function RequestParameters(props) {
     const hasWarnings = hasParameters
                         && Object.keys(warnings).filter(id => id.startsWith(`${ruleId}-request-parameter`)).length > 0;
     const headingClass = hasWarnings ? classes.warning : null;
+    const shouldOffsetButton = !!warnings[`${ruleId}-request-parameter-${parameters.length - 1}-key`]
+                               || !!warnings[`${ruleId}-request-parameter-${parameters.length - 1}-value`];
+    const buttonClass = clsx(!shouldOffsetButton && classes.button, shouldOffsetButton && classes.buttonOffset);
 
     return (
-        <div className={classes.content}>
-            {!hasParameters &&
-             <Button
-                 variant="contained"
-                 color="secondary"
-                 startIcon={<Add/>}
-                 onClick={handleAddParameter}
-             >
-                 Add parameter
-             </Button>}
-            {hasParameters &&
-             <div className={classes.fullWidth}>
-                 <ExpansionPanel square expanded={parametersExpanded} onChange={handleStateChange}>
-                     <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
-                         <Typography className={headingClass}>Parameters</Typography>
-                     </ExpansionPanelSummary>
-                     <ExpansionPanelDetails>
-                         <div className={classes.parameters}>
-                             <Button
-                                 variant="contained"
-                                 color="secondary"
-                                 startIcon={<Add/>}
-                                 onClick={handleAddParameter}
-                                 className={classes.button}
-                             >
-                                 Add parameter
-                             </Button>
-                             {parameters.map((parameter, index) =>
-                                 <RequestParameter
-                                     key={index}
-                                     parameter={parameter}
-                                     index={index}
-                                     ruleId={ruleId}
-                                     warnings={warnings}
-                                     onDeleteParameter={handleDeleteParameter}
-                                     onKeyChange={handleParameterKeyChange}
-                                     onKeyIgnoreCaseChange={handleParameterKeyIgnoreCaseChange}
-                                     onValueChange={handleParameterValueChange}
-                                     onValueIgnoreCaseChange={handleParameterValueIgnoreCaseChange}
-                                     onConditionChange={handleParameterConditionChange}
-                                 />
-                             )}
-                         </div>
-                     </ExpansionPanelDetails>
-                 </ExpansionPanel>
-             </div>}
-        </div>
+        <ExpansionPanel square expanded={parametersExpanded} onChange={handleStateChange}>
+            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                <Typography className={headingClass}>Parameters</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails className={classes.parameters}>
+                {parameters.map((parameter, index) =>
+                    <RequestParameter
+                        key={index}
+                        parameter={parameter}
+                        index={index}
+                        ruleId={ruleId}
+                        warnings={warnings}
+                        onDeleteParameter={handleDeleteParameter}
+                        onKeyChange={handleParameterKeyChange}
+                        onKeyIgnoreCaseChange={handleParameterKeyIgnoreCaseChange}
+                        onValueChange={handleParameterValueChange}
+                        onValueIgnoreCaseChange={handleParameterValueIgnoreCaseChange}
+                        onConditionChange={handleParameterConditionChange}
+                    />
+                )}
+                <div className={classes.center}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<Add/>}
+                        onClick={handleAddParameter}
+                        className={buttonClass}
+                    >
+                        Add parameter
+                    </Button>
+                </div>
+            </ExpansionPanelDetails>
+        </ExpansionPanel>
     );
 }
 

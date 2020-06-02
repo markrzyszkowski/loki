@@ -10,18 +10,26 @@ import { Delete } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
-    fields: {
-        width: '100%'
-    },
     field: {
         flexGrow: 1,
         margin: theme.spacing(1)
     },
     select: {
-        margin: theme.spacing(1)
+        margin: theme.spacing(1),
+        width: 168
+    },
+    checkbox: {
+        alignSelf: 'start',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(0.25),
     },
     button: {
-        minWidth: 61
+        alignSelf: 'start',
+        marginTop: theme.spacing(0.5),
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
     }
 }));
 
@@ -79,7 +87,7 @@ function RequestHeader(props) {
     const showValueField = !header.condition.includes('PRESENT');
 
     return (
-        <FormGroup row className={classes.fields}>
+        <FormGroup row>
             <TextField
                 error={!!warnings[`${ruleId}-request-header-${index}-key`]}
                 helperText={warnings[`${ruleId}-request-header-${index}-key`]}
@@ -122,6 +130,7 @@ function RequestHeader(props) {
                     onFocus={ignoreEvent}
                     control={<Checkbox checked={header.valueIgnoreCase} onChange={handleValueIgnoreCaseChange}/>}
                     label="ignore case"
+                    className={classes.checkbox}
                 />
             </>}
             <IconButton onClick={handleDeleteHeader} className={classes.button}>
