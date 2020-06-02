@@ -6,7 +6,7 @@ import * as PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
     button: {
-        minWidth: '48px',
+        minWidth: 48,
         flexShrink: 0,
         borderRadius: 0
     }

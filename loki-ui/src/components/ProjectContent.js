@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(9)
     },
     rulesOffset: {
-        marginTop: '2px',
+        marginTop: 2,
         marginBottom: theme.spacing(9)
     }
 }));

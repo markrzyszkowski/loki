@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
     toolbar: theme.mixins.toolbar,
     square: {
-        minWidth: '48px',
+        minWidth: 48,
         borderRadius: 0
     }
 }));
