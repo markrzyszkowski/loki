@@ -23,4 +23,10 @@ public class Response {
     private List<@Valid Header> headers;
 
     private String body;
+
+    @Min(0)
+    @Max(300000)
+    private int delay;
+
+    private boolean delayResponse;
 }

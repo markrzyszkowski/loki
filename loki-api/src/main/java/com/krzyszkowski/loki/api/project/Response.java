@@ -16,6 +16,8 @@ public class Response {
     private int statusCode;
     private List<Header> headers;
     private String body;
+    private int delay;
+    private boolean delayResponse;
     private boolean expanded;
     private boolean headersExpanded;
 }

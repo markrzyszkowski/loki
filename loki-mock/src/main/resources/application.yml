@@ -1,3 +1,7 @@
+spring:
+  mvc:
+    async:
+      request-timeout: 310000ms
 logging:
   level:
     root: info

@@ -32,6 +32,10 @@ function checkWarnings(project, state) {
 
             validateStatusCode(rule.response.statusCode, rule.id, state.warnings[tab.id]);
 
+            if (rule.request.delayResponse) {
+                validateDelay(rule.response.delay, rule.id, state.warnings[tab.id]);
+            }
+
             rule.response.headers.forEach((header, index) => {
                 validateHeaderKey(header.key, rule.id, 'response', index, state.warnings[tab.id]);
                 validateHeaderValue(header.value, rule.id, 'response', index, state.warnings[tab.id]);
@@ -293,6 +297,26 @@ function validateStatusCode(statusCode, ruleId, warnings) {
     }
 }
 
+function validateDelay(delay, ruleId, warnings) {
+    const field = `${ruleId}-response-delay`;
+
+    console.log(delay);
+
+    if (isNotEmpty(delay)) {
+        if (isValidDelay(delay)) {
+            if (warnings) {
+                delete warnings[field];
+            }
+        } else {
+            warnings = warnings || {};
+            warnings[field] = 'Delay must be valid';
+        }
+    } else {
+        warnings = warnings || {};
+        warnings[field] = 'Delay cannot be empty';
+    }
+}
+
 function isNotEmpty(str) {
     return str && str.length;
 }
@@ -392,6 +416,12 @@ function isValidStatusCode(str) {
     return statusCode >= 100 && statusCode <= 599;
 }
 
+function isValidDelay(str) {
+    const delay = parseInt(str);
+
+    return delay >= 0 && delay <= 300000;
+}
+
 const validators = {
     url: validateUrls,
     httpMethod: validateHttpMethod,
@@ -402,7 +432,8 @@ const validators = {
     headerKey: validateHeaderKey,
     headerValue: validateHeaderValue,
     body: validateBody,
-    statusCode: validateStatusCode
+    statusCode: validateStatusCode,
+    delay: validateDelay
 };
 
 function warningsPresent(warnings) {

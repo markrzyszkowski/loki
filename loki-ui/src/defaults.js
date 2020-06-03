@@ -62,6 +62,8 @@ const defaultRule = () => {
             statusCode: 200,
             headers: [],
             body: '',
+            delay: 0,
+            delayResponse: false,
             expanded: true,
             headersExpanded: false
         },
