@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
     const [project, setProject] = useState(null);
+    const [state, setState] = useState(null);
     const [backdrop, setBackdrop] = useState({
         open: false,
         show: () => setBackdrop(current => ({...current, open: true})),
