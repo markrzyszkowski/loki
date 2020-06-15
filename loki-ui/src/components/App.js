@@ -35,15 +35,16 @@ function App() {
 
     const classes = useStyles();
 
-    const handleProjectInit = project => {
+    const handleProjectInit = (project, state) => {
         setProject(project);
+        setState(state);
     };
 
     return (
         <>
             <CssBaseline/>
-            {project && <Workspace initialProject={project} backdrop={backdrop} alert={alert}/>}
-            {!project && <Initializer backdrop={backdrop} alert={alert} onProjectInit={handleProjectInit}/>}
+            {project && state && <Workspace initialProject={project} initialState={state} backdrop={backdrop} alert={alert}/>}
+            {(!project || !state) && <Initializer backdrop={backdrop} alert={alert} onProjectInit={handleProjectInit}/>}
             <Backdrop open={backdrop.open} className={classes.backdrop}/>
             <Alert alert={alert}/>
         </>

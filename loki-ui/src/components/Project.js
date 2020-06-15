@@ -71,7 +71,7 @@ function Project(props) {
         warningsCopy[tabId] = {...warningsCopy[project.tabs[tabIndex].id]};
         validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
-        onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: project.tabs.length, warnings: warningsCopy});
+        onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: project.tabs.length, modified: true, warnings: warningsCopy});
     };
 
     const handleDeleteTab = tabIndex => {
@@ -84,11 +84,11 @@ function Project(props) {
             validators.url({...project, tabs: tabsCopy}, warningsCopy);
 
             if (tabIndex === state.activeTab && tabIndex === 0) {
-                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: 0, warnings: warningsCopy});
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: 0, modified: true, warnings: warningsCopy});
             } else if (tabIndex <= state.activeTab) {
-                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: state.activeTab - 1, warnings: warningsCopy});
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {activeTab: state.activeTab - 1, modified: true, warnings: warningsCopy});
             } else {
-                onModifyProjectAndState(index, {tabs: tabsCopy}, {warnings: warningsCopy});
+                onModifyProjectAndState(index, {tabs: tabsCopy}, {modified: true, warnings: warningsCopy});
             }
         }
     };

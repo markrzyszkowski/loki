@@ -68,10 +68,11 @@ public class ProjectController {
         }
 
         var path = fetchProjectRequest.getPath();
+        var type = fetchProjectRequest.getType();
 
-        log.debug("Received request to import project from file '{}'", path);
+        log.debug("Received request to import project from {} file '{}'", type, path);
 
-        var projectOptional = projectService.importProject(path);
+        var projectOptional = projectService.importProject(path, type);
 
         return projectOptional.isPresent()
                 ? ResponseEntity.ok(FetchProjectResponse.builder()
@@ -95,14 +96,16 @@ public class ProjectController {
         }
 
         var path = saveProjectRequest.getPath();
+        var type = saveProjectRequest.getType();
         var project = saveProjectRequest.getProject();
 
-        log.debug("Received request to export project [id='{}', name='{}'] to file '{}'",
+        log.debug("Received request to export project [id='{}', name='{}'] to {} file '{}'",
                   project.getId(),
                   project.getName(),
+                  type,
                   path);
 
-        var projectExported = projectService.exportProject(path, project);
+        var projectExported = projectService.exportProject(path, type, project);
 
         return projectExported
                 ? ResponseEntity.ok().build()

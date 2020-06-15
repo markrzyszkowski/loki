@@ -15,4 +15,6 @@ public class FetchProjectRequest {
 
     @NotBlank(message = "Path cannot be empty")
     private String path;
+
+    private String type;
 }

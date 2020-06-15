@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import MuiToolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import { Add, FolderOpen, OpenInBrowser, PlayArrow, Stop } from '@material-ui/icons';
@@ -51,7 +53,31 @@ function Toolbar(props) {
         onStopMock
     } = props;
 
+    const [menuAnchor, setMenuAnchor] = useState(null);
+
     const classes = useStyles();
+
+    const handleOpenMenu = event => {
+        setMenuAnchor(event.currentTarget)
+    };
+
+    const handleCloseMenu = event => {
+        event.stopPropagation();
+
+       setMenuAnchor(null);
+    };
+
+    const handleImportProjectFromOpenApi = event => {
+        handleCloseMenu(event);
+
+        onImportProject('openapi');
+    };
+
+    const handleImportProjectFromHar = event => {
+        handleCloseMenu(event);
+
+        onImportProject('har');
+    };
 
     const handleStartMock = () => {
         onStartMock(currentIndex);
@@ -97,11 +123,22 @@ function Toolbar(props) {
                     variant="contained"
                     color="default"
                     startIcon={<OpenInBrowser/>}
-                    onClick={onImportProject}
+                    onClick={handleOpenMenu}
                     className={classes.action}
                 >
                     Import
                 </Button>
+                <Menu
+                    open={!!menuAnchor}
+                    anchorEl={menuAnchor}
+                    onClose={handleCloseMenu}
+                    anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+                    transformOrigin={{vertical: 'top', horizontal: 'center'}}
+                    getContentAnchorEl={null}
+                >
+                    <MenuItem onClick={handleImportProjectFromOpenApi}>OpenAPI 2.0/3.0 Spec</MenuItem>
+                    <MenuItem onClick={handleImportProjectFromHar}>HAR file</MenuItem>
+                </Menu>
                 <div className={classes.grow}/>
                 {loading && <CircularProgress color="inherit"/>}
                 {hasTabs &&

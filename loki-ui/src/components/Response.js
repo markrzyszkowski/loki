@@ -3,6 +3,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -13,7 +14,7 @@ import * as PropTypes from 'prop-types';
 import ResponseHeaders from './ResponseHeaders';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
 import { deleteWarnings, validators } from '../warnings';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { ignoreEvent } from '../util';
 
 const useStyles = makeStyles(theme => ({
     content: {
@@ -60,10 +61,6 @@ function Response(props) {
     const {response, ruleId, warnings, onModifyResponse} = props;
 
     const classes = useStyles();
-
-    const ignoreEvent = event => {
-        event.stopPropagation();
-    };
 
     const handleStateChange = (_, expanded) => {
         onModifyResponse({expanded: expanded});

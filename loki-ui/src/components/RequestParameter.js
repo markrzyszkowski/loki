@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { Delete } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
+import { ignoreEvent } from '../util';
 
 const useStyles = makeStyles(theme => ({
     field: {
@@ -48,10 +49,6 @@ function RequestParameter(props) {
     } = props;
 
     const classes = useStyles();
-
-    const ignoreEvent = event => {
-        event.stopPropagation();
-    };
 
     const handleDeleteParameter = () => {
         onDeleteParameter(index);

@@ -16,6 +16,7 @@ import RequestHeaders from './RequestHeaders';
 import RequestParameters from './RequestParameters';
 import RequestUrlVariables from './RequestUrlVariables';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
+import { ignoreEvent } from '../util';
 import { deleteWarnings, validators } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
@@ -85,10 +86,6 @@ function Request(props) {
     const {request, ruleId, warnings, onModifyRequest} = props;
 
     const classes = useStyles();
-
-    const ignoreEvent = event => {
-        event.stopPropagation();
-    };
 
     const handleStateChange = (_, expanded) => {
         onModifyRequest({expanded: expanded});

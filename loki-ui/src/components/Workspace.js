@@ -26,11 +26,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Workspace(props) {
-    const {initialProject, backdrop, alert} = props;
+    const {initialProject, initialState, backdrop, alert} = props;
 
     const [projects, setProjects] = useState([{
         project: initialProject,
-        state: checkWarnings(initialProject, defaultState())
+        state: initialState
     }]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -92,10 +92,10 @@ function Workspace(props) {
         ipc.send('open-project');
     };
 
-    const handleImportProject = () => {
+    const handleImportProject = type => {
         ipc.once('import-project', (_, path) => {
             if (path) {
-                importProject(path).then(project => {
+                importProject(path, type).then(project => {
                     const state = {...defaultState(), path: path};
 
                     setProjects([...projects, {
@@ -115,7 +115,7 @@ function Workspace(props) {
             backdrop.show();
         }
 
-        ipc.send('import-project');
+        ipc.send('import-project', type);
     };
 
     const handleModifyProjectAndState = (index, projectProperties, stateProperties) => {
@@ -181,10 +181,10 @@ function Workspace(props) {
         setCurrentIndex(projects.length);
     };
 
-    const handleExportProject = index => {
+    const handleExportProject = (index, type) => {
         ipc.once('export-project', (_, path) => {
             if (path) {
-                exportProject(path, projects[index].project).catch(error => {
+                exportProject(path, type, projects[index].project).catch(error => {
                     handleApiError(error, alert);
                 });
             }
@@ -196,7 +196,7 @@ function Workspace(props) {
             backdrop.show();
         }
 
-        ipc.send('export-project');
+        ipc.send('export-project', type);
     };
 
     const handleCloseProject = index => {
@@ -290,6 +290,7 @@ function Workspace(props) {
 
 Workspace.propTypes = {
     initialProject: PropTypes.object.isRequired,
+    initialState: PropTypes.object.isRequired,
     backdrop: PropTypes.object.isRequired,
     alert: PropTypes.object.isRequired
 };

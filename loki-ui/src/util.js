@@ -17,10 +17,14 @@ function handleApiError(error, alert) {
 
         alert.show('error', 'Error occured while trying to communicate with agent service');
     } else {
-        console.error('Request creation failed:', error.message);
+        console.error('Unexpected error occurred', error.message);
 
-        alert.show('error', 'Unknown error occured');
+        alert.show('error', 'Unknown error occurred');
     }
 }
 
-export { ellipsis, flection, handleApiError };
+function ignoreEvent(event) {
+    event.stopPropagation();
+}
+
+export { ellipsis, flection, handleApiError, ignoreEvent };

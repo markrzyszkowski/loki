@@ -1,5 +1,6 @@
 package com.krzyszkowski.loki.agent.io.har;
 
+import com.krzyszkowski.loki.agent.core.internal.util.UrlHelper;
 import com.krzyszkowski.loki.agent.io.ProjectInputParser;
 import com.krzyszkowski.loki.api.project.Condition;
 import com.krzyszkowski.loki.api.project.Header;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,14 +36,19 @@ import java.util.stream.Collectors;
 public class HarInputParser implements ProjectInputParser {
 
     @Override
-    public Project parse(byte[] project) throws IOException {
+    public Project parse(String path) throws IOException {
         try {
-            var har = new HarReader().readFromString(new String(project));
+            var har = new HarReader().readFromString(path);
 
             return parseProject(har.getLog());
         } catch (HarReaderException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public boolean canParse(String type) {
+        return "har".equalsIgnoreCase(type);
     }
 
     private Project parseProject(HarLog harLog) {
@@ -58,13 +65,7 @@ public class HarInputParser implements ProjectInputParser {
                                          .stream()
                                          .filter(entry -> entry.getKey() != null)
                                          .map(entry -> {
-                                             var url = entry.getKey();
-
-                                             if (url.startsWith("http://")) {
-                                                 url = url.replaceFirst("http://", "");
-                                             } else if (url.startsWith("https://")) {
-                                                 url = url.replaceFirst("https://", "");
-                                             }
+                                             var url = UrlHelper.stripProtocol(entry.getKey());
 
                                              return Tab.builder()
                                                        .id(UUID.randomUUID().toString())
@@ -76,30 +77,14 @@ public class HarInputParser implements ProjectInputParser {
                                          .collect(Collectors.toList());
     }
 
-    private Map<String, List<HarEntry>> groupTabsByUrl(List<HarEntry> harEntries) {
-        return harEntries.stream()
-                         .collect(Collectors.groupingBy(harEntry -> {
-                             try {
-                                 var uri = new URI(harEntry.getRequest().getUrl());
-
-                                 return new URI(uri.getScheme(),
-                                                uri.getAuthority(),
-                                                uri.getPath(),
-                                                null,
-                                                null).toString();
-                             } catch (URISyntaxException e) {
-                                 return null;
-                             }
-                         }));
-    }
-
     private List<Rule> parseRules(List<HarEntry> harEntries) {
         return harEntries.stream()
                          .map(harEntry -> Rule.builder()
-                                              .active(true)
-                                              .name("Untitled rule")
+                                              .id(UUID.randomUUID().toString())
+                                              .name("Imported rule")
                                               .request(parseRequest(harEntry.getRequest()))
                                               .response(parseResponse(harEntry.getResponse()))
+                                              .active(true)
                                               .expanded(true)
                                               .build())
                          .collect(Collectors.toList());
@@ -109,6 +94,7 @@ public class HarInputParser implements ProjectInputParser {
         return Request.builder()
                       .method(harRequest.getMethod().toString())
                       .methodCondition(Condition.EQUAL)
+                      .urlVariables(Collections.emptyList())
                       .parameters(parseRequestParameters(harRequest.getQueryString()))
                       .headers(parseRequestHeaders(harRequest.getHeaders()))
                       .body(harRequest.getPostData().getText())
@@ -116,8 +102,9 @@ public class HarInputParser implements ProjectInputParser {
                       .bodyIgnoreCase(false)
                       .bodyIgnoreWhitespace(false)
                       .expanded(true)
-                      .parametersExpanded(true)
-                      .headersExpanded(true)
+                      .urlVariablesExpanded(false)
+                      .parametersExpanded(false)
+                      .headersExpanded(false)
                       .build();
     }
 
@@ -150,8 +137,10 @@ public class HarInputParser implements ProjectInputParser {
                        .statusCode(harResponse.getStatus())
                        .headers(parseResponseHeaders(harResponse.getHeaders()))
                        .body(harResponse.getContent().getText())
+                       .delay(0)
+                       .delayResponse(false)
                        .expanded(true)
-                       .headersExpanded(true)
+                       .headersExpanded(false)
                        .build();
     }
 
@@ -166,8 +155,27 @@ public class HarInputParser implements ProjectInputParser {
 
     private Settings parseSettings() {
         return Settings.builder()
-                       .port(0)
                        .profile(Profile.STATIC)
+                       .port(0)
+                       .blockRemoteRequests(false)
+                       .maxRequestSize(10)
                        .build();
+    }
+
+    private Map<String, List<HarEntry>> groupTabsByUrl(List<HarEntry> harEntries) {
+        return harEntries.stream()
+                         .collect(Collectors.groupingBy(harEntry -> {
+                             try {
+                                 var uri = new URI(harEntry.getRequest().getUrl());
+
+                                 return new URI(uri.getScheme(),
+                                                uri.getAuthority(),
+                                                uri.getPath(),
+                                                null,
+                                                null).toString();
+                             } catch (URISyntaxException e) {
+                                 return null;
+                             }
+                         }));
     }
 }

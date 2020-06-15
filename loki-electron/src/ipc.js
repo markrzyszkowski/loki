@@ -4,6 +4,42 @@ const log = require('electron-log');
 function setupIpc(webContents, properties) {
     const {agentPort} = properties;
 
+    const importFilters = {
+        openapi: [
+            {
+                name: 'OpenAPI 2.0/3.0 Spec',
+                extensions: [
+                    'json', 'yaml'
+                ]
+            }
+        ],
+        har: [
+            {
+                name: 'HAR file',
+                extensions: [
+                    'har'
+                ]
+            }
+        ]
+    };
+
+    const exportFilters = {
+        openapi: [
+            {
+                name: 'OpenAPI 3.0 Spec',
+                extensions: [
+                    'json'
+                ]
+            },
+            {
+                name: 'OpenAPI 3.0 Spec',
+                extensions: [
+                    'yaml'
+                ]
+            }
+        ]
+    };
+
     ipc.on('agent-port', () => {
         log.debug(`Sending agent port to renderer process: ${agentPort}`);
         webContents.send('agent-port', agentPort);
@@ -31,41 +67,27 @@ function setupIpc(webContents, properties) {
         webContents.send('open-project', paths ? paths[0] : null);
     });
 
-    ipc.on('import-project', () => {
-        log.debug('Import project action received; showing dialog...');
+    ipc.on('import-project', (_, type) => {
+        log.debug(`Import project action received for type: ${type}; showing dialog...`);
         const paths = dialog.showOpenDialogSync({
             title: 'Select file to import',
             buttonLabel: 'Import',
             properties: [
                 'openFile'
             ],
-            filters: [
-                {
-                    name: 'Supported files',
-                    extensions: [
-                        'har'
-                    ]
-                }
-            ]
+            filters: importFilters[type]
         });
 
         log.info(`Dialog for import project action yielded path: ${paths}`);
         webContents.send('import-project', paths ? paths[0] : null);
     });
 
-    ipc.on('export-project', () => {
-        log.debug('Export project action received; showing dialog...');
+    ipc.on('export-project', (_, type) => {
+        log.debug(`Export project action received for type: ${type}; showing dialog...`);
         const path = dialog.showSaveDialogSync({
             title: 'Export project',
             buttonLabel: 'Export',
-            filters: [
-                {
-                    name: 'HAR file',
-                    extensions: [
-                        'har'
-                    ]
-                }
-            ]
+            filters: exportFilters[type]
         });
 
         log.info(`Dialog for export project action yielded path: ${path}`);

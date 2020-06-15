@@ -8,9 +8,9 @@ public interface ProjectService {
 
     Optional<Project> openProject(String path);
 
-    Optional<Project> importProject(String path);
+    Optional<Project> importProject(String path, String type);
 
-    boolean exportProject(String path, Project project);
+    boolean exportProject(String path, String type, Project project);
 
     boolean saveProject(String path, Project project);
 }

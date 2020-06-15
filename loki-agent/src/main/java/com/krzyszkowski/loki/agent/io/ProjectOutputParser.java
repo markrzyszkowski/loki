@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface ProjectOutputParser {
 
-    byte[] parse(Project project) throws IOException;
+    void parse(String path, Project project) throws IOException;
 
-    boolean canParse(String extension);
+    boolean canParse(String type);
 }

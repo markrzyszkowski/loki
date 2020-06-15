@@ -1,45 +1,49 @@
 function checkWarnings(project, state) {
-    validateUrls(project, state.warnings);
+    state.warnings = validateUrls(project, state.warnings);
 
     project.tabs.forEach(tab => {
         tab.rules.forEach(rule => {
-            validateHttpMethod(rule.request.method, rule.id, state.warnings[tab.id]);
+            state.warnings[tab.id] = validateHttpMethod(rule.request.method, rule.id, state.warnings[tab.id]);
 
             rule.request.urlVariables.forEach((variable, index) => {
-                validateUrlVariableKey(variable.key, rule.id, index, state.warnings[tab.id]);
-                validateUrlVariableValue(variable.value, rule.id, index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateUrlVariableKey(variable.key, rule.id, index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateUrlVariableValue(variable.value, rule.id, index, state.warnings[tab.id]);
             });
 
             rule.request.parameters.forEach((parameter, index) => {
-                validateParameterKey(parameter.key, rule.id, index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateParameterKey(parameter.key, rule.id, index, state.warnings[tab.id]);
 
                 if (!parameter.condition.includes('PRESENT')) {
-                    validateParameterValue(parameter.key, rule.id, index, state.warnings[tab.id]);
+                    state.warnings[tab.id] = validateParameterValue(parameter.key, rule.id, index, state.warnings[tab.id]);
                 }
             });
 
             rule.request.headers.forEach((header, index) => {
-                validateHeaderKey(header.key, rule.id, 'request', index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateHeaderKey(header.key, rule.id, 'request', index, state.warnings[tab.id]);
 
                 if (!header.condition.includes('PRESENT')) {
-                    validateHeaderValue(header.value, rule.id, 'request', index, state.warnings[tab.id]);
+                    state.warnings[tab.id] = validateHeaderValue(header.value, rule.id, 'request', index, state.warnings[tab.id]);
                 }
             });
 
             if (!rule.request.bodyCondition.includes('PRESENT')) {
-                validateBody(rule.request.body, rule.id, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateBody(rule.request.body, rule.id, state.warnings[tab.id]);
             }
 
-            validateStatusCode(rule.response.statusCode, rule.id, state.warnings[tab.id]);
+            state.warnings[tab.id] = validateStatusCode(rule.response.statusCode, rule.id, state.warnings[tab.id]);
 
-            if (rule.request.delayResponse) {
-                validateDelay(rule.response.delay, rule.id, state.warnings[tab.id]);
+            if (rule.response.delayResponse) {
+                state.warnings[tab.id] = validateDelay(rule.response.delay, rule.id, state.warnings[tab.id]);
             }
 
             rule.response.headers.forEach((header, index) => {
-                validateHeaderKey(header.key, rule.id, 'response', index, state.warnings[tab.id]);
-                validateHeaderValue(header.value, rule.id, 'response', index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateHeaderKey(header.key, rule.id, 'response', index, state.warnings[tab.id]);
+                state.warnings[tab.id] = validateHeaderValue(header.value, rule.id, 'response', index, state.warnings[tab.id]);
             });
+
+            if (!state.warnings[tab.id]) {
+                delete state.warnings[tab.id];
+            }
         });
     });
 
@@ -64,7 +68,7 @@ function deleteWarnings(prefix, warnings) {
 
 function deleteEmptyWarnings(warnings) {
     Object.entries(warnings)
-          .filter(([_, tabWarnings]) => !Object.keys(tabWarnings).length)
+          .filter(([_, tabWarnings]) => !tabWarnings || !Object.keys(tabWarnings).length)
           .map(([tabId, _]) => tabId)
           .forEach(id => {
               delete warnings[id];
@@ -100,7 +104,7 @@ function validateUrls(project, warnings) {
     const duplicates = {};
 
     project.tabs.forEach(tab => {
-        validateUrl(tab.url, warnings[tab.id]);
+        warnings[tab.id] = validateUrl(tab.url, warnings[tab.id]);
 
         const temp = tab.url.replace(/{{(.+?)}}/g, '{{-}}');
 
@@ -120,6 +124,8 @@ function validateUrls(project, warnings) {
     }
 
     deleteEmptyWarnings(warnings);
+
+    return warnings;
 }
 
 function validateUrl(url, warnings) {
@@ -138,6 +144,8 @@ function validateUrl(url, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Mock URL cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateHttpMethod(method, ruleId, warnings) {
@@ -156,6 +164,8 @@ function validateHttpMethod(method, ruleId, warnings) {
         warnings = warnings || {};
         warnings[field] = 'HTTP method cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateUrlVariableKey(key, ruleId, index, warnings) {
@@ -174,6 +184,8 @@ function validateUrlVariableKey(key, ruleId, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'URL variable key cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateUrlVariableValue(value, ruleId, index, warnings) {
@@ -192,6 +204,8 @@ function validateUrlVariableValue(value, ruleId, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'URL variable value cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateParameterKey(key, ruleId, index, warnings) {
@@ -210,6 +224,8 @@ function validateParameterKey(key, ruleId, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Parameter key cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateParameterValue(value, ruleId, index, warnings) {
@@ -228,6 +244,8 @@ function validateParameterValue(value, ruleId, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Parameter value cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateHeaderKey(key, ruleId, rqrs, index, warnings) {
@@ -246,6 +264,8 @@ function validateHeaderKey(key, ruleId, rqrs, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Header key cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateHeaderValue(value, ruleId, rqrs, index, warnings) {
@@ -264,6 +284,8 @@ function validateHeaderValue(value, ruleId, rqrs, index, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Header value cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateBody(body, ruleId, warnings) {
@@ -277,6 +299,8 @@ function validateBody(body, ruleId, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Body cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateStatusCode(statusCode, ruleId, warnings) {
@@ -295,12 +319,12 @@ function validateStatusCode(statusCode, ruleId, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Status code cannot be empty';
     }
+
+    return warnings;
 }
 
 function validateDelay(delay, ruleId, warnings) {
     const field = `${ruleId}-response-delay`;
-
-    console.log(delay);
 
     if (isNotEmpty(delay)) {
         if (isValidDelay(delay)) {
@@ -315,10 +339,12 @@ function validateDelay(delay, ruleId, warnings) {
         warnings = warnings || {};
         warnings[field] = 'Delay cannot be empty';
     }
+
+    return warnings;
 }
 
 function isNotEmpty(str) {
-    return str && str.length;
+   return typeof str === 'number' || (!!str && !!str.length);
 }
 
 function containsWhitespace(str) {
@@ -361,7 +387,7 @@ function isValidUrlPath(str) {
             return false;
         }
 
-        const matches = [...str.matchAll(/{{(.+?)}}/g)].map(match => match[1]);
+        const matches = [...str.matchAll(/{{(.*?)}}/g)].map(match => match[1]);
         const uniqueMatches = new Set(matches);
 
         if (uniqueMatches.size !== matches.length) {
@@ -369,7 +395,7 @@ function isValidUrlPath(str) {
         }
 
         for (const match of uniqueMatches) {
-            if (match.indexOf('/') !== -1) {
+            if (match.length <= 0 || match.indexOf('/') !== -1) {
                 return false;
             }
         }

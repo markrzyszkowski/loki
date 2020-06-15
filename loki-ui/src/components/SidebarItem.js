@@ -9,12 +9,14 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import NestedMenuItem from 'material-ui-nested-menu-item';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { Error, Save } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import SidebarItemButton from './SidebarItemButton';
 import Ellipsis from './util/Ellipsis';
+import { ignoreEvent } from '../util';
 import { warningsPresent } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
@@ -104,10 +106,10 @@ function SidebarItem(props) {
         onDuplicateProject(index);
     };
 
-    const handleExportProject = event => {
+    const handleExportProjectToOpenApi = event => {
         handleCloseMenu(event);
 
-        onExportProject(index);
+        onExportProject(index, 'openapi');
     };
 
     const selected = index === currentIndex;
@@ -127,7 +129,7 @@ function SidebarItem(props) {
                 classes={{container: containerClass}}
             >
                 <ListItemText primary={
-                    <Ellipsis text={project.name} maxLength={20} interactive={false}/>
+                    <Ellipsis text={project.name} maxLength={16} interactive={false}/>
                 }/>
                 {hasWarnings && <Error color="secondary"/>}
                 {unsaved && <Save color={state.modified ? 'secondary' : 'primary'}/>}
@@ -135,7 +137,10 @@ function SidebarItem(props) {
                     {unsaved && <MenuItem onClick={handleSaveProject}>Save</MenuItem>}
                     <MenuItem onClick={handleOpenDialog}>Rename</MenuItem>
                     <MenuItem onClick={handleDuplicateProject}>Duplicate</MenuItem>
-                    <MenuItem onClick={handleExportProject}>Export</MenuItem>
+                    {!hasWarnings &&
+                     <NestedMenuItem label="Export" parentMenuOpen={!!menuPosition} onClick={ignoreEvent}>
+                         <MenuItem onClick={handleExportProjectToOpenApi}>to OpenAPI 3.0 Spec</MenuItem>
+                     </NestedMenuItem>}
                     <MenuItem onClick={handleCloseMenu}>Cancel</MenuItem>
                 </Menu>
                 <ListItemSecondaryAction>

@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import * as PropTypes from 'prop-types';
 import ExpansionPanelSummary from './mui/ExpansionPanelSummary';
+import { ignoreEvent } from '../util';
 
 const useStyles = makeStyles(theme => ({
     warning: {
@@ -53,10 +54,6 @@ function RuleHeading(props) {
 
     const handleCloseDialog = () => {
         setShowDialog(false);
-    };
-
-    const ignoreEvent = event => {
-        event.stopPropagation();
     };
 
     const handleActiveChange = event => {

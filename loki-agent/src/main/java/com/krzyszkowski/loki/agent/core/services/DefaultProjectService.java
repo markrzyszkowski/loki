@@ -1,8 +1,7 @@
 package com.krzyszkowski.loki.agent.core.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.krzyszkowski.loki.agent.core.internal.ProjectExporter;
-import com.krzyszkowski.loki.agent.core.internal.ProjectImporter;
+import com.krzyszkowski.loki.agent.io.ProjectParserResolver;
 import com.krzyszkowski.loki.api.project.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,16 +14,12 @@ import java.util.Optional;
 public class DefaultProjectService implements ProjectService {
 
     private final StorageService storageService;
-    private final ProjectImporter projectImporter;
-    private final ProjectExporter projectExporter;
+    private final ProjectParserResolver parserResolver;
     private final ObjectMapper objectMapper;
 
-    public DefaultProjectService(StorageService storageService,
-                                 ProjectImporter projectImporter,
-                                 ProjectExporter projectExporter) {
+    public DefaultProjectService(StorageService storageService, ProjectParserResolver parserResolver) {
         this.storageService = storageService;
-        this.projectImporter = projectImporter;
-        this.projectExporter = projectExporter;
+        this.parserResolver = parserResolver;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -43,11 +38,9 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public Optional<Project> importProject(String path) {
+    public Optional<Project> importProject(String path, String type) {
         try {
-            var projectBytes = storageService.readFile(path);
-
-            return Optional.of(projectImporter.importProject(projectBytes));
+            return Optional.ofNullable(parserResolver.parseInput(path, type));
         } catch (IOException e) {
             log.error("Error occured while trying to import project");
             log.error("Exception: {}", e.toString());
@@ -57,19 +50,17 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public boolean exportProject(String path, Project project) {
+    public boolean exportProject(String path, String type, Project project) {
         try {
-            var projectBytes = projectExporter.exportProject(path, project);
-
-            storageService.writeFile(path, projectBytes);
-
-            return true;
+            parserResolver.parseOutput(path, type, project);
         } catch (IOException e) {
             log.error("Error occured while trying to save project");
             log.error("Exception: {}", e.toString());
 
             return false;
         }
+
+        return true;
     }
 
     @Override

@@ -9,17 +9,19 @@ const openProject = path => {
     });
 };
 
-const importProject = path => {
+const importProject = (path, type) => {
     return axios.post(`http://localhost:${agentPort}/api/project/import`, {
-        path: path
+        path: path,
+        type: type
     }).then(response => {
         return response.data.project;
     });
 };
 
-const exportProject = (path, project) => {
+const exportProject = (path, type, project) => {
     return axios.post(`http://localhost:${agentPort}/api/project/export`, {
         path: path,
+        type: type,
         project: project
     }).then(response => {
         return response.data;

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import * as PropTypes from 'prop-types';
 import ipc from '../ipc';
-import { defaultProject } from '../defaults';
+import { defaultProject, defaultState } from '../defaults';
 import { openProject, importProject } from '../project';
 import { handleApiError } from '../util';
+import { checkWarnings } from '../warnings';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,17 +31,33 @@ const useStyles = makeStyles(theme => ({
 function Initializer(props) {
     const {backdrop, alert, onProjectInit} = props;
 
+    const [menuAnchor, setMenuAnchor] = useState(null);
+
     const classes = useStyles();
 
+    const handleOpenMenu = event => {
+        setMenuAnchor(event.currentTarget)
+    };
+
+    const handleCloseMenu = event => {
+        event.stopPropagation();
+
+        setMenuAnchor(null);
+    };
+
     const handleNewProject = () => {
-        onProjectInit(defaultProject());
+        const project = defaultProject();
+
+        onProjectInit(project, checkWarnings(project, defaultState()));
     };
 
     const handleOpenProject = () => {
         ipc.once('open-project', (_, path) => {
             if (path) {
                 openProject(path).then(project => {
-                    onProjectInit(project);
+                    const state = {...defaultState(), neverSaved: false, path: path};
+
+                    onProjectInit(project, checkWarnings(project, state));
                 }).catch(error => {
                     handleApiError(error, alert);
                 });
@@ -49,14 +68,17 @@ function Initializer(props) {
         if (!ipc.isDummy) {
             backdrop.show();
         }
+
         ipc.send('open-project');
     };
 
-    const handleImportProject = () => {
+    const handleImportProject = type => {
         ipc.once('import-project', (_, path) => {
             if (path) {
-                importProject(path).then(project => {
-                    onProjectInit(project);
+                importProject(path, type).then(project => {
+                    const state = {...defaultState(), path: path};
+
+                    onProjectInit(project, checkWarnings(project, state));
                 }).catch(error => {
                     handleApiError(error, alert);
                 });
@@ -67,7 +89,20 @@ function Initializer(props) {
         if (!ipc.isDummy) {
             backdrop.show();
         }
-        ipc.send('import-project');
+
+        ipc.send('import-project', type);
+    };
+
+    const handleImportProjectFromOpenApi = event => {
+        handleCloseMenu(event);
+
+        handleImportProject('openapi');
+    };
+
+    const handleImportProjectFromHar = event => {
+        handleCloseMenu(event);
+
+        handleImportProject('har');
     };
 
     return (
@@ -95,11 +130,22 @@ function Initializer(props) {
                     variant="contained"
                     size="large"
                     color="default"
-                    onClick={handleImportProject}
+                    onClick={handleOpenMenu}
                     className={classes.action}
                 >
                     Import project
                 </Button>
+                <Menu
+                    open={!!menuAnchor}
+                    anchorEl={menuAnchor}
+                    onClose={handleCloseMenu}
+                    anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+                    transformOrigin={{vertical: 'top', horizontal: 'center'}}
+                    getContentAnchorEl={null}
+                >
+                    <MenuItem onClick={handleImportProjectFromOpenApi}>OpenAPI 2.0/3.0 Spec</MenuItem>
+                    <MenuItem onClick={handleImportProjectFromHar}>HAR file</MenuItem>
+                </Menu>
             </Paper>
         </div>
     );
