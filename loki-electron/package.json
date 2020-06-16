@@ -1,7 +1,10 @@
 {
   "name": "loki",
   "version": "0.0.1-SNAPSHOT",
-  "author": "Marcin Krzyszkowski",
+  "author": {
+    "name": "Marcin Krzyszkowski",
+    "email": "contact@krzyszkowski.com"
+  },
   "private": true,
   "main": "src",
   "engines": {
@@ -47,7 +50,8 @@
       "target": [
         "AppImage",
         "deb"
-      ]
+      ],
+      "category": "Utility"
     }
   }
 }
