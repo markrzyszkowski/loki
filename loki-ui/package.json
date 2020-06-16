@@ -1,6 +1,7 @@
 {
   "name": "loki-ui",
   "version": "0.0.1-SNAPSHOT",
+  "repository": "markrzyszkowski/Loki",
   "author": {
     "name": "Marcin Krzyszkowski",
     "email": "contact@krzyszkowski.com"
