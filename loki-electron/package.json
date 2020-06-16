@@ -52,6 +52,7 @@
         "AppImage",
         "deb"
       ],
+      "icon": "static/icon.png",
       "category": "Utility"
     }
   }
