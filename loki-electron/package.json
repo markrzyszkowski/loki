@@ -10,7 +10,9 @@
   },
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --windows"
+    "build": "electron-builder",
+    "build-windows": "electron-builder --windows",
+    "build-linux": "electron-builder --linux"
   },
   "dependencies": {
     "electron-log": "^4.1.1",
@@ -40,6 +42,12 @@
     },
     "nsis": {
       "runAfterFinish": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     }
   }
 }
