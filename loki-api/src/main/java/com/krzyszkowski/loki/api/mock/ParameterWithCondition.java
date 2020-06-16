@@ -17,7 +17,6 @@ public class ParameterWithCondition {
     @NotBlank(message = "Key cannot be empty")
     private String key;
 
-    @NotBlank(message = "Value cannot be empty")
     private String value;
 
     private Condition condition;
