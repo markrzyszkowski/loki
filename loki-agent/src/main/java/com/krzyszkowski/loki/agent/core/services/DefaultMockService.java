@@ -75,9 +75,9 @@ public class DefaultMockService implements MockService {
         }, 100, 100, TimeUnit.MILLISECONDS);
 
         try {
-            result.get(10, TimeUnit.SECONDS);
+            result.get(60, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.error("Mock process with id {} did not manage to start in 10 seconds", id);
+            log.error("Mock process with id {} did not manage to start in 60 seconds", id);
             log.error("Exception: {}", e.toString());
 
             return Optional.empty();
