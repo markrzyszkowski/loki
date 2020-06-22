@@ -80,6 +80,8 @@ public class DefaultMockService implements MockService {
             log.error("Mock process with id {} did not manage to start in 60 seconds", id);
             log.error("Exception: {}", e.toString());
 
+            mockOrchestrator.stopMockProcess(uuid);
+
             return Optional.empty();
         } catch (CancellationException e) { // ok
             log.info("Mock process with id {} started successfuly", id);
