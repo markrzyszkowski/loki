@@ -15,10 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Mock {
 
-    @NotBlank(message = "Id cannot be empty")
+    @NotBlank(message = "Mock id cannot be empty")
     private String id;
 
-    @NotBlank(message = "Url cannot be empty")
+    @NotBlank(message = "Mock url cannot be empty")
     private String url;
 
     private List<@Valid Rule> rules;

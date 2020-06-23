@@ -13,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UrlVariable {
 
-    @NotBlank(message = "Key cannot be empty")
+    @NotBlank(message = "Url variable key cannot be empty")
     private String key;
 
-    @NotBlank(message = "Value cannot be empty")
+    @NotBlank(message = "Url variable value cannot be empty")
     private String value;
 }

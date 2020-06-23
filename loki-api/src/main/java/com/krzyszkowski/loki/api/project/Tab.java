@@ -15,10 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Tab {
 
-    @NotBlank(message = "Id cannot be empty")
+    @NotBlank(message = "Tab id cannot be empty")
     private String id;
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Tab name cannot be empty")
     private String name;
 
     private String url;

@@ -16,14 +16,14 @@ import java.util.List;
 @AllArgsConstructor
 public class Project {
 
-    @NotBlank(message = "Id cannot be empty")
+    @NotBlank(message = "Project id cannot be empty")
     private String id;
 
-    @NotBlank(message = "Id cannot be empty")
+    @NotBlank(message = "Project name cannot be empty")
     private String name;
 
     @Valid
-    @NotNull(message = "Settings must be present")
+    @NotNull(message = "Project settings must be present")
     private Settings settings;
 
     private List<@Valid Tab> tabs;

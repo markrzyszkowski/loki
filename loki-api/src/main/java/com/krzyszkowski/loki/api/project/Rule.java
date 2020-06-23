@@ -15,17 +15,17 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Rule {
 
-    @NotBlank(message = "Id cannot be empty")
+    @NotBlank(message = "Rule id cannot be empty")
     private String id;
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Rule name cannot be empty")
     private String name;
 
-    @NotNull(message = "Request must be present")
+    @NotNull(message = "Rule request must be present")
     private Request request;
 
     @Valid
-    @NotNull(message = "Response must be present")
+    @NotNull(message = "Rule response must be present")
     private Response response;
 
     private boolean active;

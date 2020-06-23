@@ -13,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class Header {
 
-    @NotBlank(message = "Key cannot be empty")
+    @NotBlank(message = "Header key cannot be empty")
     private String key;
 
-    @NotBlank(message = "Value cannot be empty")
+    @NotBlank(message = "Header value cannot be empty")
     private String value;
 }

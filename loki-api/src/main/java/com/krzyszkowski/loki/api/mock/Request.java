@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Request {
 
-    @NotBlank(message = "Method cannot be empty")
+    @NotBlank(message = "Request method cannot be empty")
     private String method;
 
     private Condition methodCondition;

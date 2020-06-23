@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 public class Rule {
 
     @Valid
-    @NotNull(message = "Request must be present")
+    @NotNull(message = "Rule request must be present")
     private Request request;
 
     @Valid
-    @NotNull(message = "Response must be present")
+    @NotNull(message = "Rule response must be present")
     private Response response;
 }
