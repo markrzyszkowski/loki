@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+logging:
+  file:
+    max-history: 7
+    name: logs/agent.test.log
+  level:
+    root: info
+    com:
+      krzyszkowski:
+        loki: info
+loki:
+  agent:
+    electron:
+      port: 8081
+    mock:
+      jar: agent.test.jar

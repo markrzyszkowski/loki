@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class HarInputParser implements ProjectInputParser {
     @Override
     public Project parse(String path) throws IOException {
         try {
-            var har = new HarReader().readFromString(path);
+            var har = new HarReader().readFromFile(Paths.get(path).toFile());
 
             return parseProject(har.getLog());
         } catch (HarReaderException e) {

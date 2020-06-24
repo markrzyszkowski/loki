@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    async:
+      request-timeout: 310000ms
+
+logging:
+  file:
+    name: logs/mock.test.log
+  level:
+    root: info
+    com:
+      krzyszkowski:
+        loki: info
+
+loki:
+  mock:
+    id: id
+    agent:
+      port: 8080
+    block-remote-requests: false
+    max-request-size: 10MB
+
