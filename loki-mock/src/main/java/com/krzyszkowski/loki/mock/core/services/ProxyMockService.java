@@ -66,8 +66,9 @@ public class ProxyMockService implements MockService {
 
                 populateResponse(response, ruleResponse);
 
-                var result = ResponseEntity.status(ruleResponse.getStatusCode())
-                                           .body(ruleResponse.getBody().getBytes());
+                var result = ResponseEntity
+                        .status(ruleResponse.getStatusCode())
+                        .body(ruleResponse.getBody() != null ? ruleResponse.getBody().getBytes() : "");
 
                 if (ruleResponse.isDelayResponse()) {
                     var entryTimeWithDelay = entryTime.plusMillis(ruleResponse.getDelay());

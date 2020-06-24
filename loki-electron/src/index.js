@@ -202,12 +202,6 @@ async function setupAgent() {
         }
         log.info('Agent process exited succesfully');
     });
-
-    if (is.development) {
-        agentProcess.stdout.on('data', data => {
-            log.debug(data.toString());
-        });
-    }
 }
 
 function createMainWindow() {
@@ -233,11 +227,7 @@ function createMainWindow() {
     log.debug(`Window position: {x = ${lastWindowState.x}; y = ${lastWindowState.y}}`);
     log.debug(`Window dimensions: ${lastWindowState.width}x${lastWindowState.height}`);
 
-    if (!is.development) {
-        if (!config.get('debug')) {
-            window.removeMenu();
-        }
-    }
+    window.removeMenu();
 
     window.on('resize', () => {
         const {isMaximized} = config.get('lastWindowState');

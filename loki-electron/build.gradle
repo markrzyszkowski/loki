@@ -17,7 +17,7 @@ task electron(type: NpmTask, dependsOn: electronPrepare) {
     args = ['start']
 }
 
-assemble.dependsOn electronPackage
+assemble.dependsOn electronPrepare
 check.enabled = false
 
 clean {

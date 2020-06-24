@@ -51,7 +51,7 @@ public class StaticMockService implements MockService {
 
             var result = ResponseEntity
                     .status(ruleResponse.getStatusCode())
-                    .body(ruleResponse.getBody().getBytes());
+                    .body(ruleResponse.getBody() != null ? ruleResponse.getBody().getBytes() : "");
 
             if (ruleResponse.isDelayResponse()) {
                 var entryTimeWithDelay = entryTime.plusMillis(ruleResponse.getDelay());
