@@ -433,7 +433,7 @@ function isValidHeaderKey(str) {
 }
 
 function isValidHeaderValue(str) {
-    return !containsWhitespace(str);
+    return true;
 }
 
 function isValidStatusCode(str) {

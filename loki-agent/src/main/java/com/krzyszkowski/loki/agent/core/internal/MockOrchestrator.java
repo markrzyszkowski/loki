@@ -25,7 +25,7 @@ public class MockOrchestrator {
     private static final String MOCK_ID = "-Dloki.mock.id=%s";
     private static final String AGENT_PORT = "-Dloki.mock.agent.port=%d";
     private static final String BLOCK_REMOTE_REQUESTS = "-Dloki.mock.block-remote-requests=%b";
-    private static final String MAX_REQUEST_SIZE = "-Dloki.mock.maxRequestSize=%d";
+    private static final String MAX_REQUEST_SIZE = "-Dloki.mock.maxRequestSize=%dMB";
     private static final String JAR = "-jar";
 
     private final Map<UUID, Process> processes = new HashMap<>();

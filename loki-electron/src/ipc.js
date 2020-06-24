@@ -26,13 +26,13 @@ function setupIpc(webContents, properties) {
     const exportFilters = {
         openapi: [
             {
-                name: 'OpenAPI 3.0 Spec',
+                name: 'OpenAPI 3.0 Spec (JSON)',
                 extensions: [
                     'json'
                 ]
             },
             {
-                name: 'OpenAPI 3.0 Spec',
+                name: 'OpenAPI 3.0 Spec (YAML)',
                 extensions: [
                     'yaml'
                 ]
@@ -96,7 +96,7 @@ function setupIpc(webContents, properties) {
 
     ipc.on('save-project', () => {
         log.debug('Save project action received; showing dialog...');
-        const path = dialog.showSaveDialogSync({
+        let path = dialog.showSaveDialogSync({
             title: 'Save project',
             buttonLabel: 'Save',
             filters: [
@@ -108,6 +108,10 @@ function setupIpc(webContents, properties) {
                 }
             ]
         });
+
+        if (path.split('.').pop() !== 'lki') {
+            path += '.lki';
+        }
 
         log.info(`Dialog for save project action yielded path: ${path}`);
         webContents.send('save-project', path ? path : null);
