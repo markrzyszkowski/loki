@@ -23,9 +23,9 @@ const schema = {
         default: {
             x: undefined,
             y: undefined,
-            width: 1280,
-            height: 720,
-            isMaximized: false
+            width: 1366,
+            height: 768,
+            isMaximized: true
         }
     },
     quitOnWindowClose: {

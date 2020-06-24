@@ -221,8 +221,8 @@ function createMainWindow() {
         y: lastWindowState.y,
         width: lastWindowState.width,
         height: lastWindowState.height,
-        minWidth: 1280,
-        minHeight: 720,
+        minWidth: 1366,
+        minHeight: 768,
         show: false,
         webPreferences: {
             nodeIntegration: true
