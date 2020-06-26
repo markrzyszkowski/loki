@@ -109,7 +109,7 @@ function setupIpc(webContents, properties) {
             ]
         });
 
-        if (path.split('.').pop() !== 'lki') {
+        if (path && path.split('.').pop() !== 'lki') {
             path += '.lki';
         }
 
