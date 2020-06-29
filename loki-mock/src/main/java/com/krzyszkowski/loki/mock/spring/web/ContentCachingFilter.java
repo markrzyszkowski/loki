@@ -40,5 +40,3 @@ public class ContentCachingFilter extends OncePerRequestFilter {
         filterChain.doFilter(new CachedBodyHttpServletRequest(body, request), response);
     }
 }
-
-

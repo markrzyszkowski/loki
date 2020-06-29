@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Profile("proxy")
 public class ProxyMockConditionCreator implements MockConditionCreator {
 
+    @Override
     public Map<Predicate<HttpServletRequest>, Response> create(Mock mock) {
         return mock.getRules()
                    .stream()

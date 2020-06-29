@@ -242,7 +242,7 @@ function createMainWindow() {
         config.set('lastWindowState.isMaximized', false);
     });
 
-    window.on('close', (event) => {
+    window.on('close', event => {
         if (!isQuitting) {
             if (config.get('quitOnWindowClose')) {
                 app.quit();
