@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class StaticMockConfigurator implements MockConfigurator {
 
     @Override
     public Map<String, String> configure(Configuration configuration) {
-        var urls = new HashMap<String, String>();
+        var urls = new LinkedHashMap<String, String>();
 
         configuration.getMocks()
                      .forEach(mock -> {

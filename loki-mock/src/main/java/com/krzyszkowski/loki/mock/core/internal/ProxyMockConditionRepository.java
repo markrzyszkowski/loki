@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -16,7 +15,7 @@ import java.util.function.Predicate;
 @Profile("proxy")
 public class ProxyMockConditionRepository implements MockConditionRepository {
 
-    private final Map<String, Map<Predicate<HttpServletRequest>, Response>> repository = new HashMap<>();
+    private final Map<String, Map<Predicate<HttpServletRequest>, Response>> repository = new LinkedHashMap<>();
 
     @Override
     public void addMock(String url, Map<Predicate<HttpServletRequest>, Response> mock) {

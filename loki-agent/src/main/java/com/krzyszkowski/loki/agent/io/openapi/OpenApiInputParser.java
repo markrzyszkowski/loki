@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -85,7 +85,7 @@ public class OpenApiInputParser implements ProjectInputParser {
                          })
                          .collect(Collectors.toList());
 
-        var current = new HashMap<String, List<Rule>>();
+        var current = new LinkedHashMap<String, List<Rule>>();
         for (var rule : rules) {
             joinRuleMaps(current, rule);
         }
@@ -102,7 +102,7 @@ public class OpenApiInputParser implements ProjectInputParser {
     }
 
     private Map<String, List<Rule>> explodeOperations(String path, PathItem pathItem, List<String> pathServers) {
-        var rules = new HashMap<String, List<Rule>>();
+        var rules = new LinkedHashMap<String, List<Rule>>();
 
         var pathParameters = pathItem.getParameters() != null ? pathItem.getParameters() : new ArrayList<Parameter>();
 
