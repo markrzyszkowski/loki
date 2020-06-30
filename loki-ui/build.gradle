@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.krzyszkowski.loki'
-version '0.0.1-SNAPSHOT'
+version '1.0.0'
 
 task npmBuild(type: NpmTask, dependsOn: npmInstall) {
     args = ['run', 'build']
