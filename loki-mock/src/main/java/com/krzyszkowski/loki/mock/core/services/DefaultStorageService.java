@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 public class DefaultStorageService implements StorageService {
 
-    private static final Path storage = Paths.get(System.getProperty("java.io.tmpdir"), "Loki");
+    private static final Path storage = Paths.get(System.getProperty("java.io.tmpdir"), "loki");
 
     public DefaultStorageService() throws IOException {
         Files.createDirectories(storage);
